@@ -1,4 +1,5 @@
 <?php
+// rev 5.5
 // ---------------------------
 //  __/\\\\____________/\\\\___________________/\\\\\\\\\\\____/\\\\\\\\\\\\\___
 //   _\/\\\\\\________/\\\\\\_________________/\\\/////////\\\_\/\\\/////////\\\_
@@ -22,8 +23,8 @@
 //
 //#################### FIRST LINE #####################################
 
-define('BlockLists_PGL_Success', 'Succ&egrave;s!<br /><br />Les listes noires ont &eacute;t&eacute; appliqu&eacute;es pour PeerGuardian ET rTorrent.');
-define('MainUser_BlockLists_PGL_Table_Name', 'Nom');
-define('MainUser_BlockLists_PGL_Table_Blocklist', 'Liste noire');
+define('BlockLists_PGL_Lists_Title', 'Pays');
+define('BlockLists_Table_Source', 'Source');
+define('BlockLists_Table_Name', 'Nom');
 
 //#################### LAST LINE ######################################

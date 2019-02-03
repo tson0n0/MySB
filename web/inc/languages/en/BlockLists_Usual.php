@@ -1,4 +1,5 @@
 <?php
+// rev 5.5
 // ---------------------------
 //  __/\\\\____________/\\\\___________________/\\\\\\\\\\\____/\\\\\\\\\\\\\___
 //   _\/\\\\\\________/\\\\\\_________________/\\\/////////\\\_\/\\\/////////\\\_
@@ -22,8 +23,13 @@
 //
 //#################### FIRST LINE #####################################
 
-define('MainUser_BlockLists_rTorrent_Success', 'Succ&egrave;s!<br /><br />Les listes noires ont &eacute;t&eacute; appliqu&eacute;es pour rTorrent ET PeerGuardian.');
-define('MainUser_BlockLists_rTorrent_Table_Name', 'Nom');
-define('MainUser_BlockLists_rTorrent_Table_Blocklist', 'Liste noire');
+define('BlockLists_DB_Title', 'i-Blocklists subscriptions');
+define('BlockLists_DB_Username', 'Username');
+define('BlockLists_DB_Password', 'PIN');
+define('BlockLists_DB_Save', 'Save my credentials');
+
+define('BlockLists_Lists_Title', 'Usual');
+define('BlockLists_Table_Source', 'Source');
+define('BlockLists_Table_Name', 'Name');
 
 //#################### LAST LINE ######################################

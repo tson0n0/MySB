@@ -1,4 +1,5 @@
 <?php
+// rev 5.5
 // ---------------------------
 //  __/\\\\____________/\\\\___________________/\\\\\\\\\\\____/\\\\\\\\\\\\\___
 //   _\/\\\\\\________/\\\\\\_________________/\\\/////////\\\_\/\\\/////////\\\_
@@ -22,8 +23,8 @@
 //
 //#################### FIRST LINE #####################################
 
-define('MainUser_BlockLists_PGL_Success', 'Success!<br /><br />The blocklists have been apply for PeerGuardian AND rTorrent.');
-define('MainUser_BlockLists_PGL_Table_Name', 'Name');
-define('MainUser_BlockLists_PGL_Table_Blocklist', 'Blocklist');
+define('BlockLists_PGL_Lists_Title', 'Pays');
+define('BlockLists_Table_Source', 'Source');
+define('BlockLists_Table_Name', 'Nom');
 
 //#################### LAST LINE ######################################
