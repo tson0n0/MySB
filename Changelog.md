@@ -123,15 +123,15 @@
 - ruTorrent, use of ZIP file instead of GIT
 - rTorrent method review
   * .rtorrent.rc
-    + disabling incomplete folder, files are no longer moved
-    + conservation of *.torrent files in "torrents/Label" directories
-    + improved management of Watch records to assign a good label
+	+ disabling incomplete folder, files are no longer moved
+	+ conservation of *.torrent files in "torrents/Label" directories
+	+ improved management of Watch records to assign a good label
   * .rTorrent.bsh
-    + deleting file movement
+	+ deleting file movement
   * synchro.sh
-    + minor changes
+	+ minor changes
   * init script
-    + minor changes
+	+ minor changes
 - PHP install review _(modules)_
 - Portal
   * Medoo Framework v1.5.4
@@ -188,15 +188,15 @@
 - DNScrypt-proxy, new init script _(greatly inspired by DNSCrypt-Loader)_
   * new command lines and interactive mode _(**service dnscrypt-proxy help**)_
   * config option, _resolvers select filters_
-    + select IP version _(but forced to IPv4)_
-    + selection of resolvers that do not keep logs of queries _(No Logs)_
-    + selection of resolvers that accept the DNSsec protocol
-    + selection of resolvers that accept the NameCoin protocol
+	+ select IP version _(but forced to IPv4)_
+	+ selection of resolvers that do not keep logs of queries _(No Logs)_
+	+ selection of resolvers that accept the DNSsec protocol
+	+ selection of resolvers that accept the NameCoin protocol
   * update option
-    + download online 'dnscrypt-resolvers.csv'
-    + minisign check of 'dnscrypt-resolvers.csv'
-    + verify certificate validity of filtred resolvers
-    + speed test of filtred resolvers
+	+ download online 'dnscrypt-resolvers.csv'
+	+ minisign check of 'dnscrypt-resolvers.csv'
+	+ verify certificate validity of filtred resolvers
+	+ speed test of filtred resolvers
   * speed-test option, _allows to start DNScrypt with the fastest resolvers_
 - Replacing ownCloud v9.1.3 with NextCloud v12.0.0
 - Add Maxmind GeoIP automatic update script v2.4.0

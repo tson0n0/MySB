@@ -24,14 +24,15 @@
 
 echo && echo -e "${CBLUE}*** Check PHP Syntax ***${CEND}"
 
-for file in $(find /builds/${CI_PROJECT_PATH}/web/ -type f -name '*.php' -print0 | sort -z | xargs -r0); do
-	php -l ${file} &> /dev/null
-	if [[ ${?} -ne 0 ]]; then
+for file in $(find /builds/"${CI_PROJECT_PATH}"/web/ -type f -name '*.php' -print0 | sort -z | xargs -r0); do
+	if (! php -l "${file}" &>/dev/null); then
 		echo -e "${CYELLOW}${file}:${CEND} ${CRED}Failed${CEND}"
 		nReturn=1
 	else
 		echo -e "${CYELLOW}${file}:${CEND} ${CGREEN}Passed${CEND}"
 	fi
 done
+
+export nReturn
 
 ##################### LAST LINE ######################################

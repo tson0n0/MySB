@@ -24,9 +24,9 @@
 
 echo
 echo
-case "$nReturn" in
-	0)  return $nReturn;;
-	*)  exit $nReturn;;
+case "${nReturn:?}" in
+	0)  return "$nReturn";;
+	*)  exit "$nReturn";;
 esac
 
 ##################### LAST LINE ######################################
