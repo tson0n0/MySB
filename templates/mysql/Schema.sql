@@ -1,6 +1,6 @@
 -- MySQL dump 10.16  Distrib 10.1.37-MariaDB, for debian-linux-gnu (x86_64)
 --
--- Host: localhost    Database: MySB_db
+-- Host: localhost	Database: MySB_db
 -- ------------------------------------------------------
 -- Server version	10.1.37-MariaDB-0+deb9u1
 
@@ -25,7 +25,7 @@
 -- Structure de la table `blocklists`
 --
 
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET @saved_cs_client	 = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE IF NOT EXISTS `blocklists` (
   `id_blocklists` int(11) NOT NULL AUTO_INCREMENT,
@@ -50,7 +50,7 @@ CREATE TABLE IF NOT EXISTS `blocklists` (
 -- Structure de la table `commands`
 --
 
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET @saved_cs_client	 = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE IF NOT EXISTS `commands` (
   `id_commands` int(11) NOT NULL AUTO_INCREMENT,
@@ -69,7 +69,7 @@ CREATE TABLE IF NOT EXISTS `commands` (
 -- Structure de la table `dnscrypt_config`
 --
 
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET @saved_cs_client	 = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE IF NOT EXISTS `dnscrypt_config` (
   `id_dnscrypt_config` int(11) NOT NULL DEFAULT '1',
@@ -89,7 +89,7 @@ CREATE TABLE IF NOT EXISTS `dnscrypt_config` (
 -- Structure de la table `dnscrypt_resolvers`
 --
 
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET @saved_cs_client	 = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE IF NOT EXISTS `dnscrypt_resolvers` (
   `id_dnscrypt_resolvers` int(11) NOT NULL AUTO_INCREMENT,
@@ -124,7 +124,7 @@ CREATE TABLE IF NOT EXISTS `dnscrypt_resolvers` (
 -- Structure de la table `lets_encrypt`
 --
 
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET @saved_cs_client	 = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE IF NOT EXISTS `lets_encrypt` (
   `id_lets_encrypt` int(11) NOT NULL AUTO_INCREMENT,
@@ -140,7 +140,7 @@ CREATE TABLE IF NOT EXISTS `lets_encrypt` (
 -- Structure de la table `mails`
 --
 
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET @saved_cs_client	 = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE IF NOT EXISTS `mails` (
   `id_mails` int(11) NOT NULL AUTO_INCREMENT,
@@ -159,7 +159,7 @@ CREATE TABLE IF NOT EXISTS `mails` (
 -- Structure de la table `port_forwarding`
 --
 
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET @saved_cs_client	 = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE IF NOT EXISTS `port_forwarding` (
   `id_port_forwarding` int(11) NOT NULL AUTO_INCREMENT,
@@ -179,7 +179,7 @@ CREATE TABLE IF NOT EXISTS `port_forwarding` (
 -- Structure de la table `port_forwarding_addresses`
 --
 
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET @saved_cs_client	 = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE IF NOT EXISTS `port_forwarding_addresses` (
   `id_port_forwarding_addresses` int(11) NOT NULL AUTO_INCREMENT,
@@ -196,7 +196,7 @@ CREATE TABLE IF NOT EXISTS `port_forwarding_addresses` (
 -- Structure de la table `providers_monitoring`
 --
 
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET @saved_cs_client	 = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE IF NOT EXISTS `providers_monitoring` (
   `id_providers_monitoring` int(11) NOT NULL AUTO_INCREMENT,
@@ -213,7 +213,7 @@ CREATE TABLE IF NOT EXISTS `providers_monitoring` (
 -- Structure de la table `repositories`
 --
 
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET @saved_cs_client	 = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE IF NOT EXISTS `repositories` (
   `id_repositories` int(11) NOT NULL AUTO_INCREMENT,
@@ -237,7 +237,7 @@ CREATE TABLE IF NOT EXISTS `repositories` (
 -- Structure de la table `services`
 --
 
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET @saved_cs_client	 = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE IF NOT EXISTS `services` (
   `id_services` int(11) NOT NULL AUTO_INCREMENT,
@@ -265,7 +265,7 @@ CREATE TABLE IF NOT EXISTS `services` (
 -- Structure de la table `smtp`
 --
 
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET @saved_cs_client	 = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE IF NOT EXISTS `smtp` (
   `id_smtp` int(11) NOT NULL,
@@ -286,7 +286,7 @@ CREATE TABLE IF NOT EXISTS `smtp` (
 -- Structure de la table `system`
 --
 
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET @saved_cs_client	 = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE IF NOT EXISTS `system` (
   `id_system` int(11) NOT NULL,
@@ -332,7 +332,7 @@ CREATE TABLE IF NOT EXISTS `system` (
 -- Structure de la table `trackers_list`
 --
 
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET @saved_cs_client	 = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE IF NOT EXISTS `trackers_list` (
   `id_trackers_list` int(11) NOT NULL AUTO_INCREMENT,
@@ -356,7 +356,7 @@ CREATE TABLE IF NOT EXISTS `trackers_list` (
 -- Structure de la table `trackers_list_ipv4`
 --
 
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET @saved_cs_client	 = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE IF NOT EXISTS `trackers_list_ipv4` (
   `id_trackers_list_ipv4` int(11) NOT NULL AUTO_INCREMENT,
@@ -373,7 +373,7 @@ CREATE TABLE IF NOT EXISTS `trackers_list_ipv4` (
 -- Structure de la table `tracking_rent_history`
 --
 
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET @saved_cs_client	 = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE IF NOT EXISTS `tracking_rent_history` (
   `id_tracking_rent_history` int(11) NOT NULL AUTO_INCREMENT,
@@ -402,7 +402,7 @@ CREATE TABLE IF NOT EXISTS `tracking_rent_history` (
 -- Structure de la table `tracking_rent_payments`
 --
 
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET @saved_cs_client	 = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE IF NOT EXISTS `tracking_rent_payments` (
   `id_tracking_rent_payments` int(11) NOT NULL AUTO_INCREMENT,
@@ -420,7 +420,7 @@ CREATE TABLE IF NOT EXISTS `tracking_rent_payments` (
 -- Structure de la table `tracking_rent_options`
 --
 
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET @saved_cs_client	 = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE IF NOT EXISTS `tracking_rent_options` (
   `id_tracking_rent_options` int(11) NOT NULL AUTO_INCREMENT,
@@ -438,7 +438,7 @@ CREATE TABLE IF NOT EXISTS `tracking_rent_options` (
 -- Structure de la table `tracking_rent_status`
 --
 
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET @saved_cs_client	 = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE IF NOT EXISTS `tracking_rent_status` (
   `id_tracking_rent_status` int(11) NOT NULL AUTO_INCREMENT,
@@ -460,7 +460,7 @@ CREATE TABLE IF NOT EXISTS `tracking_rent_status` (
 -- Structure de la table `users`
 --
 
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET @saved_cs_client	 = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE IF NOT EXISTS `users` (
   `id_users` int(11) NOT NULL AUTO_INCREMENT,
@@ -499,7 +499,7 @@ CREATE TABLE IF NOT EXISTS `users` (
 -- Structure de la table `users_addresses`
 --
 
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET @saved_cs_client	 = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE IF NOT EXISTS `users_addresses` (
   `id_users_addresses` int(11) NOT NULL AUTO_INCREMENT,
@@ -521,7 +521,7 @@ CREATE TABLE IF NOT EXISTS `users_addresses` (
 -- Structure de la table `users_crontab`
 --
 
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET @saved_cs_client	 = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE IF NOT EXISTS `users_crontab` (
   `id_users_crontab` int(11) NOT NULL AUTO_INCREMENT,
@@ -543,7 +543,7 @@ CREATE TABLE IF NOT EXISTS `users_crontab` (
 -- Structure de la table `users_history`
 --
 
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET @saved_cs_client	 = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE IF NOT EXISTS `users_history` (
   `id_users_history` int(11) NOT NULL AUTO_INCREMENT,
@@ -566,7 +566,7 @@ CREATE TABLE IF NOT EXISTS `users_history` (
 -- Structure de la table `users_rtorrent_cfg`
 --
 
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET @saved_cs_client	 = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE IF NOT EXISTS `users_rtorrent_cfg` (
   `id_users_rtorrent_cfg` int(11) NOT NULL AUTO_INCREMENT,
@@ -586,7 +586,7 @@ CREATE TABLE IF NOT EXISTS `users_rtorrent_cfg` (
 -- Structure de la table `users_scripts`
 --
 
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET @saved_cs_client	 = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE IF NOT EXISTS `users_scripts` (
   `id_users_scripts` int(11) NOT NULL AUTO_INCREMENT,
@@ -604,7 +604,7 @@ CREATE TABLE IF NOT EXISTS `users_scripts` (
 -- Contraintes pour la table `port_forwarding_addresses`
 --
 
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET @saved_cs_client	 = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 ALTER TABLE `port_forwarding_addresses`
   DROP FOREIGN KEY IF EXISTS `port_forwarding_addresses_ibfk_1`;
@@ -617,7 +617,7 @@ ALTER TABLE `port_forwarding_addresses`
 -- Contraintes pour la table `trackers_list_ipv4`
 --
 
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET @saved_cs_client	 = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 ALTER TABLE `trackers_list_ipv4`
   DROP FOREIGN KEY IF EXISTS `trackers_list_ipv4_ibfk_1`;
@@ -630,7 +630,7 @@ ALTER TABLE `trackers_list_ipv4`
 -- Contraintes pour la table `tracking_rent_history`
 --
 
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET @saved_cs_client	 = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 ALTER TABLE `tracking_rent_history`
   DROP FOREIGN KEY IF EXISTS `tracking_rent_history_ibfk_2`;
@@ -643,7 +643,7 @@ ALTER TABLE `tracking_rent_history`
 -- Contraintes pour la table `tracking_rent_payments`
 --
 
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET @saved_cs_client	 = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 ALTER TABLE `tracking_rent_payments`
   DROP FOREIGN KEY IF EXISTS `tracking_rent_payments_ibfk_2`;
@@ -656,7 +656,7 @@ ALTER TABLE `tracking_rent_payments`
 -- Contraintes pour la table `tracking_rent_status`
 --
 
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET @saved_cs_client	 = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 ALTER TABLE `tracking_rent_status`
   DROP FOREIGN KEY IF EXISTS `tracking_rent_status_ibfk_2`;
@@ -669,7 +669,7 @@ ALTER TABLE `tracking_rent_status`
 -- Contraintes pour la table `users_addresses`
 --
 
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET @saved_cs_client	 = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 ALTER TABLE `users_addresses`
   DROP FOREIGN KEY IF EXISTS `users_addresses_ibfk_1`;
@@ -682,7 +682,7 @@ ALTER TABLE `users_addresses`
 -- Contraintes pour la table `users_crontab`
 --
 
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET @saved_cs_client	 = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 ALTER TABLE `users_crontab`
   DROP FOREIGN KEY IF EXISTS `users_crontab_ibfk_1`;
@@ -695,7 +695,7 @@ ALTER TABLE `users_crontab`
 -- Contraintes pour la table `users_rtorrent_cfg`
 --
 
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET @saved_cs_client	 = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 ALTER TABLE `users_rtorrent_cfg`
   DROP FOREIGN KEY IF EXISTS `users_rtorrent_cfg_ibfk_1`;
@@ -708,7 +708,7 @@ ALTER TABLE `users_rtorrent_cfg`
 -- Contraintes pour la table `users_scripts`
 --
 
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET @saved_cs_client	 = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 ALTER TABLE `users_scripts`
   DROP FOREIGN KEY IF EXISTS `users_scripts_ibfk_1`;

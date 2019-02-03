@@ -24,11 +24,11 @@
 
 // Get the full URL of the current page
 function current_page_url() {
-    $page_url   = 'http';
-    if(isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on'){
-        $page_url .= 's';
-    }
-    return $page_url.'://'.$_SERVER['SERVER_NAME'].':'.$_SERVER['SERVER_PORT'].$_SERVER['REQUEST_URI'];
+	$page_url   = 'http';
+	if(isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on'){
+		$page_url .= 's';
+	}
+	return $page_url.'://'.$_SERVER['SERVER_NAME'].':'.$_SERVER['SERVER_PORT'].$_SERVER['REQUEST_URI'];
 }
 
 // Sort array

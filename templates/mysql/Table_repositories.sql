@@ -1,6 +1,6 @@
 -- MySQL dump 10.16  Distrib 10.1.37-MariaDB, for debian-linux-gnu (x86_64)
 --
--- Host: localhost    Database: MySB_db
+-- Host: localhost	Database: MySB_db
 -- ------------------------------------------------------
 -- Server version	10.1.37-MariaDB-0+deb9u1
 
