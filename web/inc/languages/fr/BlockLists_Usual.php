@@ -1,4 +1,5 @@
 <?php
+// rev 5.5
 // ---------------------------
 //  __/\\\\____________/\\\\___________________/\\\\\\\\\\\____/\\\\\\\\\\\\\___
 //   _\/\\\\\\________/\\\\\\_________________/\\\/////////\\\_\/\\\/////////\\\_
@@ -22,8 +23,13 @@
 //
 //#################### FIRST LINE #####################################
 
-define('MainUser_BlockLists_rTorrent_Success', 'Success!<br /><br />The blocklists have been apply for PeerGuardian AND rTorrent.');
-define('MainUser_BlockLists_rTorrent_Table_Name', 'Name');
-define('MainUser_BlockLists_rTorrent_Table_Blocklist', 'Blocklist');
+define('BlockLists_DB_Title', 'Abonnements i-Blocklists');
+define('BlockLists_DB_Username', 'Nom d\'utilisateur');
+define('BlockLists_DB_Password', 'PIN');
+define('BlockLists_DB_Save', 'Sauvegarder mes identifiants');
+
+define('BlockLists_Lists_Title', 'Usuelles');
+define('BlockLists_Table_Source', 'Source');
+define('BlockLists_Table_Name', 'Nom');
 
 //#################### LAST LINE ######################################

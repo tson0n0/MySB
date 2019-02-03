@@ -46,19 +46,18 @@ CBLUE="\033[1;34m"
 [[ -z "${CI_PROJECT_NAMESPACE}" ]] && CI_PROJECT_NAMESPACE="toulousain79"
 [[ -z "${CI_PROJECT_NAME}" ]] && CI_PROJECT_NAME="MySB"
 [[ -z "${CI_REGISTRY_IMAGE}" ]] && CI_REGISTRY_IMAGE="registry.gitlab.com/toulousain79/mysb"
-[[ -z "${CI_COMMIT_REF_NAME}" ]] && CI_COMMIT_REF_NAME="v99.99"
+[[ -z "${CI_COMMIT_REF_NAME}" ]] && CI_COMMIT_REF_NAME="develop"
 [[ -z "${CI_COMMIT_SHA}" ]] && CI_COMMIT_SHA="${CI_COMMIT_REF_NAME}"
 [[ -z "${CI_COMMIT_SHA}" ]] && CI_COMMIT_SHA="${CI_COMMIT_REF_NAME}"
 [[ -z "${CI_PROJECT_URL}" ]] && CI_PROJECT_URL="https://gitlab.com/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}"
 [[ -z "${CI_PROJECT_DIR}" ]] && CI_PROJECT_DIR="${1}"
-[[ -d "${CI_PROJECT_DIR}" ]] && sGitLab_RootDir="${CI_PROJECT_DIR}" || sGitLab_RootDir="${1}"
 [[ -z "${CI_PROJECT_DIR}" ]] && return 1
 # Docker Hub
 sProjectName="$(echo "${CI_PROJECT_NAME}" | tr '[:upper:]' '[:lower:]')"
 
 # Images list
 sImageList=()
-if [ ! -z "$IMG_TO_BUILD" ] || [ ! -z "${2}" ]; then
+if [ -n "$IMG_TO_BUILD" ] || [ -n "${2}" ]; then
 	for sImage in ${IMG_TO_BUILD}; do
 		sImageList+=("${sImage}")
 	done
@@ -79,7 +78,6 @@ for sImage in "${sImageList[@]}"; do
 	sFirstUpper=${sImage^}
 	sDate=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
 	nReturn=0
-	sArg=''
 
 	# Ignore if no directory image
 	[[ ! -d ${CI_PROJECT_DIR}/ci/images/${sImage}/ ]] && continue
@@ -88,8 +86,8 @@ for sImage in "${sImageList[@]}"; do
 	sTags="--tag ${CI_REGISTRY_IMAGE}/${sImage}/${sImage}:latest"
 	#sTags="--tag ${sImage}:latest"
 
-	#### TAGs Docker Hub registry (No Tags for bases images v99.99 branch)
-	if [[ ! ${sImage} = *"base"* ]] && [[ ! ${CI_COMMIT_REF_NAME} = "v99.99" ]]; then
+	#### TAGs Docker Hub registry (No Tags for bases images develop branch)
+	if [[ ! ${sImage} = *"base"* ]] && [[ ! ${CI_COMMIT_REF_NAME} = "develop" ]]; then
 		sTags="${sTags} --tag ${sProjectName}/${sImage}:${CI_COMMIT_REF_NAME} --tag ${sProjectName}/${sImage}:latest"
 	fi
 
@@ -117,7 +115,7 @@ for sImage in "${sImageList[@]}"; do
 	fi
 
 	#### Push to Docker Hub Regsitry
-	if [[ ! ${sImage} = *"base"* ]] && [[ ! ${CI_COMMIT_REF_NAME} = "v99.99" ]]; then
+	if [[ ! ${sImage} = *"base"* ]] && [[ ! ${CI_COMMIT_REF_NAME} = "develop" ]]; then
 		if [ ${nReturn} -eq 0 ]; then
 			echo && echo -e "${CBLUE}*** Pushing${CEND} ${CYELLOW}$sFirstUpper ${CI_COMMIT_REF_NAME}${CEND} ${CBLUE}Docker image to Docker Hub Regsitry ***${CEND}"
 			docker push ${sProjectName}/${sImage}:${CI_COMMIT_REF_NAME} && sResultMessage="${CGREEN}Succeeded${CEND}" || sResultMessage="${CRED}Failed${CEND}" nReturn=1

@@ -1,24 +1,39 @@
 ---
 stages:
-    - check
+    - check_develop
+    - check_master
     - build_images
 
-# #### Project check (merge request)
-Project check:
+# #### Templates - BoF
+.tmpl_check: &tmpl_check
     image: ${CI_REGISTRY_IMAGE}/project_check/project_check:latest
-    stage: check
-    only:
-      refs:
-        - merge_requests
-        - schedules
-    except:
-      variables:
-        - $BUILD == "True"
     script:
         - |
             for script in $(echo ${CI_PROJECT_DIR}/ci/scripts/[0-9][0-9]-*.bsh); do
                 . ${script}
             done
+# #### Templates - EoF
+
+# #### Project check for develop branch (merge request)
+check_develop:
+    stage: check_develop
+    only:
+      refs:
+        - merge_requests
+    allow_failure: false
+    <<: *tmpl_check
+
+
+# #### Project check for master branch (after merge request & schedules)
+check_master:
+    stage: check_master
+    only:
+      refs:
+        - master
+        - schedules
+    when: on_success
+    <<: *tmpl_check
+
 
 # #### BUILD
 Building Docker Images:
