@@ -40,8 +40,9 @@
 ### END INIT INFO
 
 #### Includes
+# shellcheck source=.etc/MySB/config
 . /etc/MySB/config || exit 0
-# shellcheck source=/opt/MySB/inc/vars
+# shellcheck source=inc/vars
 . "$MySB_InstallDir/inc/vars" || exit 0
 
 ######################################################################
