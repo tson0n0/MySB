@@ -1,3 +1,5 @@
+#!/bin/bash
+# rev 5.5
 # ----------------------------------
 #  __/\\\\____________/\\\\___________________/\\\\\\\\\\\____/\\\\\\\\\\\\\___
 #   _\/\\\\\\________/\\\\\\_________________/\\\/////////\\\_\/\\\/////////\\\_
@@ -20,28 +22,31 @@
 #	--> Licensed under the MIT license: http://www.opensource.org/licenses/mit-license.php
 #
 ######################################################################
-([ -z "$vars" ] || [ "$vars" -ne 1 ]) && echo "Please load 'vars' file before..." && return
+{ [ -z "${vars:-}" ] || [ "${vars}" -ne 1 ]; } && {
+	echo "Please load 'vars' file before..."
+	return
+}
 funcs_MySB_CreateUser=1
+export funcs_MySB_CreateUser
 ##################### FIRST LINE #####################################
 
 #### NextCloud account manage
 gfnNextCloudAccountManage() {
-	local sSwitch sUserAccount sPassword tTimeStamp sUserMail
+	local sSwitch sUserAccount sPassword sUserMail
 
 	sSwitch="$1"
 	sUserAccount="$2"
 	sPassword="$3"
-	tTimeStamp=$(date +%s)
 	sUserMail="$(cmdMySQL 'MySB_db' "SELECT users_email FROM users WHERE users_ident='$sUserAccount';")"
 	OC_PASS="$sPassword"
 	export OC_PASS
 
 	case "$sSwitch" in
 	'create')
-		su -s /bin/sh www-data -c "/usr/bin/php $gsNextCloudDir/occ user:add --password-from-env --display-name=\"$sUserAccount\" --group=\"MySB_users\" $sUserAccount" &>/dev/null
+		su -s /bin/sh www-data -c "/usr/bin/php ${gsNextCloudDir:?}/occ user:add --password-from-env --display-name=\"$sUserAccount\" --group=\"MySB_users\" $sUserAccount" &>/dev/null
 		IfExist="$(cmdMySQL 'NextCloud_db' "SELECT configvalue FROM nc_preferences WHERE userid='$sUserAccount' AND appid='core' AND configkey = 'lang';")"
 		if [ -z "$IfExist" ]; then
-			cmdMySQL 'NextCloud_db' "INSERT INTO nc_preferences (userid,appid,configkey,configvalue) VALUES ('$sUserAccount','core','lang','$EnvLang');"
+			cmdMySQL 'NextCloud_db' "INSERT INTO nc_preferences (userid,appid,configkey,configvalue) VALUES ('$sUserAccount','core','lang','${EnvLang:?}');"
 		else
 			cmdMySQL 'NextCloud_db' "UPDATE nc_preferences SET configvalue = '$EnvLang' WHERE userid='$sUserAccount' AND appid= 'core' AND configkey = 'lang';"
 		fi
@@ -179,17 +184,17 @@ gfnManageQuota() {
 gfnCakeboxUsersConfigs() {
 	local sUser
 
-	if [ "$gbIsInstalled_Cakebox" == "YES" ] && [ -d $gsCakeboxDir ]; then
+	if [ "${gbIsInstalled_Cakebox:?}" == "YES" ] && [ -d "${gsCakeboxDir:?}" ]; then
 		sUser="$1"
 
-		if [ -f $gsCakeboxDir/config/default.php.dist ]; then
-			rm -f $gsCakeboxDir/config/default.php.dist
+		if [ -f "$gsCakeboxDir"/config/default.php.dist ]; then
+			rm -f "$gsCakeboxDir"/config/default.php.dist
 		fi
-		install -o root -g www-data -m 0660 $MySB_InstallDir/templates/cakebox/config.user.tmpl $gsCakeboxDir/config/$sUser.php
-		perl -pi -e "s/<server_name>/$sUser/g" $gsCakeboxDir/config/$sUser.php
+		install -o root -g www-data -m 0660 "${MySB_InstallDir:?}"/templates/cakebox/config.user.tmpl "$gsCakeboxDir/config/$sUser.php"
+		perl -pi -e "s/<server_name>/$sUser/g" "$gsCakeboxDir/config/$sUser.php"
 		case "$EnvLang" in
-		"fr") perl -pi -e "s/<lang>/$EnvLang/g" $gsCakeboxDir/config/$sUser.php ;;
-		"en") perl -pi -e "s/<lang>/$EnvLang/g" $gsCakeboxDir/config/$sUser.php ;;
+		"fr") perl -pi -e "s/<lang>/$EnvLang/g" "$gsCakeboxDir/config/$sUser.php" ;;
+		"en") perl -pi -e "s/<lang>/$EnvLang/g" "$gsCakeboxDir/config/$sUser.php" ;;
 		esac
 	fi
 }
@@ -199,101 +204,101 @@ gfnManageUserHomeDir() {
 	local sUser="$1"
 
 	#### Create missing directories
-	if [ ! -d /home/$sUser ]; then mkdir /home/$sUser; fi
-	if [ ! -d /home/$sUser/.ssh ]; then mkdir /home/$sUser/.ssh; fi
-	if [ ! -d /home/$sUser/db ]; then mkdir /home/$sUser/db; fi
-	if [ ! -d /home/$sUser/blocklist ]; then mkdir /home/$sUser/blocklist; fi
-	if [ ! -d /home/$sUser/logs ]; then mkdir /home/$sUser/logs; fi
-	if [ ! -d /home/$sUser/scripts ]; then mkdir /home/$sUser/scripts; fi
-	if [ ! -d /home/$sUser/rtorrent ]; then mkdir /home/$sUser/rtorrent; fi
-	if [ ! -d /home/$sUser/rtorrent/watch ]; then mkdir /home/$sUser/rtorrent/watch; fi
-	if [ ! -d /home/$sUser/rtorrent/complete ]; then mkdir /home/$sUser/rtorrent/complete; fi
-	if [ ! -d /home/$sUser/rtorrent/.session ]; then mkdir /home/$sUser/rtorrent/.session; fi
-	if [ ! -d /home/$sUser/rtorrent/torrents ]; then mkdir /home/$sUser/rtorrent/torrents; fi
-	if [ ! -d /home/$sUser/rtorrent/share ]; then mkdir /home/$sUser/rtorrent/share; fi
+	if [ ! -d /home"/$sUser" ]; then mkdir /home/"$sUser"; fi
+	if [ ! -d /home/"$sUser"/.ssh ]; then mkdir /home/"$sUser"/.ssh; fi
+	if [ ! -d /home/"$sUser"/db ]; then mkdir /home/"$sUser"/db; fi
+	if [ ! -d /home/"$sUser"/blocklist ]; then mkdir /home/"$sUser"/blocklist; fi
+	if [ ! -d /home/"$sUser"/logs ]; then mkdir /home/"$sUser"/logs; fi
+	if [ ! -d /home/"$sUser"/scripts ]; then mkdir /home/"$sUser"/scripts; fi
+	if [ ! -d /home/"$sUser"/rtorrent ]; then mkdir /home/"$sUser"/rtorrent; fi
+	if [ ! -d /home/"$sUser"/rtorrent/watch ]; then mkdir /home/"$sUser"/rtorrent/watch; fi
+	if [ ! -d /home/"$sUser"/rtorrent/complete ]; then mkdir /home/"$sUser"/rtorrent/complete; fi
+	if [ ! -d /home/"$sUser"/rtorrent/.session ]; then mkdir /home/"$sUser"/rtorrent/.session; fi
+	if [ ! -d /home/"$sUser"/rtorrent/torrents ]; then mkdir /home/"$sUser"/rtorrent/torrents; fi
+	if [ ! -d /home/"$sUser"/rtorrent/share ]; then mkdir /home/"$sUser"/rtorrent/share; fi
 
 	#### Change rights and owners
 	# /home/user
-	chown root:root /home/$sUser
-	chmod 0755 /home/$sUser
+	chown root:root /home/"$sUser"
+	chmod 0755 /home/"$sUser"
 
 	# .bashrc, .bash_logout, .profile, .rtorrent.rc, .rTorrent.bsh, .ssh/
-	if [ -d /home/$sUser/.ssh ]; then
-		chown root:$sUser /home/$sUser/.ssh
-		chmod 0750 /home/$sUser/.ssh
+	if [ -d /home/"$sUser"/.ssh ]; then
+		chown root:"$sUser" /home/"$sUser"/.ssh
+		chmod 0750 /home/"$sUser"/.ssh
 	fi
-	if [ -f /home/$sUser/.rtorrent.rc ]; then
-		chown root:$sUser /home/$sUser/.rtorrent.rc
-		chmod 0740 /home/$sUser/.rtorrent.rc
+	if [ -f /home/"$sUser"/.rtorrent.rc ]; then
+		chown root:"$sUser" /home/"$sUser"/.rtorrent.rc
+		chmod 0740 /home/"$sUser"/.rtorrent.rc
 	fi
-	if [ -f /home/$sUser/.rTorrent.bsh ]; then
-		chown root:$sUser /home/$sUser/.rTorrent.bsh
-		chmod 0750 /home/$sUser/.rTorrent.bsh
+	if [ -f /home/"$sUser"/.rTorrent.bsh ]; then
+		chown root:"$sUser" /home/"$sUser"/.rTorrent.bsh
+		chmod 0750 /home/"$sUser"/.rTorrent.bsh
 	fi
-	if [ -f /home/$sUser/.bashrc ]; then
-		chown root:$sUser /home/$sUser/.bashrc
-		chmod 0740 /home/$sUser/.bashrc
+	if [ -f /home/"$sUser"/.bashrc ]; then
+		chown root:"$sUser" /home/"$sUser"/.bashrc
+		chmod 0740 /home/"$sUser"/.bashrc
 	fi
-	if [ -f /home/$sUser/.bash_logout ]; then
-		chown root:$sUser /home/$sUser/.bash_logout
-		chmod 0740 /home/$sUser/.bash_logout
+	if [ -f /home/"$sUser"/.bash_logout ]; then
+		chown root:"$sUser" /home/"$sUser"/.bash_logout
+		chmod 0740 /home/"$sUser"/.bash_logout
 	fi
-	if [ -f /home/$sUser/.profile ]; then
-		chown root:$sUser /home/$sUser/.profile
-		chmod 0740 /home/$sUser/.profile
+	if [ -f /home/"$sUser"/.profile ]; then
+		chown root:"$sUser" /home/"$sUser"/.profile
+		chmod 0740 /home/"$sUser"/.profile
 	fi
 
 	# /home/user/db
-	if [ ! -f /home/$sUser/db/$sUser.sq3 ]; then cp $gsSync_DB /home/$sUser/db/$sUser.sq3; fi
-	chmod -R 0770 /home/$sUser/db
-	chown -R $sUser:www-data /home/$sUser/db
+	if [ ! -f "/home/$sUser/db/$sUser.sq3" ]; then cp "$gsSync_DB" "/home/$sUser/db/$sUser.sq3"; fi
+	chmod -R 0770 /home/"$sUser"/db
+	chown -R "$sUser":www-data /home/"$sUser"/db
 	# /home/user/blocklist
-	chmod -R 0755 /home/$sUser/blocklist
-	chown -R root:$sUser /home/$sUser/blocklist
+	chmod -R 0755 /home/"$sUser"/blocklist
+	chown -R root:"$sUser" /home/"$sUser"/blocklist
 	# /home/user/logs
-	chmod -R 0775 /home/$sUser/logs
-	chown -R root:$sUser /home/$sUser/logs
+	chmod -R 0775 /home/"$sUser"/logs
+	chown -R root:"$sUser" /home/"$sUser"/logs
 	# /home/user/scripts
-	chmod -R 0774 /home/$sUser/scripts
-	chown -R root:$sUser /home/$sUser/scripts
+	chmod -R 0774 /home/"$sUser"/scripts
+	chown -R root:"$sUser" /home/"$sUser"/scripts
 	# /home/user/rtorrent
-	chown root:$sUser /home/$sUser/rtorrent
-	chmod 0775 /home/$sUser/rtorrent
+	chown root:"$sUser" /home/"$sUser"/rtorrent
+	chmod 0775 /home/"$sUser"/rtorrent
 	# /home/user/rtorrent/watch
-	chown root:$sUser /home/$sUser/rtorrent/watch
-	chmod 0775 /home/$sUser/rtorrent/watch
-	chown $sUser:www-data /home/$sUser/rtorrent/watch/* &>/dev/null
+	chown root:"$sUser" /home/"$sUser"/rtorrent/watch
+	chmod 0775 /home/"$sUser"/rtorrent/watch
+	chown "$sUser":www-data /home/"$sUser"/rtorrent/watch/* &>/dev/null
 	# /home/user/rtorrent/complete
-	chown root:$sUser /home/$sUser/rtorrent/complete
-	chmod 0775 /home/$sUser/rtorrent/complete
+	chown root:"$sUser" /home/"$sUser"/rtorrent/complete
+	chmod 0775 /home/"$sUser"/rtorrent/complete
 	# /home/user/rtorrent/.session
-	chown root:$sUser /home/$sUser/rtorrent/.session
-	chmod 0771 /home/$sUser/rtorrent/.session
+	chown root:"$sUser" /home/"$sUser"/rtorrent/.session
+	chmod 0771 /home/"$sUser"/rtorrent/.session
 }
 
 #### Seedbox-Manager Users Config
 gfnManagerUsersConfigs() {
 	local sUser sHomeDirEscaped sUserNameUpper
 
-	if [ "$gbIsInstalled_Manager" == "YES" ]; then
+	if [ "${gbIsInstalled_Manager:?}" == "YES" ]; then
 		sUser="$1"
-		sHomeDirEscaped="$(echo /home/$sUser | sed s,/,\\\\\/,g)"
-		sUserNameUpper="$(echo $sUser | tr '[:lower:]' '[:upper:]')"
+		sHomeDirEscaped="$(echo /home/"$sUser" | sed s,/,\\\\\/,g)"
+		sUserNameUpper="$(echo "$sUser" | tr '[:lower:]' '[:upper:]')"
 
-		if [ ! -d $gsManagerDir/conf/users/$sUser ]; then mkdir -p $gsManagerDir/conf/users/$sUser; fi
-		if [ ! -f $gsManagerDir/conf/users/$sUser/config.ini ]; then
-			install -o www-data -g www-data -m 0640 $MySB_InstallDir/templates/manager/config.ini.tmpl $gsManagerDir/conf/users/$sUser/config.ini
-			sed -i "s/<user_directory>/$sHomeDirEscaped/g;" $gsManagerDir/conf/users/$sUser/config.ini
-			sed -i "s/<scgi_folder>/\/$sUserNameUpper/g;" $gsManagerDir/conf/users/$sUser/config.ini
-			sed -i "s/port_ftp = 21/port_ftp = $gsPort_FTP/g;" $gsManagerDir/conf/users/$sUser/config.ini
-			sed -i "s/port_sftp = 22/port_sftp = $gsPort_SSH/g;" $gsManagerDir/conf/users/$sUser/config.ini
-			sed -i "s/<mail_address>/$gsMainUserEmail/g;" $gsManagerDir/conf/users/$sUser/config.ini
-			if [ "$gsMainUserName" == "$sUser" ]; then
-				sed -i "s/admin = no/admin = yes/g;" $gsManagerDir/conf/users/$sUser/config.ini
+		if [ ! -d "${gsManagerDir:?}/conf/users/$sUser" ]; then mkdir -p "$gsManagerDir/conf/users/$sUser"; fi
+		if [ ! -f "$gsManagerDir"/conf/users/"$sUser"/config.ini ]; then
+			install -o www-data -g www-data -m 0640 "${MySB_InstallDir}"/templates/manager/config.ini.tmpl "$gsManagerDir/conf/users/$sUser/config.ini"
+			sed -i "s/<user_directory>/$sHomeDirEscaped/g;" "$gsManagerDir/conf/users/$sUser/config.ini"
+			sed -i "s/<scgi_folder>/\/$sUserNameUpper/g;" "$gsManagerDir/conf/users/$sUser/config.ini"
+			sed -i "s/port_ftp = 21/port_ftp = ${gsPort_FTP:?}/g;" "$gsManagerDir/conf/users/$sUser/config.ini"
+			sed -i "s/port_sftp = 22/port_sftp = ${gsPort_SSH:?}/g;" "$gsManagerDir/conf/users/$sUser/config.ini"
+			sed -i "s/<mail_address>/${gsMainUserEmail:?}/g;" "$gsManagerDir/conf/users/$sUser/config.ini"
+			if [ "${gsMainUserName:?}" == "$sUser" ]; then
+				sed -i "s/admin = no/admin = yes/g;" "$gsManagerDir/conf/users/$sUser/config.ini"
 			fi
 			case "$EnvLang" in
-			"fr") perl -pi -e "s/<lang>/$EnvLang/g" $gsManagerDir/conf/users/$sUser/config.ini ;;
-			"en") perl -pi -e "s/<lang>/$EnvLang/g" $gsManagerDir/conf/users/$sUser/config.ini ;;
+			"fr") perl -pi -e "s/<lang>/$EnvLang/g" "$gsManagerDir/conf/users/$sUser/config.ini" ;;
+			"en") perl -pi -e "s/<lang>/$EnvLang/g" "$gsManagerDir/conf/users/$sUser/config.ini" ;;
 			esac
 		fi
 	fi
@@ -316,12 +321,12 @@ gfnRuTorrentUsersConfigs() {
 	if [ ! -d $gsRutorrentDir/share/users/$sUser/settings/ ]; then mkdir -p $gsRutorrentDir/share/users/$sUser/settings/; fi
 	if [ ! -d $gsRutorrentDir/share/users/$sUser/torrents/ ]; then mkdir -p $gsRutorrentDir/share/users/$sUser/torrents/; fi
 	if [ ! -f $gsRutorrentDir/share/users/$sUser/settings/uisettings.json ]; then
-		install -o www-data -g www-data -m 0666 $MySB_InstallDir/templates/rutorrent/uisettings.json.tmpl $gsRutorrentDir/share/users/$sUser/settings/uisettings.json
+		install -o www-data -g www-data -m 0666 ${MySB_InstallDir}/templates/rutorrent/uisettings.json.tmpl $gsRutorrentDir/share/users/$sUser/settings/uisettings.json
 	fi
 
 	# conf
 	if [ ! -d $gsRutorrentDir/conf/users/$sUser/ ]; then mkdir -p $gsRutorrentDir/conf/users/$sUser/; fi
-	install -o www-data -g www-data -m 0755 $MySB_InstallDir/templates/rutorrent/config.php.tmpl $gsRutorrentDir/conf/users/$sUser/config.php
+	install -o www-data -g www-data -m 0755 ${MySB_InstallDir}/templates/rutorrent/config.php.tmpl $gsRutorrentDir/conf/users/$sUser/config.php
 	perl -pi -e "s/<topDirectory>/$sHomeDirEscaped\/rtorrent/g" $gsRutorrentDir/conf/users/$sUser/config.php
 	perl -pi -e "s/<log_file>/$sHomeDirEscaped\/logs\/rutorrent.log/g" $gsRutorrentDir/conf/users/$sUser/config.php
 	perl -pi -e "s/<RPC>/$sUserUpper/g" $gsRutorrentDir/conf/users/$sUser/config.php
@@ -329,7 +334,7 @@ gfnRuTorrentUsersConfigs() {
 	perl -pi -e "s/<quotaUser>/$sUser/g" $gsRutorrentDir/conf/users/$sUser/config.php
 	if [ -f $gsRutorrentDir/conf/access.ini ]; then cp $gsRutorrentDir/conf/access.ini $gsRutorrentDir/conf/users/$sUser/access.ini; fi
 
-	install -o www-data -g www-data -m 0755 $MySB_InstallDir/templates/rutorrent/plugins.ini.tmpl $gsRutorrentDir/conf/users/$sUser/plugins.ini
+	install -o www-data -g www-data -m 0755 ${MySB_InstallDir}/templates/rutorrent/plugins.ini.tmpl $gsRutorrentDir/conf/users/$sUser/plugins.ini
 
 	for sPlugin in $sPluginsList; do
 		bIsActive="$(cmdMySQL 'MySB_db' "SELECT active FROM repositories WHERE dir LIKE '%/$sPlugin';")"
@@ -535,13 +540,13 @@ gfnCreateRtorrentConfigFile() {
 	gfnUserCrontab "$sUser"
 
 	# .rTorrent.bsh
-	install -o root -g $sUser -m 0750 $MySB_InstallDir/templates/rtorrent/rtorrent.bsh.tmpl $sHomeDir/.rTorrent.bsh
+	install -o root -g $sUser -m 0750 ${MySB_InstallDir}/templates/rtorrent/rtorrent.bsh.tmpl $sHomeDir/.rTorrent.bsh
 	perl -pi -e "s/<username>/$sUser/g" $sHomeDir/.rTorrent.bsh
 
 	# Example scripts
-	install -o root -g $sUser -m 0750 $MySB_InstallDir/templates/rtorrent/synchro.sh.tmpl $sHomeDir/scripts/synchro.sh
+	install -o root -g $sUser -m 0750 ${MySB_InstallDir}/templates/rtorrent/synchro.sh.tmpl $sHomeDir/scripts/synchro.sh
 	echo "$Global_Readme_AvailableVariables" >/home/$sUser/scripts/README
-	chown $sUser:$sUser $sHomeDir/scripts/*
+	chown "$sUser":"$sUser" $sHomeDir/scripts/*
 	chmod 0770 $sHomeDir/scripts/*
 	dos2unix $sHomeDir/scripts/* &>/dev/null
 
@@ -551,7 +556,7 @@ gfnCreateRtorrentConfigFile() {
 			mv $sHomeDir/.rtorrent.rc $sHomeDir/.rtorrent.rc.old
 		fi
 		if [ ! -f $sHomeDir/.rtorrent.rc ] && [ ! -s $sHomeDir/.rtorrent.rc ]; then
-			install -o root -g $sUser -m 0740 $MySB_InstallDir/templates/rtorrent/rtorrent.rc.tmpl $sHomeDir/.rtorrent.rc
+			install -o root -g $sUser -m 0740 ${MySB_InstallDir}/templates/rtorrent/rtorrent.rc.tmpl $sHomeDir/.rtorrent.rc
 			perl -pi -e "s/<InstallDir>/$gsInstallDirEscaped/g" $sHomeDir/.rtorrent.rc
 			perl -pi -e "s/<server_ip>/$gsSrvIpAddress/g" $sHomeDir/.rtorrent.rc
 			perl -pi -e "s/<username>/$sUser/g" $sHomeDir/.rtorrent.rc
