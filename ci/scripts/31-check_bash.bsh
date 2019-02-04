@@ -63,7 +63,19 @@ fi
 # 	nReturn=1
 # fi
 
-echo && echo -e "${CBLUE}*** Check Syntax with Shellcheck ***${CEND}"
+echo && echo -e "${CBLUE}*** Check Syntax with Shellcheck (sh) ***${CEND}"
+
+sFilesList="$(grep -IRl "\(#\!/opt/bin/\|#\!/bin/\|shell\=\)sh" --exclude-dir ".git" --exclude-dir ".vscode" "${sDirToScan}/")"
+for sFile in ${sFilesList}; do
+	if ! shellcheck -s sh -x -f tty -S error "${sFile}"; then
+		echo -e "${CYELLOW}${sFile}:${CEND} ${CRED}Failed${CEND}"
+		nReturn=1
+	else
+		echo -e "${CYELLOW}${sFile}:${CEND} ${CGREEN}Passed${CEND}"
+	fi
+done
+
+echo && echo -e "${CBLUE}*** Check Syntax with Shellcheck (bash) ***${CEND}"
 
 sFilesList="$(grep -IRl "\(#\!/opt/bin/\|#\!/bin/\|shell\=\)bash" --exclude-dir ".git" --exclude-dir ".vscode" --exclude-dir ".vscode" "${sDirToScan}/")"
 for sFile in ${sFilesList}; do

@@ -24,6 +24,7 @@ test -f /etc/default/bind9 && . /etc/default/bind9
 
 test -x /usr/sbin/rndc || exit 0
 
+# shellcheck source=/dev/null
 . /lib/lsb/init-functions
 PIDFILE=/run/named/named.pid
 

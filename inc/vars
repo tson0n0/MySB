@@ -32,6 +32,7 @@ if [ -f /etc/MySB/config ] && [ -z "${MySB_InstallDir}" ]; then
 	source /etc/MySB/config
 fi
 if [ -f /lib/lsb/init-functions ] && [ -z "$(command -v start_daemon)" ]; then
+	# shellcheck source=/dev/null
 	source /lib/lsb/init-functions &>/dev/null
 fi
 if [ -f /root/.bash_aliases ]; then
