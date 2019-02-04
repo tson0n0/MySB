@@ -18,6 +18,7 @@
 
 test -f /sbin/rpcbind || exit 0
 
+# shellcheck source=/dev/null
 . /lib/lsb/init-functions
 
 OPTIONS="-w -h 127.0.0.1 -h 10.0.2.1 -h 10.0.0.1 -h 10.0.1.1"
