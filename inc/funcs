@@ -1,4 +1,5 @@
 #!/bin/bash
+# rev 5.5
 # ----------------------------------
 #  __/\\\\____________/\\\\___________________/\\\\\\\\\\\____/\\\\\\\\\\\\\___
 #   _\/\\\\\\________/\\\\\\_________________/\\\/////////\\\_\/\\\/////////\\\_
@@ -21,41 +22,50 @@
 #	--> Licensed under the MIT license: http://www.opensource.org/licenses/mit-license.php
 #
 ######################################################################
-([ -z "$vars" ] || [ "$vars" -ne 1 ]) && echo "Please load 'vars' file..." && return
+{ [ -z "${vars:-}" ] || [ "${vars}" -ne 1 ]; } && {
+	echo "Please load 'vars' file before..."
+	return
+}
 funcs=1
+export funcs
 ##################### FIRST LINE #####################################
 
 #### Include tools functions
-if [ -z "$funcs_sql" ] || [ $funcs_sql -eq 0 ]; then
-	source $MySB_InstallDir/inc/funcs_sql
+if [ -z "$funcs_sql" ] || [ "$funcs_sql" -eq 0 ]; then
+	# shellcheck source=inc/funcs_sql
+	source "${MySB_InstallDir}"/inc/funcs_sql
 fi
-if [ -z "$funcs_tools" ] || [ $funcs_tools -eq 0 ]; then
-	source $MySB_InstallDir/inc/funcs_tools
+if [ -z "$funcs_tools" ] || [ "$funcs_tools" -eq 0 ]; then
+	# shellcheck source=inc/funcs_tools
+	source "$MySB_InstallDir"/inc/funcs_tools
 fi
 
 #### Banner
 gfnBannerGenerator() {
 	local nCountLine sLine
 
-	figlet MySB $gsCurrentVersion > $MySB_InstallDir/files/banner.tmp
-	echo "echo -e \"${CGREEN}############################################################$CEND" > $MySB_InstallDir/files/banner_$gsCurrentVersion
+	figlet MySB "$gsCurrentVersion" > "$MySB_InstallDir"/files/banner.tmp
+	echo "echo -e \"${CGREEN}############################################################$CEND" > "$MySB_InstallDir/files/banner_$gsCurrentVersion"
 
-	nCountLine=`wc -l $MySB_InstallDir/files/banner.tmp | awk '{ print $1 }'`
-	for (( lign=1; lign<=$nCountLine; lign++ )); do
-		sLine=`head -n $lign $MySB_InstallDir/files/banner.tmp | tail -n 1`
-		echo "${CGREEN}#$CEND	${CBLUE}$sLine$CEND" >> $MySB_InstallDir/files/banner_$gsCurrentVersion
+	nCountLine=$(wc -l "$MySB_InstallDir"/files/banner.tmp | awk '{ print $1 }')
+	for (( lign=1; lign<=nCountLine; lign++ )); do
+		sLine=$(head -n $lign "$MySB_InstallDir"/files/banner.tmp | tail -n 1)
+		echo "${CGREEN}#$CEND	${CBLUE}$sLine$CEND" >> "$MySB_InstallDir/files/banner_$gsCurrentVersion"
 	done
-	rm -f $MySB_InstallDir/files/banner.tmp
+	rm -f "${MySB_InstallDir}"/files/banner.tmp
+	{
+		echo "${CGREEN}#$CEND	${CYELLOW}https://github.com/toulousain79/MySB/$CEND"
+		echo "${CGREEN}#$CEND"
+		echo "${CGREEN}#$CEND	${Header_CurrentFile} ${CRED}$0$CEND"
+		echo "${CGREEN}############################################################$CEND\""
+	} >> "$MySB_InstallDir/files/banner_$gsCurrentVersion"
 
-	echo "${CGREEN}#$CEND	${CYELLOW}https://github.com/toulousain79/MySB/$CEND" >> $MySB_InstallDir/files/banner_$gsCurrentVersion
-	echo "${CGREEN}#$CEND" >> $MySB_InstallDir/files/banner_$gsCurrentVersion
-	echo "${CGREEN}#$CEND	$Header_CurrentFile ${CRED}$0$CEND" >> $MySB_InstallDir/files/banner_$gsCurrentVersion
-	echo "${CGREEN}############################################################$CEND\"" >> $MySB_InstallDir/files/banner_$gsCurrentVersion
-	if [ -f $MySB_InstallDir/files/banner_$gsCurrentVersion ]; then
-		sed -i "s/,/ /g;" $MySB_InstallDir/files/banner_$gsCurrentVersion &> /dev/null
-		sed -i "s/\`/ /g;" $MySB_InstallDir/files/banner_$gsCurrentVersion &> /dev/null
+	if [ -f "$MySB_InstallDir/files/banner_$gsCurrentVersion" ]; then
+		sed -i "s/,/ /g;" "$MySB_InstallDir/files/banner_$gsCurrentVersion" &> /dev/null
+		sed -i "s/\`/ /g;" "$MySB_InstallDir/files/banner_$gsCurrentVersion" &> /dev/null
 		clear
-		source $MySB_InstallDir/files/banner_$gsCurrentVersion
+		# shellcheck disable=SC1090
+		source "$MySB_InstallDir/files/banner_$gsCurrentVersion"
 	fi
 	echo
 }
@@ -67,11 +77,11 @@ gfnSendMail() {
 	sUser="$2"
 	sCase="$3"
 	sInfo="$4"
-	[ ! -z "$5" ] && sUserMail="$5" || sUserMail="`cmdMySQL 'MySB_db' "SELECT users_email FROM users_history WHERE users_ident='$sUser';"`"
+	[ -n "$5" ] && sUserMail="$5" || sUserMail="$(cmdMySQL 'MySB_db' "SELECT users_email FROM users_history WHERE users_ident='$sUser';")"
 	sAttach=""
 	bDoSendMail=1
 
-	if [ ! -z "$sInfo" ]; then log_daemon_msg "$Funcs_SendMail_GenerateHTML [$sUser]"; fi
+	if [ -n "$sInfo" ]; then log_daemon_msg "${Funcs_SendMail_GenerateHTML} [$sUser]"; fi
 
 	if ! gfnGetPid nginx; then
 		service nginx restart &> /dev/null
@@ -84,8 +94,8 @@ gfnSendMail() {
 		case "$sCase" in
 			'new_user'|'renting'|'account_created'|'delete_user')
 				echo "in_porgress" >> /tmp/SendMails.lock
-				screen -dmS SendMails $MySB_InstallDir/scripts/SendMails.bsh CRON;
-				nIdMail="`cmdMySQL 'MySB_db' "SELECT id_mails FROM mails WHERE user='$sUser' AND use_case='$sCase';" 2> /dev/null`"
+				screen -dmS SendMails "$MySB_InstallDir"/scripts/SendMails.bsh CRON;
+				nIdMail="$(cmdMySQL 'MySB_db' "SELECT id_mails FROM mails WHERE user='$sUser' AND use_case='$sCase';" 2> /dev/null)"
 				if [ -z "$nIdMail" ]; then
 					cmdMySQL 'MySB_db' "INSERT INTO mails (user,subject,use_case,info,mail_address) VALUES ('$sUser','$sSubject','$sCase','$sInfo','$sUserMail');"
 				fi
@@ -105,8 +115,8 @@ gfnSendMail() {
 			'new_files')
 				sMailType="plain"
 				sAttach="$MySB_InstallDir/temp/$sUser.txt"
-				fnUserNewFiles "/home/$sUser/rtorrent/complete/" >> $sAttach
-				if [ ! -s $sAttach ]; then sAttach=""; fi
+				fnUserNewFiles "/home/$sUser/rtorrent/complete/" >> "$sAttach"
+				if [ ! -s "$sAttach" ]; then sAttach=""; fi
 			;;
 			'new_version')
 				sMailType="plain"
@@ -115,8 +125,8 @@ gfnSendMail() {
 				fi
 			;;
 			*)
-				curl --silent --retry 2 --user $gsMySB_User:$gsMySB_Password "http://127.0.0.1:$gsPort_System_HTTP/UserInfoMail?case=$sCase&user=$sUser" > $MySB_InstallDir/temp/$sUser.html
-				if [ -s $MySB_InstallDir/temp/$sUser.html ]; then
+				curl --silent --retry 2 --user "${gsMySB_User}":"${gsMySB_Password}" "http://127.0.0.1:${gsPort_System_HTTP}/UserInfoMail?case=$sCase&user=$sUser" > "$MySB_InstallDir/temp/$sUser.html"
+				if [ -s "$MySB_InstallDir/temp/$sUser.html" ]; then
 					sAttach="$MySB_InstallDir/temp/$sUser.html"
 					sMailType="html"
 				else
@@ -126,17 +136,17 @@ gfnSendMail() {
 		esac
 	fi
 
-	if [ ! -z "$sInfo" ]; then
+	if [ -n "$sInfo" ]; then
 		gfnStatusLSB
 
-		log_daemon_msg "$Funcs_SendMail_SendingEmail [$sUser] ($sInfo)"
+		log_daemon_msg "${Funcs_SendMail_SendingEmail} [$sUser] ($sInfo)"
 	fi
 
 	if [ $bDoSendMail -eq 1 ]; then
 		if [ -z "$sAttach" ]; then
-			echo "" | mail -a "From: MySB <$gsMainUserEmail>" -a "MIME-Version: 1.0" -a "Content-Type: text/$sMailType" -s "$sSubject" $sUserMail
+			echo "" | mail -a "From: MySB <${gsMainUserEmail}>" -a "MIME-Version: 1.0" -a "Content-Type: text/$sMailType" -s "$sSubject" "$sUserMail"
 		else
-			cat $sAttach | mail -a "From: MySB <$gsMainUserEmail>" -a "MIME-Version: 1.0" -a "Content-Type: text/$sMailType" -s "$sSubject" $sUserMail
+			mail -a "From: MySB <$gsMainUserEmail>" -a "MIME-Version: 1.0" -a "Content-Type: text/$sMailType" -s "$sSubject" "$sUserMail" < "$sAttach"
 		fi
 		sleep 2
 
@@ -144,7 +154,7 @@ gfnSendMail() {
 		if gfnCheckCommand 0 postfix && gfnGetPid postfix; then postfix flush; fi
 	fi
 
-	if [ ! -z "$sInfo" ]; then gfnStatusLSB; fi
+	if [ -n "$sInfo" ]; then gfnStatusLSB; fi
 }
 
 #### Start/Stop services
@@ -153,7 +163,7 @@ gfnManageServices() {
 
 	sGlobalCmd="$1"
 	sServices="$2"
-	sServices="`echo $sServices | sed -e 's/^ //g;' | sed 's/\s+$//'`"
+	sServices="$(echo "$sServices" | sed -e 's/^ //g;' | sed 's/\s+$//')"
 	if [ "$sGlobalCmd" == "restart" ]; then
 		sGlobalCmd="start"
 		sFinalCmd="restart"
@@ -162,58 +172,57 @@ gfnManageServices() {
 	fi
 
 	# Cleaning actual list of services
-	if [ ! -z "$sServices" ]; then
+	if [ -n "$sServices" ]; then
 		# Check if command exist
 		for Service in $sServices; do
-			if ! gfnCheckCommand 0 $Service; then
-				sServices="`echo $sServices | sed -e 's/$Service//g;'`"
+			if ! gfnCheckCommand 0 "$Service"; then
+				sServices="${sServices//$Service/}"
 			fi
 		done
-		sServices="`echo $sServices | sed -e 's/^ //g;' | sed 's/\s+$//'`"
+		sServices="$(echo "$sServices" | sed -e 's/^ //g;' | sed 's/\s+$//')"
 	fi
 
-	if [ ! -z "$sServices" ]; then
+	if [ -n "$sServices" ]; then
 		case "$LOGSTD" in
 			"STDOUT")
-				echo "---- "`date +"%T"` >> $MySB_InstallDir/logs/$gsScriptName.log
+				echo "---- $(date +"%T")" >> "$MySB_InstallDir/logs/${gsScriptName}.log"
 			;;
 		esac
 
 		for Service in $sServices; do
 			case "$sGlobalCmd" in
 				"stop")
-					if gfnGetPid $Service; then
+					if gfnGetPid "$Service"; then
 						nContinue=1
 
 						case "$Service" in
 							"pglcmd")
 								nContinue=0
-								log_daemon_msg "$Funcs_Stopping PeerGuardian Linux" "pglcmd"
+								log_daemon_msg "${Funcs_Stopping} PeerGuardian Linux" "pglcmd"
 								pglcmd stop > /dev/null
 								gfnStatusLSB
 							;;
 							"$binPhpService"|"stunnel4"|"vsftpd"|"fail2ban"|"nfs-kernel-server"|"tautulli"|"plexmediaserver"|rtorrent-*)
 								nContinue=0
 								log_daemon_msg "$Funcs_Stopping $Service"
-								service $Service stop > /dev/null
+								service "$Service" stop > /dev/null
 								gfnStatusLSB
 							;;
 							"nginx")
 								nContinue=0
 								log_daemon_msg "$Funcs_Stopping $Service"
-								service $Service stop > /dev/null
-								if [ $? -gt 0 ]; then
+								if (! service "$Service" stop > /dev/null); then
 									fuser -k 81/tcp &> /dev/null
-									[[ ! -z $gsPort_System_HTTP ]] && fuser -k $gsPort_System_HTTP/tcp &> /dev/null
-									[[ ! -z $gsPort_MySB_HTTPS ]] && fuser -k $gsPort_MySB_HTTPS/tcp &> /dev/null
-									[[ ! -z $gsPort_NginX_HTTP ]] && fuser -k $gsPort_NginX_HTTP/tcp &> /dev/null
-									[[ ! -z $gsPort_NginX_HTTPS ]] && fuser -k $gsPort_NginX_HTTPS/tcp &> /dev/null
+									[[ -n ${gsPort_System_HTTP} ]] && fuser -k "$gsPort_System_HTTP"/tcp &> /dev/null
+									[[ -n ${gsPort_MySB_HTTPS} ]] && fuser -k "$gsPort_MySB_HTTPS"/tcp &> /dev/null
+									[[ -n ${gsPort_NginX_HTTP} ]] && fuser -k "$gsPort_NginX_HTTP"/tcp &> /dev/null
+									[[ -n ${gsPort_NginX_HTTPS} ]] && fuser -k "$gsPort_NginX_HTTPS"/tcp &> /dev/null
 									gfnStatusLSB 0
 								fi
-								if gfnGetPid $Service || [ ! -z "`ps ax | grep 'nginx' | grep '/usr/sbin/nginx' | grep -v 'grep'`" ]; then
+								if gfnGetPid "$Service" || [ -n "$(ps ax | grep 'nginx' | grep '/usr/sbin/nginx' | grep -v 'grep')" ]; then
 									gfnStatusLSB 1
-									log_daemon_msg "$Funcs_Killing $Service"
-									killall $Service
+									log_daemon_msg "${Funcs_Killing} $Service"
+									killall "$Service"
 									gfnStatusLSB
 								else
 									gfnStatusLSB 0
@@ -223,32 +232,32 @@ gfnManageServices() {
 
 						if [ "$nContinue" == "1" ]; then
 							log_daemon_msg "$Funcs_Stopping $Service"
-							service $Service stop > /dev/null
+							service "$Service" stop > /dev/null
 							gfnStatusLSB
 						fi
 					else
-						log_daemon_msg "$Funcs_AlreadyStopped" "$Service"
+						log_daemon_msg "${Funcs_AlreadyStopped}" "$Service"
 						gfnStatusLSB 0
 					fi
 				;;
 				"start")
 					if [ "$Service" == "pglcmd" ]; then
 						if gfnCheckCommand 0 pglcmd; then
-							if [ -z $funcs_PeerGuardian ]; then
-								source $MySB_InstallDir/inc/funcs_by_script/funcs_PeerGuardian
+							if [ -z "$funcs_PeerGuardian" ]; then
+								# shellcheck source=inc/funcs_by_script/funcs_PeerGuardian
+								source "$MySB_InstallDir"/inc/funcs_by_script/funcs_PeerGuardian
 							fi
 
-							if gfnGetPid $Service; then
-								log_daemon_msg "$Funcs_Restarting PeerGuardian Linux"
-								pglcmd restart > /dev/null
-								if [ $? -gt 0 ]; then
+							if gfnGetPid "$Service"; then
+								log_daemon_msg "${Funcs_Restarting} PeerGuardian Linux"
+								if (! pglcmd restart > /dev/null); then
 									gfnStatusLSB 1
 
-									log_daemon_msg "$Funcs_ForceStarting PeerGuardian Linux"
+									log_daemon_msg "${Funcs_ForceStarting} PeerGuardian Linux"
 									pglcmd force-restart > /dev/null
 								fi
 							else
-								log_daemon_msg "$Funcs_Starting PeerGuardian Linux"
+								log_daemon_msg "${Funcs_Starting} PeerGuardian Linux"
 								pglcmd start > /dev/null
 							fi
 
@@ -257,32 +266,29 @@ gfnManageServices() {
 
 								case "$LOGSTD" in
 									"STDOUT")
-										echo `date +"%T"`" --> The updated list of PGL may have failed." >> $MySB_InstallDir/logs/$gsScriptName.log
-										echo `date +"%T"`" --> Attempting to clean lists error." >> $MySB_InstallDir/logs/$gsScriptName.log
+										echo "$(date +"%T") --> The updated list of PGL may have failed." >> "$MySB_InstallDir/logs/$gsScriptName.log"
+										echo "$(date +"%T") --> Attempting to clean lists error." >> "$MySB_InstallDir/logs/$gsScriptName.log"
 									;;
 								esac
 
-								sPglcmdLog="`cat /var/log/pgl/pglcmd.log | grep failed | grep list.iblocklist.com | awk '{ print $6 }'`"
+								sPglcmdLog="$(grep 'failed' /var/log/pgl/pglcmd.log | grep 'list.iblocklist.com' | awk '{ print $6 }')"
 								for List in $sPglcmdLog; do
 									case "$LOGSTD" in
 										"STDOUT")
-											echo `date +"%T"`" --> '$List' will be disabled." >> $MySB_InstallDir/logs/$gsScriptName.log
+											echo "$(date +"%T") --> '$List' will be disabled." >> "$MySB_InstallDir/logs/$gsScriptName.log"
 										;;
 									esac
 
 									# Comment the list in '/etc/pgl/blocklists.list'
-									List=`echo $List | sed s,/,\\\\\\\\\\/,g`
+									List=$(echo $List | sed s,/,\\\\\\\\\\/,g)
 									sed -i "s/^$List/#$List/g" /etc/pgl/blocklists.list
 								done
 								log_daemon_msg "$Funcs_ForceStarting PeerGuardian Linux"
-								pglcmd restart > /dev/null
-
-								if [ $? -gt 0 ]; then # We have again a problem with PeerGuardian, test a force-restart
+								if (! pglcmd restart > /dev/null); then # We have again a problem with PeerGuardian, test a force-restart
 									gfnStatusLSB 1
 
 									log_daemon_msg "$Funcs_ForceStarting PeerGuardian Linux"
-									pglcmd force-restart > /dev/null
-									if [ $? -gt 0 ]; then # Again ??
+									if (! pglcmd force-restart > /dev/null); then # Again ??
 										gfnStatusLSB 1
 										# We will use rTorrent Blocklist
 										gfnPeerGuardianFailed "rTorrent"
@@ -307,17 +313,17 @@ gfnManageServices() {
 						case "$Service" in
 							"bind9")
 								nContinue=0
-								if gfnCheckCommand 0 $Service; then
-									if ! gfnGetPid $Service; then
-										log_daemon_msg "$Funcs_Starting $Service"
-										service $Service start > /dev/null
+								if gfnCheckCommand 0 "$Service"; then
+									if ! gfnGetPid "$Service"; then
+										log_daemon_msg "${Funcs_Starting} $Service"
+										service "$Service" start > /dev/null
 									else
-										log_daemon_msg "$Funcs_Reloading $Service"
-										service $Service $sFinalCmd > /dev/null
-										if [ -z "`ps ax | grep 'named -f -u bind' | grep -v 'grep'`" ]; then
+										log_daemon_msg "${Funcs_Reloading} $Service"
+										service "$Service" $sFinalCmd > /dev/null
+										if [ -z "$(ps ax | grep 'named -f -u bind' | grep -v 'grep')" ]; then
 											gfnStatusLSB 1
-											log_daemon_msg "$Funcs_Restarting $Service"
-											service $Service restart > /dev/null
+											log_daemon_msg "${Funcs_Restarting} $Service"
+											service "$Service" restart > /dev/null
 										fi
 									fi
 									gfnStatusLSB
@@ -325,30 +331,30 @@ gfnManageServices() {
 							;;
 							"nginx")
 								nContinue=0
-								if gfnCheckCommand 0 $Service; then
-									if ! gfnGetPid $Service; then
+								if gfnCheckCommand 0 "$Service"; then
+									if ! gfnGetPid "$Service"; then
 										log_daemon_msg "$Funcs_Starting $Service"
-										service $Service start > /dev/null
+										service "$Service" start > /dev/null
 									else
 										log_daemon_msg "$Funcs_Reloading $Service"
-										service $Service $sFinalCmd > /dev/null
-										if [ -z "`ps ax | grep 'nginx' | grep '/usr/sbin/nginx' | grep -v 'grep'`" ]; then
+										service "$Service" $sFinalCmd > /dev/null
+										if [ -z "$(ps ax | grep 'nginx' | grep '/usr/sbin/nginx' | grep -v 'grep')" ]; then
 											gfnStatusLSB 1
 											log_daemon_msg "$Funcs_Restarting $Service"
 											fuser -k 81/tcp &> /dev/null
-											[[ ! -z $gsPort_System_HTTP ]] && fuser -k $gsPort_System_HTTP/tcp &> /dev/null
-											[[ ! -z $gsPort_MySB_HTTPS ]] && fuser -k $gsPort_MySB_HTTPS/tcp &> /dev/null
-											[[ ! -z $gsPort_NginX_HTTP ]] && fuser -k $gsPort_NginX_HTTP/tcp &> /dev/null
-											[[ ! -z $gsPort_NginX_HTTPS ]] && fuser -k $gsPort_NginX_HTTPS/tcp &> /dev/null
-											service $Service restart > /dev/null
-											if [ -z "`ps ax | grep 'nginx' | grep '/usr/sbin/nginx' | grep -v 'grep'`" ]; then
+											[[ -n $gsPort_System_HTTP ]] && fuser -k "$gsPort_System_HTTP"/tcp &> /dev/null
+											[[ -n $gsPort_MySB_HTTPS ]] && fuser -k "$gsPort_MySB_HTTPS"/tcp &> /dev/null
+											[[ -n $gsPort_NginX_HTTP ]] && fuser -k "$gsPort_NginX_HTTP"/tcp &> /dev/null
+											[[ -n $gsPort_NginX_HTTPS ]] && fuser -k "$gsPort_NginX_HTTPS"/tcp &> /dev/null
+											service "$Service" restart > /dev/null
+											if [ -z "$(ps ax | grep 'nginx' | grep '/usr/sbin/nginx' | grep -v 'grep')" ]; then
 												gfnStatusLSB 1
 												log_daemon_msg "$Funcs_Killing $Service"
-												service $Service stop > /dev/null
-												killall $Service
+												service "$Service" stop > /dev/null
+												killall "$Service"
 												gfnStatusLSB
 												log_daemon_msg "$Funcs_Starting $Service"
-												service $Service start > /dev/null
+												service "$Service" start > /dev/null
 											fi
 										fi
 									fi
@@ -357,13 +363,13 @@ gfnManageServices() {
 							;;
 							*)
 								nContinue=0
-								if gfnCheckCommand 0 $Service; then
-									if ! gfnGetPid $Service; then
+								if gfnCheckCommand 0 "$Service"; then
+									if ! gfnGetPid "$Service"; then
 										log_daemon_msg "$Funcs_Starting $Service"
-										service $Service start > /dev/null
+										service "$Service" start > /dev/null
 									else
 										log_daemon_msg "$Funcs_Restarting $Service"
-										service $Service restart > /dev/null
+										service "$Service" restart > /dev/null
 									fi
 									gfnStatusLSB
 								fi
@@ -372,12 +378,12 @@ gfnManageServices() {
 
 						if [ "$nContinue" == "1" ]; then
 							log_daemon_msg "$Funcs_Starting $Service"
-							service $Service $sFinalCmd > /dev/null
+							service "$Service" $sFinalCmd > /dev/null
 							gfnStatusLSB
 
 							if [ $? -gt 0 ] && [ "$sFinalCmd" == "reload" ]; then
 								log_daemon_msg "$Funcs_Restarting $Service"
-								service $Service restart > /dev/null
+								service "$Service" restart > /dev/null
 								gfnStatusLSB
 							fi
 						fi
@@ -388,7 +394,7 @@ gfnManageServices() {
 
 		case "$LOGSTD" in
 			"STDOUT")
-				echo "---- "`date +"%T"` >> $MySB_InstallDir/logs/$gsScriptName.log
+				echo "---- $(date +"%T")" >> "$MySB_InstallDir/logs/$gsScriptName.log"
 			;;
 		esac
 	fi
@@ -429,7 +435,7 @@ gfnQuestionGetString() {
 			continue
 		fi
 
-		if [ ! -z "$DEFAULT" ]; then
+		if [ -n "$DEFAULT" ]; then
 			if grep -q "$DEFAULT" <<< "$YESNO"; then
 				if grep -q "$NEWVAR1" <<< "$YESNO"; then
 					if grep -q "$NEWVAR1" <<< "$YESYES"; then
@@ -461,7 +467,7 @@ gfnQuestionGetString() {
 			fi
 		fi
 
-		if [ ! -z "$DEFAULT" ]; then
+		if [ -n "$DEFAULT" ]; then
 			if grep -q "$DEFAULT" <<< "$YESNO"; then
 				if grep -q "$NEWVAR2" <<< "$YESNO"; then
 					if grep -q "$NEWVAR2" <<< "$YESYES"; then
@@ -480,7 +486,7 @@ gfnQuestionGetString() {
 
 #### Script Invocation
 gfnScriptInvoke() {
-	local sMethod sScriptWished sScript sArguments sAllArgs sError
+	local sMethod sScriptWished sScript sArguments sAllArgs
 
 	#### Use 'source' OR 'bash' OR 'screen' ?
 	sMethod="$1"
@@ -531,7 +537,7 @@ gfnScriptInvoke() {
 					gfnWaitingSTD ${gsScriptName}_${sScript}
 				;;
 				"ScreenWAIT")
-					while [ ! -z "`screen -ls | grep ${gsScriptName}_${sScript}`" ]; do
+					while [ -n "`screen -ls | grep ${gsScriptName}_${sScript}`" ]; do
 						echo -n "."
 						sleep 1
 					done
@@ -550,8 +556,9 @@ gfnManageDirAndFiles() {
 		*)							sSwitch="global";;
 	esac
 
-	if [ -z $funcs_MySB_CreateUser ] || [ $funcs_MySB_CreateUser -eq 0 ]; then
-		source $MySB_InstallDir/inc/funcs_by_script/funcs_MySB_CreateUser
+	if [ -z "$funcs_MySB_CreateUser" ] || [ "$funcs_MySB_CreateUser" -eq 0 ]; then
+		# shellcheck source=inc/funcs_by_script/funcs_MySB_CreateUser
+		source "$MySB_InstallDir"/inc/funcs_by_script/funcs_MySB_CreateUser
 	fi
 
 	#### Create missing directories
@@ -559,63 +566,63 @@ gfnManageDirAndFiles() {
 		# TMPFS
 		if [ ! -d /mnt/tmpFS ]; then mkdir /mnt/tmpFS; fi
 		# Root Directories
-		if [ ! -d $MySB_InstallDir/db ]; then mkdir $MySB_InstallDir/db; fi
-		if [ ! -d $MySB_InstallDir/files ]; then mkdir $MySB_InstallDir/files; fi
-		if [ ! -d $MySB_InstallDir/logs/archives ]; then mkdir -p $MySB_InstallDir/logs/archives; fi
-		if [ ! -d $MySB_InstallDir/sources ]; then mkdir $MySB_InstallDir/sources; fi
-		if [ ! -d $MySB_InstallDir/ssl ]; then mkdir $MySB_InstallDir/ssl; fi
-		if [ ! -d $MySB_InstallDir/temp ]; then mkdir $MySB_InstallDir/temp; fi
-		if [ ! -d $MySB_InstallDir/web/apps ]; then mkdir -p $MySB_InstallDir/web/apps; fi
-		if [ ! -d $MySB_InstallDir/web/openvpn ]; then mkdir -p $MySB_InstallDir/web/openvpn; fi
+		if [ ! -d "$MySB_InstallDir"/db ]; then mkdir "$MySB_InstallDir"/db; fi
+		if [ ! -d "$MySB_InstallDir"/files ]; then mkdir "$MySB_InstallDir"/files; fi
+		if [ ! -d "$MySB_InstallDir"/logs/archives ]; then mkdir -p "$MySB_InstallDir"/logs/archives; fi
+		if [ ! -d "$MySB_InstallDir"/sources ]; then mkdir "$MySB_InstallDir"/sources; fi
+		if [ ! -d "$MySB_InstallDir"/ssl ]; then mkdir "$MySB_InstallDir"/ssl; fi
+		if [ ! -d "$MySB_InstallDir"/temp ]; then mkdir "$MySB_InstallDir"/temp; fi
+		if [ ! -d "$MySB_InstallDir"/web/apps ]; then mkdir -p "$MySB_InstallDir"/web/apps; fi
+		if [ ! -d "$MySB_InstallDir"/web/openvpn ]; then mkdir -p "$MySB_InstallDir"/web/openvpn; fi
 		# Log directories
-		if [ ! -d $MySB_InstallDir/web/logs ]; then mkdir $MySB_InstallDir/web/logs; fi
-		if [ ! -d $MySB_InstallDir/web/logs/bin ]; then mkdir $MySB_InstallDir/web/logs/bin; fi
-		if [ ! -d $MySB_InstallDir/web/logs/install ]; then mkdir $MySB_InstallDir/web/logs/install; fi
-		if [ ! -d $MySB_InstallDir/web/logs/nginx ]; then mkdir $MySB_InstallDir/web/logs/nginx; fi
-		if [ ! -d $MySB_InstallDir/web/logs/scripts ]; then mkdir $MySB_InstallDir/web/logs/scripts; fi
-		if [ ! -d $MySB_InstallDir/web/logs/security ]; then mkdir $MySB_InstallDir/web/logs/security; fi
-		if [ ! -d $MySB_InstallDir/web/logs/upgrade ]; then mkdir $MySB_InstallDir/web/logs/upgrade; fi
-		if [ ! -d $MySB_InstallDir/web/logs/system ]; then mkdir $MySB_InstallDir/web/logs/system; fi
+		if [ ! -d "$MySB_InstallDir"/web/logs ]; then mkdir "$MySB_InstallDir"/web/logs; fi
+		if [ ! -d "$MySB_InstallDir"/web/logs/bin ]; then mkdir "$MySB_InstallDir"/web/logs/bin; fi
+		if [ ! -d "$MySB_InstallDir"/web/logs/install ]; then mkdir "$MySB_InstallDir"/web/logs/install; fi
+		if [ ! -d "$MySB_InstallDir"/web/logs/nginx ]; then mkdir "$MySB_InstallDir"/web/logs/nginx; fi
+		if [ ! -d "$MySB_InstallDir"/web/logs/scripts ]; then mkdir "$MySB_InstallDir"/web/logs/scripts; fi
+		if [ ! -d "$MySB_InstallDir"/web/logs/security ]; then mkdir "$MySB_InstallDir"/web/logs/security; fi
+		if [ ! -d "$MySB_InstallDir"/web/logs/upgrade ]; then mkdir "$MySB_InstallDir"/web/logs/upgrade; fi
+		if [ ! -d "$MySB_InstallDir"/web/logs/system ]; then mkdir "$MySB_InstallDir"/web/logs/system; fi
 
 		#### Convert with dos2unix
-		dos2unix $MySB_InstallDir/* &> /dev/null
-		dos2unix $MySB_InstallDir/bin/* &> /dev/null
-		dos2unix $MySB_InstallDir/files/* &> /dev/null
-		dos2unix $MySB_InstallDir/inc/* &> /dev/null
-		dos2unix $MySB_InstallDir/install/* &> /dev/null
-		dos2unix $MySB_InstallDir/scripts/* &> /dev/null
-		dos2unix $MySB_InstallDir/templates/* &> /dev/null
-		dos2unix $MySB_InstallDir/upgrade/* &> /dev/null
+		dos2unix "$MySB_InstallDir"/* &> /dev/null
+		dos2unix "$MySB_InstallDir"/bin/* &> /dev/null
+		dos2unix "$MySB_InstallDir"/files/* &> /dev/null
+		dos2unix "$MySB_InstallDir"/inc/* &> /dev/null
+		dos2unix "$MySB_InstallDir"/install/* &> /dev/null
+		dos2unix "$MySB_InstallDir"/scripts/* &> /dev/null
+		dos2unix "$MySB_InstallDir"/templates/* &> /dev/null
+		dos2unix "$MySB_InstallDir"/upgrade/* &> /dev/null
 
 		#### Change rights
 		# $MySB_InstallDir/
-		chmod -R 0700 $MySB_InstallDir
-		chmod 0755 $MySB_InstallDir
-		chown -R root:root $MySB_InstallDir
+		chmod -R 0700 "$MySB_InstallDir"
+		chmod 0755 "$MySB_InstallDir"
+		chown -R root:root "$MySB_InstallDir"
 		# $MySB_InstallDir/db
-		chmod 0770 $MySB_InstallDir/db
-		chmod 0660 $MySB_InstallDir/db/* &> /dev/null
-		chown -R root:www-data $MySB_InstallDir/db
+		chmod 0770 "$MySB_InstallDir"/db
+		chmod 0660 "$MySB_InstallDir"/db/* &> /dev/null
+		chown -R root:www-data "$MySB_InstallDir"/db
 		# $MySB_InstallDir/ssl
-		chmod 0644 $MySB_InstallDir/ssl/*.cert &> /dev/null
+		chmod 0644 "$MySB_InstallDir"/ssl/*.cert &> /dev/null
 		# $MySB_InstallDir/install
-		chmod -R 0755 $MySB_InstallDir/install
+		chmod -R 0755 "$MySB_InstallDir"/install
 		# $MySB_InstallDir/temp
-		chown root:www-data $MySB_InstallDir/temp
-		chmod 0760 $MySB_InstallDir/temp
+		chown root:www-data "$MySB_InstallDir"/temp
+		chmod 0760 "$MySB_InstallDir"/temp
 		# $MySB_InstallDir/web
-		chown -R root:www-data $MySB_InstallDir/web/*
-		chmod -R 0640 $MySB_InstallDir/web/*
-		find $MySB_InstallDir/web/* -type d -not -path "*ru*" -not -path "*openvpn*" -print0 | xargs -0 chmod 0750
-		chmod 0755 $MySB_InstallDir/web
-		chmod 0755 $MySB_InstallDir/web/apps
+		chown -R root:www-data "$MySB_InstallDir"/web/*
+		chmod -R 0640 "$MySB_InstallDir"/web/*
+		find "$MySB_InstallDir"/web/* -type d -not -path "*ru*" -not -path "*openvpn*" -print0 | xargs -0 chmod 0750
+		chmod 0755 "$MySB_InstallDir"/web
+		chmod 0755 "$MySB_InstallDir"/web/apps
 		# Tautulli
-		if [ -d $MySB_InstallDir/web/apps/tt ] && [ ! -z "`grep 'tautulli' /etc/passwd`" ]; then
-			chown tautulli:nogroup -R $MySB_InstallDir/web/apps/tt
+		if [ -d "$MySB_InstallDir"/web/apps/tt ] && [ -n "$(grep 'tautulli' /etc/passwd)" ]; then
+			chown tautulli:nogroup -R "$MySB_InstallDir"/web/apps/tt
 		fi
 
 		# $MySB_InstallDir/web/openvpn
-		if [ -d $MySB_InstallDir/web/openvpn ]; then chmod 0770 $MySB_InstallDir/web/openvpn; fi
+		if [ -d "$MySB_InstallDir"/web/openvpn ]; then chmod 0770 "$MySB_InstallDir"/web/openvpn; fi
 		# /home/MySB_share
 		if [ -d /home/MySB_share ]; then
 			chown root:MySB_users /home/MySB_share
@@ -637,46 +644,46 @@ gfnManageDirAndFiles() {
 		fi
 
 		# Cakebox-Light
-		if [ -d  $gsCakeboxDir/config/ ]; then
-			chown root:www-data $gsCakeboxDir/config/*
-			chmod 0660 $gsCakeboxDir/config/*
+		if [ -d  "$gsCakeboxDir"/config/ ]; then
+			chown root:www-data "$gsCakeboxDir"/config/*
+			chmod 0660 "$gsCakeboxDir"/config/*
 		fi
 
 		# LoadAvg
-		if [ ! -z "$gsLoadAvgDir" ]; then
-			if [ -f $gsLoadAvgDir/configure ]; then chmod 0640 $gsLoadAvgDir/configure; fi
-			if [ ! -d $gsLoadAvgDir/logs ] && [ -d $gsLoadAvgDir ]; then mkdir $gsLoadAvgDir/logs; fi
-			if [ -d $gsLoadAvgDir/logs ]; then chmod 0777 $gsLoadAvgDir/logs; fi
+		if [ -n "${gsLoadAvgDir}" ]; then
+			if [ -f "$gsLoadAvgDir"/configure ]; then chmod 0640 "$gsLoadAvgDir"/configure; fi
+			if [ ! -d "$gsLoadAvgDir"/logs ] && [ -d "$gsLoadAvgDir" ]; then mkdir "$gsLoadAvgDir"/logs; fi
+			if [ -d "$gsLoadAvgDir"/logs ]; then chmod 0777 "$gsLoadAvgDir"/logs; fi
 		fi
 
 		# NextCloud
-		if [ ! -z "$gsNextCloudDir" ] && [ -d $gsNextCloudDir ]; then
+		if [ -n "${gsNextCloudDir}" ] && [ -d "$gsNextCloudDir" ]; then
 			if [ ! -d /home/nextcloud ]; then mkdir -p /home/nextcloud; fi
 			if [ ! -d /home/nextcloud/admin/files ]; then mkdir -p /home/nextcloud/admin/files; fi
-			if [ ! -d $gsNextCloudDir/assets ]; then mkdir -p $gsNextCloudDir/assets; fi
-			if [ ! -d $gsNextCloudDir/updater ]; then mkdir -p $gsNextCloudDir/updater; fi
-			if [ ! -d $gsNextCloudDir/apps2 ]; then mkdir -p $gsNextCloudDir/apps2; fi
+			if [ ! -d "$gsNextCloudDir"/assets ]; then mkdir -p "$gsNextCloudDir"/assets; fi
+			if [ ! -d "$gsNextCloudDir"/updater ]; then mkdir -p "$gsNextCloudDir"/updater; fi
+			if [ ! -d "$gsNextCloudDir"/apps2 ]; then mkdir -p "$gsNextCloudDir"/apps2; fi
 
 			if [ ! -f /home/nextcloud/.ocdata ]; then touch /home/nextcloud/.ocdata; fi
 			if [ ! -f /home/nextcloud/index.html ]; then touch /home/nextcloud/index.html; fi
 			if [ -f /home/nextcloud/mount.json ]; then chmod 0640 /home/nextcloud/mount.json; fi
 
-			find $gsNextCloudDir/ -type f -print0 | xargs -0 chmod 0640
-			find $gsNextCloudDir/ -type d -print0 | xargs -0 chmod 0750
+			find "$gsNextCloudDir"/ -type f -print0 | xargs -0 chmod 0640
+			find "$gsNextCloudDir"/ -type d -print0 | xargs -0 chmod 0750
 
-			[ -d $gsNextCloudDir ] && chown -R root:www-data $gsNextCloudDir
-			[ -d $gsNextCloudDir/apps/ ] && chown -R www-data:www-data $gsNextCloudDir/apps/
-			[ -d $gsNextCloudDir/apps2/ ] && chown -R www-data:www-data $gsNextCloudDir/apps2/
-			[ -d $gsNextCloudDir/config/ ] && chown -R www-data:www-data $gsNextCloudDir/config/
-			[ -d $gsNextCloudDir/themes/ ] && chown -R www-data:www-data $gsNextCloudDir/themes/
-			[ -d $gsNextCloudDir/updater/ ] && chown -R www-data:www-data $gsNextCloudDir/updater/
+			[ -d "$gsNextCloudDir" ] && chown -R root:www-data "$gsNextCloudDir"
+			[ -d "$gsNextCloudDir"/apps/ ] && chown -R www-data:www-data "$gsNextCloudDir"/apps/
+			[ -d "$gsNextCloudDir"/apps2/ ] && chown -R www-data:www-data "$gsNextCloudDir"/apps2/
+			[ -d "$gsNextCloudDir"/config/ ] && chown -R www-data:www-data "$gsNextCloudDir"/config/
+			[ -d "$gsNextCloudDir"/themes/ ] && chown -R www-data:www-data "$gsNextCloudDir"/themes/
+			[ -d "$gsNextCloudDir"/updater/ ] && chown -R www-data:www-data "$gsNextCloudDir"/updater/
 			[ -d /home/nextcloud/ ] && chown -R www-data:www-data /home/nextcloud/
 
-			[ -f $gsNextCloudDir/occ ] && chmod 0750 $gsNextCloudDir/occ
+			[ -f "$gsNextCloudDir"/occ ] && chmod 0750 "$gsNextCloudDir"/occ
 
-			if [ -f $gsNextCloudDir/.htaccess ]; then
-				chmod 0644 $gsNextCloudDir/.htaccess
-				chown root:www-data $gsNextCloudDir/.htaccess
+			if [ -f "$gsNextCloudDir"/.htaccess ]; then
+				chmod 0644 "$gsNextCloudDir"/.htaccess
+				chown root:www-data "$gsNextCloudDir"/.htaccess
 			fi
 			if [ -f /home/nextcloud/.htaccess ]; then
 				chmod 0644 /home/nextcloud/.htaccess
@@ -685,23 +692,23 @@ gfnManageDirAndFiles() {
 		fi
 
 		# ruTorrent Global Config
-		if [ ! -z "$gsRutorrentDir" ] && [ -d $gsRutorrentDir ]; then
+		if [ -n "$gsRutorrentDir" ] && [ -d "$gsRutorrentDir" ]; then
 			fnRuTorrentGlobalConfigs
 		fi
 	fi
 
 	# Users
 	if [ "$sSwitch" != "no_user" ]; then
-		if [ "$gbIsReady_MySB_Db" == "YES" ]; then
+		if [ "${gbIsReady_MySB_Db}" == "YES" ]; then
 			gfnListCountUsers 'normal'
-			if [ ! -z "$gsUsersList" ]; then
+			if [ -n "$gsUsersList" ]; then
 				for FnUser in $gsUsersList; do
-					if [ ! -z "`getent passwd $FnUser`" ]; then
+					if [ -n "$(getent passwd "$FnUser")" ]; then
 						# Home
 						gfnManageUserHomeDir "$FnUser"
 
 						# ruTorrent
-						if [ ! -z "$gsRutorrentDir" ] && [ -d $gsRutorrentPluginsDir ]; then
+						if [ -n "${gsRutorrentDir}" ] && [ -d "$gsRutorrentPluginsDir" ]; then
 							gfnRuTorrentUsersConfigs "$FnUser"
 						fi
 
@@ -718,24 +725,24 @@ gfnManageDirAndFiles() {
 
 	# ruTorrent
 	if [ "$sSwitch" == "global" ] || [ "$sSwitch" == "no_user" ]; then
-		if [ ! -z "$gsRutorrentDir" ] && [ -d $gsRutorrentDir ]; then
-			if [ -d $gsRutorrentDir ]; then chmod -R 0755 $gsRutorrentDir; fi
-			if [ -d $gsRutorrentDir ]; then chown -R www-data:www-data $gsRutorrentDir; fi
-			if [ -d $gsRutorrentDir/share ]; then
-				chmod -R 0777 $gsRutorrentDir/share
-				find $gsRutorrentDir/share/ -type f -print0 | xargs -0 chmod 0666
+		if [ -n "$gsRutorrentDir" ] && [ -d "$gsRutorrentDir" ]; then
+			if [ -d "$gsRutorrentDir" ]; then chmod -R 0755 "$gsRutorrentDir"; fi
+			if [ -d "$gsRutorrentDir" ]; then chown -R www-data:www-data "$gsRutorrentDir"; fi
+			if [ -d "$gsRutorrentDir"/share ]; then
+				chmod -R 0777 "$gsRutorrentDir"/share
+				find "$gsRutorrentDir"/share/ -type f -print0 | xargs -0 chmod 0666
 			fi
-			if [ -d $gsRutorrentPluginsDir/fileupload/scripts/upload ]; then chmod 0775 $gsRutorrentPluginsDir/fileupload/scripts/upload; fi
+			if [ -d "$gsRutorrentPluginsDir"/fileupload/scripts/upload ]; then chmod 0775 "$gsRutorrentPluginsDir"/fileupload/scripts/upload; fi
 		fi
 	fi
 
 	# Seedbox-Manager
 	if [ "$sSwitch" == "global" ] || [ "$sSwitch" == "no_user" ]; then
-		if [ ! -z "$gsManagerDir" ] && [ -d $gsManagerDir ]; then
-			if [ -d $gsManagerDir ]; then chown -R www-data:www-data $gsManagerDir; fi
-			if [ -f $gsManagerDir/reboot-rtorrent ]; then
-				chown root:root $gsManagerDir/reboot-rtorrent
-				chmod 4755 $gsManagerDir/reboot-rtorrent
+		if [ -n "$gsManagerDir" ] && [ -d "$gsManagerDir" ]; then
+			if [ -d "$gsManagerDir" ]; then chown -R www-data:www-data "$gsManagerDir"; fi
+			if [ -f "$gsManagerDir"/reboot-rtorrent ]; then
+				chown root:root "$gsManagerDir"/reboot-rtorrent
+				chmod 4755 "$gsManagerDir"/reboot-rtorrent
 			fi
 		fi
 	fi
@@ -1041,7 +1048,7 @@ fnUserNewFiles() {
 	for i in $(ls -1AFho $1 | grep ".*/$"); do
 		sDir=$1"$i"
 		if [[ -d $sDir ]]; then
-			cd $sDir
+			cd ${sDir} || exit
 			ls -1AFho | grep "`date +%b\ %d`" | awk '{ print $8 }'
 			fnUserNewFiles "$sDir"
 		fi
