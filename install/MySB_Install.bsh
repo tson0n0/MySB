@@ -195,12 +195,8 @@ ${CRED}############################################################$CEND"
 
 # To execute when this script will exited
 ExitOnError() {
-<<<<<<< HEAD
 	# shellcheck source=inc/includes_after
 	if [ -f $MySB_InstallDir/inc/includes_after ]; then source "$MySB_InstallDir"/inc/includes_after; fi
-=======
-	[ -f $MySB_InstallDir/inc/includes_after ] && source $MySB_InstallDir/inc/includes_after
->>>>>>> de9cf1d41345d9d581474564386c83515efb4824
 	case "$1" in
 	0)
 		echo -e "$2"
@@ -289,11 +285,7 @@ SystemChecks() {
 	else
 		if [ -f /etc/lsb-release ]; then
 			sOS_Id="$(grep 'DISTRIB_ID' /etc/lsb-release | cut -d '=' -f 2)"
-<<<<<<< HEAD
 			sOS_Ver="$(grep 'DISTRIB_RELEASE' /etc/issue.net | cut -d '=' -f 2)"
-=======
-			sOS_Ver="$(grep 'DISTRIB_RELEASE' /etc/lsb-release | cut -d '=' -f 2)"
->>>>>>> de9cf1d41345d9d581474564386c83515efb4824
 		elif [ -f /etc/issue.net ]; then
 			sOS_Id="$(awk '{ print $1 }' </etc/issue.net | sed -e 's/^$//g;')"
 			sOS_Ver="$(awk '{ print $3 }' </etc/issue.net | sed -e 's/^$//g;')"
@@ -340,11 +332,7 @@ SystemChecks() {
 	fi
 
 	#### Check internet access
-<<<<<<< HEAD
 	if (! ping -c4 github.com >>/tmp/"$(basename "$0")".log); then
-=======
-	if (! ping -c4 github.com >>"/tmp/$(basename "$0").log"); then
->>>>>>> de9cf1d41345d9d581474564386c83515efb4824
 		nContinue=1
 		echo -e "${CYELLOW}Internet	: $CEND${CRED}$AnswerNO$CEND"
 	else
@@ -396,13 +384,8 @@ clear
 	echo "------------------------------------------------------------"
 	echo "START Err: $(/bin/date '+%Y-%m-%d - %H:%M:%S') - $(basename "$0")"
 	echo "------------------------------------------------------------"
-<<<<<<< HEAD
 } >/tmp/"$(basename "$0")".log
 exec 2>>/tmp/"$(basename "$0")".log
-=======
-} >"/tmp/$(basename "$0").log"
-exec 2>>"/tmp/$(basename "$0").log"
->>>>>>> de9cf1d41345d9d581474564386c83515efb4824
 
 # Language select
 if [ -z "$EnvLang" ]; then
@@ -456,11 +439,7 @@ while [ -z "$Answer" ]; do
 		if [ -z "$MySB_InstallDir" ]; then
 			MySB_InstallDir="/opt/MySB"
 		fi
-<<<<<<< HEAD
 		IfEmpty="$(find $MySB_InstallDir/ -maxdepth 1 | wc -l)"
-=======
-		IfEmpty="$(ls -a $MySB_InstallDir 2>/dev/null | sed -e "/\.$/d" | wc -l)"
->>>>>>> de9cf1d41345d9d581474564386c83515efb4824
 		while [ -z "$MySB_InstallDir" ] || [ -d $MySB_InstallDir ] || [ "$IfEmpty" -gt 0 ]; do
 			echo -e -n "$DirNotEmpty"
 			read -r MySB_InstallDir
@@ -469,11 +448,7 @@ while [ -z "$Answer" ]; do
 			fi
 
 			if [ -d $MySB_InstallDir ]; then
-<<<<<<< HEAD
 				IfEmpty="$(find $MySB_InstallDir/ -maxdepth 1 | wc -l)"
-=======
-				IfEmpty="$(ls -a $MySB_InstallDir 2>/dev/null | sed -e "/\.$/d" | wc -l)"
->>>>>>> de9cf1d41345d9d581474564386c83515efb4824
 			else
 				IfEmpty=0
 			fi
@@ -487,11 +462,7 @@ while [ -z "$Answer" ]; do
 done
 
 # First we disable IPv6
-<<<<<<< HEAD
 sysctl -w net.ipv6.conf.all.disable_ipv6=1 >>/tmp/"$(basename "$0")".log
-=======
-sysctl -w net.ipv6.conf.all.disable_ipv6=1 >>"/tmp/$(basename "$0").log"
->>>>>>> de9cf1d41345d9d581474564386c83515efb4824
 
 # We do an update
 BannerInstall
@@ -500,16 +471,6 @@ fnCountDown 3
 if (! apt-get -y --assume-yes -o 'Acquire::Check-Valid-Until=false' update); then
 	ExitOnError 1 "apt-get -y --assume-yes -o 'Acquire::Check-Valid-Until=false' update"
 fi
-<<<<<<< HEAD
-=======
-
-# Next we do an upgrade
-# BannerInstall
-# echo -e -n "$UpgradingSystem"
-# fnCountDown 3
-# apt-get -y --assume-yes -V -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confnew" upgrade
-# [ $? -gt 0 ] && ExitOnError 1 "apt-get -y --assume-yes -V -o Dpkg::Options::=\"--force-confnew\" upgrade"
->>>>>>> de9cf1d41345d9d581474564386c83515efb4824
 
 # Now we can install required packages
 BannerInstall
@@ -523,11 +484,7 @@ fi
 #### download files from Git
 BannerInstall
 echo -e -n "$DownloadingGithub"
-<<<<<<< HEAD
 screen -dmS MySB_GitClone git clone --progress -b $gsCurrentVersion https://github.com/toulousain79/MySB.git $MySB_InstallDir >>/tmp/"$(basename "$0")".log
-=======
-screen -dmS MySB_GitClone git clone --progress -b $gsCurrentVersion https://github.com/toulousain79/MySB.git $MySB_InstallDir >>"/tmp/$(basename "$0").log"
->>>>>>> de9cf1d41345d9d581474564386c83515efb4824
 while (screen -ls | grep -q 'MySB_GitClone'); do
 	echo -n "."
 	sleep 1
@@ -543,11 +500,7 @@ chmod 0640 /etc/MySB/config
 
 # load variables
 # shellcheck source=inc/vars
-<<<<<<< HEAD
 source "$MySB_InstallDir"/inc/vars
-=======
-source $MySB_InstallDir/inc/vars
->>>>>>> de9cf1d41345d9d581474564386c83515efb4824
 
 # Create directories
 echo -e -n "$CreatingDir"
@@ -560,7 +513,6 @@ gfnScriptInvoke 'ScreenWAIT' "$MySB_InstallDir/install/MySQL" 'INSTALL'
 gfnStatusSTD
 
 # Update DB with usable values
-<<<<<<< HEAD
 if (! cmdMySQL 'MySB_db' "UPDATE system SET mysb_version='$gsCurrentVersion' WHERE id_system='1';" -v >>/tmp/"$(basename "$0")".log); then
 	ExitOnError 1 "UPDATE system SET mysb_version='$gsCurrentVersion' WHERE id_system='1';"
 fi
@@ -569,15 +521,6 @@ if (! cmdMySQL 'MySB_db' "INSERT INTO users (users_ident,users_email,language,ad
 fi
 # shellcheck source=inc/vars
 source "$MySB_InstallDir"/inc/vars
-=======
-cmdMySQL 'MySB_db' "UPDATE system SET mysb_version='$gsCurrentVersion' WHERE id_system='1';" -v >>"/tmp/$(basename "$0").log"
-[ $? -gt 0 ] && ExitOnError 1 "UPDATE system SET mysb_version='$gsCurrentVersion' WHERE id_system='1';"
-cmdMySQL 'MySB_db' "INSERT INTO users (users_ident,users_email,language,admin) VALUES ('MySB','MySB','$EnvLang','1');" -v >>"/tmp/$(basename "$0").log"
-[ $? -gt 0 ] && ExitOnError 1 "INSERT INTO users (users_ident,users_email,language,admin) VALUES ('MySB','MySB','$EnvLang','1');"
-# shellcheck source=inc/vars
-source $MySB_InstallDir/inc/vars
-[ $? -gt 0 ] && ExitOnError 1 "source $MySB_InstallDir/inc/vars"
->>>>>>> de9cf1d41345d9d581474564386c83515efb4824
 
 # Some questions
 /bin/bash "$MySB_InstallDir"/install/Questions $$ 'INSTALL'
@@ -586,13 +529,8 @@ echo
 
 # Start install script
 echo -e "$StartingScreen"
-<<<<<<< HEAD
 screen -wipe >>/tmp/"$(basename "$0")".log
 screen -dmS MySB_bsh /bin/bash "$MySB_InstallDir"/install/MySB.bsh
-=======
-screen -wipe >>"/tmp/$(basename "$0").log"
-screen -dmS MySB_bsh /bin/bash $MySB_InstallDir/install/MySB.bsh
->>>>>>> de9cf1d41345d9d581474564386c83515efb4824
 echo -e -n "$PleaseWait"
 fnCountDown 5
 screen -r MySB_bsh
@@ -603,10 +541,6 @@ export REBOOT
 
 # -----------------------------------------
 # shellcheck source=inc/includes_after
-<<<<<<< HEAD
 if [ -f "$MySB_InstallDir"/inc/includes_after ]; then source "$MySB_InstallDir"/inc/includes_after; fi
-=======
-if [ -f $MySB_InstallDir/inc/includes_after ]; then source $MySB_InstallDir/inc/includes_after; fi
->>>>>>> de9cf1d41345d9d581474564386c83515efb4824
 # -----------------------------------------
 ##################### LAST LINE ######################################

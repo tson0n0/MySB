@@ -33,27 +33,13 @@ if [ -f /etc/MySB/config ] && [ -z "${MySB_InstallDir}" ]; then
 	source /etc/MySB/config
 fi
 if [ -f /lib/lsb/init-functions ] && [ -z "$(command -v start_daemon)" ]; then
-<<<<<<< HEAD
-	# shellcheck source=/lib/lsb/init-functions
-	# shellcheck disable=SC1091
-=======
 	# shellcheck source=/dev/null
->>>>>>> de9cf1d41345d9d581474564386c83515efb4824
 	source /lib/lsb/init-functions &>/dev/null
 fi
 if [ -f /root/.bash_aliases ]; then
 	# shellcheck source=.root/.bash_aliases
 	source /root/.bash_aliases
 fi
-<<<<<<< HEAD
-if [ -n "${MySB_InstallDir}" ] && [ -f "${MySB_InstallDir}"/inc/funcs ]; then
-	if [ -z "${funcs}" ] || [ "${funcs}" -eq 0 ]; then
-		# shellcheck source=inc/funcs
-		source "${MySB_InstallDir}"/inc/funcs
-	fi
-else
-	echo "Loading '${MySB_InstallDir}/inc/funcs' error !"
-=======
 if [ -n "${MySB_InstallDir:?}" ] && [ -f ${MySB_InstallDir:?}/inc/funcs ]; then
 	if [ -z "${funcs}" ] || [ "${funcs}" -eq 0 ]; then
 		# shellcheck source=inc/funcs
@@ -61,7 +47,6 @@ if [ -n "${MySB_InstallDir:?}" ] && [ -f ${MySB_InstallDir:?}/inc/funcs ]; then
 	fi
 else
 	echo "Loading '${MySB_InstallDir:?}/inc/funcs' error !"
->>>>>>> de9cf1d41345d9d581474564386c83515efb4824
 	exit 1
 fi
 
@@ -79,11 +64,7 @@ if [ "$0" != "-bash" ]; then
 	gsDirName=$(dirname "$0")
 
 fi
-<<<<<<< HEAD
-gsInstallDirEscaped="$(echo "${MySB_InstallDir}" | sed s,/,\\\\\/,g)"
-=======
 gsInstallDirEscaped="$(echo "${MySB_InstallDir:?}" | sed s,/,\\\\\/,g)"
->>>>>>> de9cf1d41345d9d581474564386c83515efb4824
 gsFilesDirEscaped="$(echo $MySB_Files | sed s,/,\\\\\/,g)"
 gsProcessors="$(grep -c 'processor' /proc/cpuinfo)"
 gsMemory="$(free -m | grep 'Mem' | awk '{ print $2 }')"
@@ -104,13 +85,8 @@ binPhpEnmod="phpenmod"
 if [ -n "$gsScriptName" ]; then
 	case "$gsScriptName" in
 	MySB_UpgradeSystem)
-<<<<<<< HEAD
-		if [ "$gbIsInstalled_DNScrypt" == "YES" ] && [ -f "${MySB_InstallDir}"/templates/init/etc.init.d.dnscrypt-proxy.tmpl ]; then
-			install -o root -g root -m 0755 "${MySB_InstallDir}"/templates/init/etc.init.d.dnscrypt-proxy.tmpl /etc/init.d/dnscrypt-proxy
-=======
 		if [ "$gbIsInstalled_DNScrypt" == "YES" ] && [ -f "${MySB_InstallDir:?}"/templates/init/etc.init.d.dnscrypt-proxy.tmpl ]; then
 			install -o root -g root -m 0755 "${MySB_InstallDir:?}"/templates/init/etc.init.d.dnscrypt-proxy.tmpl /etc/init.d/dnscrypt-proxy
->>>>>>> de9cf1d41345d9d581474564386c83515efb4824
 			systemctl daemon-reload
 		fi
 		;;
@@ -120,15 +96,9 @@ if [ -n "$gsScriptName" ]; then
 fi
 
 #### 4 - Databases
-<<<<<<< HEAD
-gsWolf_DB="${MySB_InstallDir}/db/Wolf.sq3"
-gsSync_DB="${MySB_InstallDir}/db/Sync.sq3"
-gsIblocklists_DB="${MySB_InstallDir}/db/iBlocklists.sq3"
-=======
 gsWolf_DB="${MySB_InstallDir:?}/db/Wolf.sq3"
 gsSync_DB="${MySB_InstallDir:?}/db/Sync.sq3"
 gsIblocklists_DB="${MySB_InstallDir:?}/db/iBlocklists.sq3"
->>>>>>> de9cf1d41345d9d581474564386c83515efb4824
 gbIsReady_MySB_Db="NO"
 if gfnCheckCommand 0 mysql && gfnCheckCommand 0 sqlite3; then
 	if [ "$(find /var/lib/mysql/MySB_db/ -maxdepth 1 -type f 2>/dev/null | wc -l)" -gt 1 ]; then
@@ -142,15 +112,6 @@ if gfnCheckCommand 0 mysql && gfnCheckCommand 0 sqlite3; then
 fi
 
 #### 5 - All Variables
-<<<<<<< HEAD
-if [ -n "${MySB_InstallDir}" ] && [ "$gbIsReady_MySB_Db" == "YES" ]; then
-	########## USED FOR DATABASE UPGRADE - BoF ##########
-	case "$gsScriptName" in
-	From_*)
-		if [ "$(cat "${MySB_InstallDir}"/version)" == "v99.99" ] && [ -f "${MySB_InstallDir}"/upgrade/MySQL.bsh ] && [ ! -f /tmp/MySQL.bsh.log ]; then
-			# shellcheck source=upgrade/MySQL.bsh
-			source "${MySB_InstallDir}"/upgrade/MySQL.bsh >/tmp/MySQL.bsh.log 2>&1
-=======
 if [ -n "${MySB_InstallDir:?}" ] && [ "$gbIsReady_MySB_Db" == "YES" ]; then
 	########## USED FOR DATABASE UPGRADE - BoF ##########
 	case "$gsScriptName" in
@@ -158,7 +119,6 @@ if [ -n "${MySB_InstallDir:?}" ] && [ "$gbIsReady_MySB_Db" == "YES" ]; then
 		if [ "$(cat "${MySB_InstallDir:?}"/version)" == "v5.5" ] && [ -f "${MySB_InstallDir:?}"/upgrade/MySQL.bsh ] && [ ! -f /tmp/MySQL.bsh.log ]; then
 			# shellcheck source=upgrade/MySQL.bsh
 			source "${MySB_InstallDir:?}"/upgrade/MySQL.bsh >/tmp/MySQL.bsh.log 2>&1
->>>>>>> de9cf1d41345d9d581474564386c83515efb4824
 		fi
 		;;
 	esac
@@ -433,34 +393,20 @@ if [ -n "${MySB_InstallDir:?}" ] && [ "$gbIsReady_MySB_Db" == "YES" ]; then
 fi
 
 #### 6 - Version for upgrade
-<<<<<<< HEAD
-if [ -f "${MySB_InstallDir}"/version ]; then
-	gsCurrentVersion="$(cat "${MySB_InstallDir}"/version)"
-=======
 if [ -f "${MySB_InstallDir:?}"/version ]; then
 	gsCurrentVersion="$(cat "${MySB_InstallDir:?}"/version)"
->>>>>>> de9cf1d41345d9d581474564386c83515efb4824
 fi
 
 #### Language
 gfnLoadLanguage() {
 	local sScriptLang
 
-<<<<<<< HEAD
-	if [ -f "${MySB_InstallDir}/inc/lang/$EnvLang/Global.lng" ]; then
-		# shellcheck source=inc/lang/fr/Global.lng
-		source "${MySB_InstallDir}/inc/lang/$EnvLang/Global.lng"
-	else
-		# shellcheck source=inc/lang/fr/Global.lng
-		source "${MySB_InstallDir}/inc/lang/en/Global.lng"
-=======
 	if [ -f "${MySB_InstallDir:?}/inc/lang/$EnvLang/Global.lng" ]; then
 		# shellcheck source=inc/lang/fr/Global.lng
 		source "${MySB_InstallDir:?}/inc/lang/$EnvLang/Global.lng"
 	else
 		# shellcheck source=inc/lang/fr/Global.lng
 		source "${MySB_InstallDir:?}/inc/lang/en/Global.lng"
->>>>>>> de9cf1d41345d9d581474564386c83515efb4824
 	fi
 
 	if [ -z "$1" ]; then
@@ -468,15 +414,6 @@ gfnLoadLanguage() {
 	else
 		sScriptLang="$1"
 	fi
-<<<<<<< HEAD
-	if [ -f "${MySB_InstallDir}/inc/lang/$EnvLang/$sScriptLang.lng" ]; then
-		# shellcheck source=inc/lang/fr/Global.lng
-		source "${MySB_InstallDir}/inc/lang/$EnvLang/$sScriptLang.lng"
-	else
-		if [ -f "${MySB_InstallDir}/inc/lang/en/$sScriptLang.lng" ]; then
-			# shellcheck source=inc/lang/fr/Global.lng
-			source "${MySB_InstallDir}/inc/lang/en/$sScriptLang.lng"
-=======
 	if [ -f "${MySB_InstallDir:?}/inc/lang/$EnvLang/$sScriptLang.lng" ]; then
 		# shellcheck source=inc/lang/fr/Global.lng
 		source "${MySB_InstallDir:?}/inc/lang/$EnvLang/$sScriptLang.lng"
@@ -484,7 +421,6 @@ gfnLoadLanguage() {
 		if [ -f "${MySB_InstallDir:?}/inc/lang/en/$sScriptLang.lng" ]; then
 			# shellcheck source=inc/lang/fr/Global.lng
 			source "${MySB_InstallDir:?}/inc/lang/en/$sScriptLang.lng"
->>>>>>> de9cf1d41345d9d581474564386c83515efb4824
 		fi
 	fi
 
@@ -496,50 +432,6 @@ gfnLoadLanguage() {
 		else
 			sCountry="unknown"
 		fi
-<<<<<<< HEAD
-		if [ -f "${MySB_InstallDir}/inc/lang/$EnvLang/Questions.lng" ]; then
-			# shellcheck source=inc/lang/fr/Questions.lng
-			source "${MySB_InstallDir}/inc/lang/$EnvLang/Questions.lng"
-		else
-			# shellcheck source=inc/lang/fr/Questions.lng
-			source "${MySB_InstallDir}/inc/lang/en/Questions.lng"
-		fi
-		;;
-	BulkChanges.bsh | From_*) # Upgrade ?
-		if [ -f "${MySB_InstallDir}/inc/lang/$EnvLang/Upgrade.lng" ]; then
-			# shellcheck source=inc/lang/fr/Upgrade.lng
-			source "${MySB_InstallDir}/inc/lang/$EnvLang/Upgrade.lng"
-		else
-			# shellcheck source=inc/lang/fr/Upgrade.lng
-			source "${MySB_InstallDir}/inc/lang/en/Upgrade.lng"
-		fi
-		;;
-	funcs_MySB_CreateUser)
-		if [ -f "${MySB_InstallDir}/inc/lang/$EnvLang/MySB_CreateUser.lng" ]; then
-			# shellcheck source=inc/lang/fr/MySB_CreateUser.lng
-			source "${MySB_InstallDir}/inc/lang/$EnvLang/MySB_CreateUser.lng"
-		else
-			# shellcheck source=inc/lang/fr/MySB_CreateUser.lng
-			source "${MySB_InstallDir}/inc/lang/en/MySB_CreateUser.lng"
-		fi
-		;;
-	funcs_GetTrackersCert.bsh)
-		if [ -f "${MySB_InstallDir}/inc/lang/$EnvLang/GetTrackersCert.bsh.lng" ]; then
-			# shellcheck source=inc/lang/fr/GetTrackersCert.bsh.lng
-			source "${MySB_InstallDir}/inc/lang/$EnvLang/GetTrackersCert.bsh.lng"
-		else
-			# shellcheck source=inc/lang/fr/GetTrackersCert.bsh.lng
-			source "${MySB_InstallDir}/inc/lang/en/GetTrackersCert.bsh.lng"
-		fi
-		;;
-	PeerGuardian)
-		if [ -f "${MySB_InstallDir}/inc/lang/$EnvLang/MySB_SecurityRules.lng" ]; then
-			# shellcheck source=inc/lang/fr/MySB_SecurityRules.lng
-			source "${MySB_InstallDir}/inc/lang/$EnvLang/MySB_SecurityRules.lng"
-		else
-			# shellcheck source=inc/lang/fr/MySB_SecurityRules.lng
-			source "${MySB_InstallDir}/inc/lang/en/MySB_SecurityRules.lng"
-=======
 		if [ -f "${MySB_InstallDir:?}/inc/lang/$EnvLang/Questions.lng" ]; then
 			# shellcheck source=inc/lang/fr/Questions.lng
 			source "${MySB_InstallDir:?}/inc/lang/$EnvLang/Questions.lng"
@@ -582,7 +474,6 @@ gfnLoadLanguage() {
 		else
 			# shellcheck source=inc/lang/fr/MySB_SecurityRules.lng
 			source "${MySB_InstallDir:?}/inc/lang/en/MySB_SecurityRules.lng"
->>>>>>> de9cf1d41345d9d581474564386c83515efb4824
 		fi
 		;;
 	esac
@@ -590,28 +481,11 @@ gfnLoadLanguage() {
 gfnLoadLanguage
 
 # Dev mode, Save all variables
-<<<<<<< HEAD
-if [ -f ./dev ] || [ -f "${MySB_InstallDir}/dev" ]; then
-=======
 if [ -f ./dev ] || [ -f "${MySB_InstallDir:?}/dev" ]; then
->>>>>>> de9cf1d41345d9d581474564386c83515efb4824
 	gbDevMode=1
 else
 	gbDevMode=0
 fi
-<<<<<<< HEAD
-if [ -n "$gbDevMode" ] && [ $gbDevMode -eq 1 ] && [ -d "${MySB_InstallDir}/logs" ]; then
-	[ ! -d "${MySB_InstallDir}/logs/VARs" ] && mkdir "${MySB_InstallDir}/logs/VARs"
-	[ ! -d "${MySB_InstallDir}/logs/PGLCMD" ] && mkdir "${MySB_InstallDir}/logs/PGLCMD"
-	[ ! -d "${MySB_InstallDir}/logs/IPTABLES" ] && mkdir "${MySB_InstallDir}/logs/IPTABLES"
-	[ ! -d "${MySB_InstallDir}/logs/TODEL" ] && mkdir "${MySB_InstallDir}/logs/TODEL"
-	(
-		set -o posix
-		set
-	) | grep -e '^gs' -e '^gb' -e '^gn' >"${MySB_InstallDir}/logs/VARs/${gsScriptName}_VARs.log"
-fi
-
-=======
 if [ -n "$gbDevMode" ] && [ $gbDevMode -eq 1 ] && [ -d "${MySB_InstallDir:?}/logs" ]; then
 	[ ! -d "${MySB_InstallDir:?}/logs/VARs" ] && mkdir "${MySB_InstallDir:?}/logs/VARs"
 	[ ! -d "${MySB_InstallDir:?}/logs/PGLCMD" ] && mkdir "${MySB_InstallDir:?}/logs/PGLCMD"
@@ -624,7 +498,6 @@ if [ -n "$gbDevMode" ] && [ $gbDevMode -eq 1 ] && [ -d "${MySB_InstallDir:?}/log
 fi
 
 export vars
->>>>>>> de9cf1d41345d9d581474564386c83515efb4824
 export CEND CBLACK CRED CGREEN CYELLOW CBLUE
 export gsScriptName gsDirName
 export gsInstallDirEscaped gsFilesDirEscaped gsProcessors gsMemory gsDebianRelease gsUrlCheckList binCURL
