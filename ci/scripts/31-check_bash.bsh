@@ -105,7 +105,8 @@ done
 
 nReturn=$((nReturn + 1))
 
-echo "${nReturn}"
+echo "check_bash before ${nReturn}"
 export nReturn
+echo "check_bash after ${nReturn}"
 
 ##################### LAST LINE ######################################
