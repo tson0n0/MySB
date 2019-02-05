@@ -39,7 +39,7 @@ fi
 #### GeoIP update
 gfnGetRepoValues 'GeoIPupdate' && gfnRepoManageByType
 if [ $gnRepoUpgrade -eq 1 ] || [ "$gsSwitch" == "INSTALL" ]; then
-	cd $gsRepoDir/
+	cd ${gsRepoDir}/ || exit
 	make clean
 	autoreconf
 	./configure
@@ -55,15 +55,15 @@ gfnGetRepoValues 'Composer'
 gfnRepoManageByType
 if [ "$gsVersionInstalled" != "$gsVersionLatest" ]; then
 	gfnRepoManageByType
-	chmod -v +x $gsRepoDir
-	$gsRepoDir --version | grep 'Composer version'
+	chmod -v +x ${gsRepoDir}
+	${gsRepoDir} --version | grep 'Composer version'
 fi
 composer self-update
 
 #### NodeJS
 gfnGetRepoValues 'NodeJS' && gfnRepoManageByType
 if [ $gnRepoUpgrade -eq 1 ] || [ "$gsSwitch" == "INSTALL" ]; then
-	cd $gsRepoDir
+	cd ${gsRepoDir} || exit
 	if [ -d out/ ]; then
 		make clean
 	fi

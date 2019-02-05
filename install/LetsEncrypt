@@ -44,8 +44,10 @@ sCerbotParams="certonly --authenticator standalone --verbose --update-registrati
 #### INSTALL
 case "${gsSwitch}" in
 	'INSTALL'|'UPGRADE')
-		gfnPackagesManage install 'libaugeas0 augeas-lenses' 'backports'
-		gfnPackageBundleInstall 'python-virtualenv python-dev gcc dialog libssl-dev libffi-dev libltdl-dev psutils python-augeas'
+		sPackages=(libaugeas0 augeas-lenses)
+		gfnPackagesManage install "${sPackages[@]}" 'backports'
+		sPackages=(python-virtualenv python-dev gcc dialog libssl-dev libffi-dev libltdl-dev psutils python-augeas)
+		gfnPackageBundleInstall "${sPackages[@]}"
 	;;
 esac
 
@@ -189,7 +191,7 @@ if [[ ! -z ${sNewDomains} ]]; then
 	# Dev mode ?
 	[[ ${gbDevMode} -eq 1 ]] && sCerbotParams="${sCerbotParams} --test-cert"
 
-	cd ${MySB_Files}/
+	cd ${MySB_Files}/ || exit
 	chmod +x certbot-auto
 	./certbot-auto ${sCerbotParams} ${sNewDomains} --pre-hook "service nginx stop" --post-hook "service nginx start"
 
@@ -240,7 +242,7 @@ if [[ "renew" =~ ^($*)$ ]] || [[ "${gsSwitch}" == "UPGRADE" ]]; then
 			# Firewall
 			fnFirewalling 'before'
 
-			cd ${MySB_Files}/
+			cd ${MySB_Files}/ || exit
 			chmod +x certbot-auto
 			./certbot-auto renew --pre-hook "service nginx stop" --post-hook "service nginx start"
 			dNewEndDate=$(openssl x509 -in /etc/letsencrypt/live/${gsHostNameFqdn}/cert.pem -noout -dates | grep 'notAfter'  | cut -d "=" -f 2)

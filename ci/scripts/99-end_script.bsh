@@ -24,7 +24,7 @@
 
 echo
 echo
-exit "$nReturn"
+exit "${nReturn:-}"
 # case "${nReturn:?}" in
 # 	0)  return "$nReturn";;
 # 	*)  exit "$nReturn";;

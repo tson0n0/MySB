@@ -29,14 +29,14 @@ source $(dirname $0)/../inc/includes_before
 #### FUNCTIONs
 # Install Plex DEB package
 function fnInstallDebPackage() {
-	local  sServices
+	local sServices
 
 	# Loading repository informations
 	gfnGetRepoValues 'Plex Media Server'
 
 	# Change architecture if needed
 	case $(getconf LONG_BIT) in
-		32) gsRepoURL="$(echo ${gsRepoURL} | sed 's/x86_64/i686/g;')";;
+	32) gsRepoURL="$(echo ${gsRepoURL} | sed 's/x86_64/i686/g;')" ;;
 	esac
 
 	# Install Plex if needed
@@ -76,7 +76,7 @@ function fnInstallZipTautulli() {
 	[[ $? -ne 0 ]] && return 1
 
 	# VARs
-	sRepoDirEscaped="`echo $gsRepoDir | sed s,/,\\\\\\\\\\/,g`"
+	sRepoDirEscaped="$(echo $gsRepoDir | sed s,/,\\\\\/,g)"
 
 	# Need upgrade or install ?
 	if [ "$gbIsInstalled_Tautulli" == "NO" ] || [ "$gsVersionLatest" != "$gsVersionInstalled" ]; then
@@ -168,7 +168,7 @@ function fnInstallZipTautulli() {
 			perl -pi -e "s/<MainUser>/$gsMainUserName/g" /etc/nginx/locations/Tautulli.conf
 
 			# Update certificates for Python
-			update-ca-certificates --fresh &> /dev/null
+			update-ca-certificates --fresh &>/dev/null
 
 			# START services
 			gfnManageServices start "plexmediaserver nginx tautulli"
@@ -200,7 +200,8 @@ fi
 #### INSTALL
 if [ "$gbToInstall_PlexMedia" == "YES" ]; then
 	#### Install package
-	gfnPackageBundleInstall 'alsa-oss oss-compat libasound2-plugins'
+	sPackages=(alsa-oss oss-compat libasound2-plugins)
+	gfnPackageBundleInstall "${sPackages[@]}"
 
 	#### Install DEB package
 	fnInstallDebPackage

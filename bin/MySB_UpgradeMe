@@ -167,7 +167,7 @@ if [ $Continue -eq 0 ]; then
 	echo
 
 	# MySB
-	cd $MySB_InstallDir/
+	cd "${MySB_InstallDir}"/ || exit
 
 	git fetch --all
 	if [ $? -gt 0 ]; then
@@ -203,7 +203,7 @@ if [ $Continue -eq 0 ]; then
 	fi
 
 	# MySB_files
-	cd $MySB_Files/
+	cd "${MySB_Files}"/ || exit
 	git reset --hard
 	git clean -fd
 
@@ -243,7 +243,7 @@ fi
 
 #### Completing the upgrade
 MySB_NewVersion="`cat $MySB_InstallDir/version`"
-MySB_RepoVersion="`cd $MySB_InstallDir/ && git branch | grep '*' | awk '{ print $2 }'`"
+MySB_RepoVersion="`cd ${MySB_InstallDir}/ && git branch | grep '*' | awk '{ print $2 }'`"
 
 if [ $Continue -eq 0 ]; then
 	if [ "$MySB_NewVersion" == "$MySB_RepoVersion" ]; then

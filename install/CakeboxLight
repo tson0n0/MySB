@@ -43,7 +43,7 @@ if [ "$gbToInstall_Cakebox" == "YES" ]; then
 
 	case "$gsSwitch" in
 		'UPGRADE'|'REFRESH')
-			cd $gsRepoDir/ || exit 1
+			cd ${gsRepoDir}/ || exit 1
 			git fetch --tags
 			git checkout -b $(git describe --tags $(git rev-list --tags --max-count=1))
 			composer self-update
@@ -51,10 +51,10 @@ if [ "$gbToInstall_Cakebox" == "YES" ]; then
 			bower update --allow-root --config.interactive=false
 		;;
 		'INSTALL')
-			if [ ! -d $gsRepoDir ]; then
-				git clone $gsRepoURL $gsRepoDir
+			if [ ! -d ${gsRepoDir} ]; then
+				git clone $gsRepoURL ${gsRepoDir}
 			fi
-			cd $gsRepoDir/ || exit 1
+			cd ${gsRepoDir}/ || exit 1
 			git checkout -b $(git describe --tags $(git rev-list --tags --max-count=1))
 			composer install
 			bower update --allow-root --config.interactive=false
@@ -64,9 +64,9 @@ if [ "$gbToInstall_Cakebox" == "YES" ]; then
 	#### ruTorrent Plugin Link Cakebox
 	gfnGetRepoValues 'ruTorrent Plugin Link Cakebox'
 	gfnRepoManageByType
-	chown -vR www-data:www-data $gsRepoDir
-	sed -i "s/'http:\/\/'.\$host;/'https:\/\/$gsHostNameFqdn:$gsPort_MySB_HTTPS\/cb\/';/g;" $gsRepoDir/conf.php
-	sed -i "s/torrents/rtorrent/g;" $gsRepoDir/conf.php
+	chown -vR www-data:www-data ${gsRepoDir}
+	sed -i "s/'http:\/\/'.\$host;/'https:\/\/$gsHostNameFqdn:$gsPort_MySB_HTTPS\/cb\/';/g;" ${gsRepoDir}/conf.php
+	sed -i "s/torrents/rtorrent/g;" ${gsRepoDir}/conf.php
 
 	#### NginX (alias with proxy)
 	sCakeboxDirEscaped=`echo $gsCakeboxDir | sed s,/,\\\\\\\\\\/,g`

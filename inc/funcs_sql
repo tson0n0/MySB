@@ -23,7 +23,7 @@
 #
 ######################################################################
 { [ -z "${vars:-}" ] || [ "${vars}" -ne 1 ]; } && {
-	echo "Please load 'vars' file before..."
+	echo "Please load 'vars' file before..." >/tmp/funcs_sql.log
 	return
 }
 funcs_sql=1

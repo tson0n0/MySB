@@ -60,7 +60,7 @@ fi
 # 	echo -e "${CYELLOW}Check Syntax with shellcheck:${CEND} ${CGREEN}Passed${CEND}"
 # else
 # 	echo -e "${CYELLOW}Check Syntax with shellcheck:${CEND} ${CRED}Failed${CEND}"
-# 	nReturn=1
+# 	((nReturn+1))
 # fi
 
 echo && echo -e "${CBLUE}*** Check Syntax with Shellcheck (sh) ***${CEND}"
@@ -69,7 +69,7 @@ sFilesList="$(grep -IRl "\(#\!/opt/bin/\|#\!/bin/\|shell\=\)sh" --exclude-dir ".
 for sFile in ${sFilesList}; do
 	if ! shellcheck -s sh -x -f tty -S error "${sFile}"; then
 		echo -e "${CYELLOW}${sFile}:${CEND} ${CRED}Failed${CEND}"
-		nReturn=1
+		((nReturn+1))
 	else
 		echo -e "${CYELLOW}${sFile}:${CEND} ${CGREEN}Passed${CEND}"
 	fi
@@ -81,7 +81,7 @@ sFilesList="$(grep -IRl "\(#\!/opt/bin/\|#\!/bin/\|shell\=\)bash" --exclude-dir 
 for sFile in ${sFilesList}; do
 	if ! shellcheck -s bash -xa -f tty -S error "${sFile}"; then
 		echo -e "${CYELLOW}${sFile}:${CEND} ${CRED}Failed${CEND}"
-		nReturn=1
+		((nReturn+1))
 	else
 		echo -e "${CYELLOW}${sFile}:${CEND} ${CGREEN}Passed${CEND}"
 	fi
@@ -97,12 +97,10 @@ for file in ${sFilesList}; do
 	dos2unix "${file}" &>/dev/null
 	if (! bash "${file}"); then
 		echo -e "${CYELLOW}${file}:${CEND} ${CRED}Failed${CEND}"
-		nReturn=1
+		((nReturn+1))
 	else
 		echo -e "${CYELLOW}${file}:${CEND} ${CGREEN}Passed${CEND}"
 	fi
 done
-
-export nReturn
 
 ##################### LAST LINE ######################################

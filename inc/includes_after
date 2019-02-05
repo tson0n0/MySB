@@ -27,8 +27,21 @@
 if [ -f /etc/MySB/config ]; then
 	# shellcheck source=.etc/MySB/config
 	source /etc/MySB/config
-	funcs=0; funcs_sql=0; funcs_tools=0;
-	export funcs funcs_sql funcs_tools
+	funcs=0
+	funcs_sql=0
+	funcs_iptables=0
+	funcs_tools=0
+	funcs_BlocklistsRTorrent=0
+	funcs_Fail2Ban=0
+	funcs_GetTrackersCert=0
+	funcs_Install=0
+	funcs_MySB_CreateUser=0
+	funcs_MySB_SecurityRules=0
+	funcs_PeerGuardian=0
+	funcs_SourcesList=0
+	funcs_Upgrade=0
+	export funcs funcs_sql funcs_tools funcs_iptables funcs_BlocklistsRTorrent funcs_Fail2Ban funcs_PeerGuardian
+	export funcs_GetTrackersCert funcs_Install funcs_MySB_CreateUser funcs_MySB_SecurityRules funcs_SourcesList funcs_Upgrade
 	# shellcheck source=inc/vars
 	source $MySB_InstallDir/inc/vars
 else
@@ -60,17 +73,18 @@ if [ "${END:?}" == "ON" ]; then
 	log_daemon_msg "${IncAfter_CleaningCacheSystem:?}"
 	#### Free cache server
 	## To free pagecache, dentries and inodes
-	sync; echo 3 > /proc/sys/vm/drop_caches
+	sync
+	echo 3 >/proc/sys/vm/drop_caches
 	gfnStatusLSB
 fi
 
 #### 3 - Specify the log directory
 case "$gsDirName" in
-	"$MySB_InstallDir/bin")		DirLog="$MySB_InstallDir/web/logs/bin";;
-	"$MySB_InstallDir/install")	DirLog="$MySB_InstallDir/web/logs/install";;
-	"$MySB_InstallDir/scripts")	DirLog="$MySB_InstallDir/web/logs/scripts";;
-	"$MySB_InstallDir/upgrade")	DirLog="$MySB_InstallDir/web/logs/upgrade";;
-	*)							DirLog="$MySB_InstallDir/web/logs";;
+"$MySB_InstallDir/bin") DirLog="$MySB_InstallDir/web/logs/bin" ;;
+"$MySB_InstallDir/install") DirLog="$MySB_InstallDir/web/logs/install" ;;
+"$MySB_InstallDir/scripts") DirLog="$MySB_InstallDir/web/logs/scripts" ;;
+"$MySB_InstallDir/upgrade") DirLog="$MySB_InstallDir/web/logs/upgrade" ;;
+*) DirLog="$MySB_InstallDir/web/logs" ;;
 esac
 [ ! -d $DirLog ] && mkdir -p $DirLog
 
@@ -116,6 +130,35 @@ case "${gsScriptName:?}" in
 		# The server IP is only used to know the country of the SeedBox.
 		# The IP address is not keeped on destination.
 		gfnStatistics
+	fi
+	TIMESTAMP=ON
+	DirLog="$MySB_InstallDir/web/logs/install"
+	if [ -f /tmp/"${gsScriptName}".log ]; then
+		mv /tmp/"${gsScriptName}".log "$MySB_InstallDir/logs/${gsScriptName}.log"
+	fi
+	;;
+"MySB_CreateUser")
+	if (screen -ls | grep -q 'MySB'); then
+		# Create new MySB banner
+		[ "$BANNER" == "ON" ] && gfnBannerGenerator
+	fi
+	;;
+From_*) # Upgrade ?
+	#### Upgrade in progress page + Start Cron service
+	gfnUpgradeInProgress "off"
+
+	clear
+	[ -f $MySB_InstallDir/dev ] && rm -vf $MySB_InstallDir/dev
+	echo -e "${CGREEN}${IncAfter_UpgradeFinished}$CEND"
+	echo
+	#### Engage a reboot after an upgrade
+	REBOOT=YES
+
+	#### Statistics
+	# No credentials are retained !
+	# The server IP is only used to know the country of the SeedBox.
+	# The IP address is not keeped on destination.
+	gfnStatistics
 	;;
 esac
 
@@ -147,7 +190,7 @@ if [ "$REBOOT" == "YES" ]; then
 	#### Flush mail queue
 	if gfnCheckCommand 0 postfix && gfnGetPid postfix; then postfix flush; fi
 	#### Update CA certificates
-	update-ca-certificates --fresh &> /dev/null
+	update-ca-certificates --fresh &>/dev/null
 
 	echo
 	echo -e "${IncAfter_Message_Last:?}"

@@ -104,7 +104,6 @@ ${CRED}############################################################$CEND"
 	WhereToInstall="${CBLUE}Where do you want to install MySB ? (Hit enter for default choice) [$MySB_InstallDir]$CEND"
 	UpdatingSource="${CBLUE}Updating Debian source lists$CEND... "
 	SomethingWrong="${CRED}Looks like something was wrong during the update, aborting !$CEND"
-	UpgradingSystem="${CBLUE}Upgrading the system$CEND"
 	NeededPackage="${CBLUE}Installing some needed packages$CEND... "
 	DirNotEmpty="${CYELLOW}The selected folder [$MySB_InstallDir] is not empty, choose another one:$CEND"
 	DownloadingGithub="${CBLUE}Downloading files from GitHub into [$MySB_InstallDir]$CEND"
@@ -181,7 +180,6 @@ ${CRED}############################################################$CEND"
 	WhereToInstall="${CBLUE}Où voulez-vous installer MySB ? (Appuyez sur Entrée pour le choix par défaut) [$MySB_InstallDir]$CEND"
 	UpdatingSource="${CBLUE}Mise à jour des listes sources de Debian$CEND... "
 	SomethingWrong="${CRED}On dirait que quelque chose clochait au cours de la mise à jour, abandon!$CEND"
-	UpgradingSystem="${CBLUE}Mise à niveau du système$CEND"
 	NeededPackage="${CBLUE}Installation des paquets nécessaires$CEND... "
 	DirNotEmpty="${CYELLOW}Le dossier sélectionné [$MySB_InstallDir] n'est pas vide, choisissez en un autre:$CEND"
 	DownloadingGithub="${CBLUE}Téléchargement des fichiers provenant de GitHub dans [$MySB_InstallDir]$CEND"
@@ -197,7 +195,8 @@ ${CRED}############################################################$CEND"
 
 # To execute when this script will exited
 ExitOnError() {
-	[ -f $MySB_InstallDir/inc/includes_after ] && source $MySB_InstallDir/inc/includes_after
+	# shellcheck source=inc/includes_after
+	if [ -f $MySB_InstallDir/inc/includes_after ]; then source "$MySB_InstallDir"/inc/includes_after; fi
 	case "$1" in
 	0)
 		echo -e "$2"
@@ -286,7 +285,7 @@ SystemChecks() {
 	else
 		if [ -f /etc/lsb-release ]; then
 			sOS_Id="$(grep 'DISTRIB_ID' /etc/lsb-release | cut -d '=' -f 2)"
-			sOS_Ver="$(grep 'DISTRIB_RELEASE' /etc/lsb-release | cut -d '=' -f 2)"
+			sOS_Ver="$(grep 'DISTRIB_RELEASE' /etc/issue.net | cut -d '=' -f 2)"
 		elif [ -f /etc/issue.net ]; then
 			sOS_Id="$(awk '{ print $1 }' </etc/issue.net | sed -e 's/^$//g;')"
 			sOS_Ver="$(awk '{ print $3 }' </etc/issue.net | sed -e 's/^$//g;')"
@@ -333,7 +332,7 @@ SystemChecks() {
 	fi
 
 	#### Check internet access
-	if (! ping -c4 github.com >>"/tmp/$(basename "$0").log"); then
+	if (! ping -c4 github.com >>/tmp/"$(basename "$0")".log); then
 		nContinue=1
 		echo -e "${CYELLOW}Internet	: $CEND${CRED}$AnswerNO$CEND"
 	else
@@ -385,8 +384,8 @@ clear
 	echo "------------------------------------------------------------"
 	echo "START Err: $(/bin/date '+%Y-%m-%d - %H:%M:%S') - $(basename "$0")"
 	echo "------------------------------------------------------------"
-} >"/tmp/$(basename "$0").log"
-exec 2>>"/tmp/$(basename "$0").log"
+} >/tmp/"$(basename "$0")".log
+exec 2>>/tmp/"$(basename "$0")".log
 
 # Language select
 if [ -z "$EnvLang" ]; then
@@ -440,7 +439,7 @@ while [ -z "$Answer" ]; do
 		if [ -z "$MySB_InstallDir" ]; then
 			MySB_InstallDir="/opt/MySB"
 		fi
-		IfEmpty="$(ls -a $MySB_InstallDir 2>/dev/null | sed -e "/\.$/d" | wc -l)"
+		IfEmpty="$(find $MySB_InstallDir/ -maxdepth 1 | wc -l)"
 		while [ -z "$MySB_InstallDir" ] || [ -d $MySB_InstallDir ] || [ "$IfEmpty" -gt 0 ]; do
 			echo -e -n "$DirNotEmpty"
 			read -r MySB_InstallDir
@@ -449,7 +448,7 @@ while [ -z "$Answer" ]; do
 			fi
 
 			if [ -d $MySB_InstallDir ]; then
-				IfEmpty="$(ls -a $MySB_InstallDir 2>/dev/null | sed -e "/\.$/d" | wc -l)"
+				IfEmpty="$(find $MySB_InstallDir/ -maxdepth 1 | wc -l)"
 			else
 				IfEmpty=0
 			fi
@@ -463,7 +462,7 @@ while [ -z "$Answer" ]; do
 done
 
 # First we disable IPv6
-sysctl -w net.ipv6.conf.all.disable_ipv6=1 >>"/tmp/$(basename "$0").log"
+sysctl -w net.ipv6.conf.all.disable_ipv6=1 >>/tmp/"$(basename "$0")".log
 
 # We do an update
 BannerInstall
@@ -473,34 +472,24 @@ if (! apt-get -y --assume-yes -o 'Acquire::Check-Valid-Until=false' update); the
 	ExitOnError 1 "apt-get -y --assume-yes -o 'Acquire::Check-Valid-Until=false' update"
 fi
 
-# Next we do an upgrade
-# BannerInstall
-# echo -e -n "$UpgradingSystem"
-# fnCountDown 3
-# apt-get -y --assume-yes -V -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confnew" upgrade
-# [ $? -gt 0 ] && ExitOnError 1 "apt-get -y --assume-yes -V -o Dpkg::Options::=\"--force-confnew\" upgrade"
-
 # Now we can install required packages
 BannerInstall
 echo -e -n "$NeededPackage"
 fnCountDown 3
-TOOLS="git-core dos2unix lsb-release screen ccze gnupg figlet mlocate dnsutils curl man-db geoip-bin" # DO NO RENAME 'TOOLS' VARIABLES !
-apt-get -y --assume-yes install $TOOLS
-[ $? -gt 0 ] && ExitOnError 1 "apt-get -y --assume-yes install $TOOLS"
+TOOLS=(git-core dos2unix lsb-release screen ccze gnupg figlet mlocate dnsutils curl man-db geoip-bin) # DO NO RENAME 'TOOLS' VARIABLES !
+if (! apt-get -y --assume-yes install "${TOOLS[@]}"); then
+	ExitOnError 1 "apt-get -y --assume-yes install ${TOOLS[*]}"
+fi
 
 #### download files from Git
 BannerInstall
 echo -e -n "$DownloadingGithub"
-screen -dmS MySB_GitClone git clone --progress -b $gsCurrentVersion https://github.com/toulousain79/MySB.git $MySB_InstallDir >>"/tmp/$(basename "$0").log"
+screen -dmS MySB_GitClone git clone --progress -b $gsCurrentVersion https://github.com/toulousain79/MySB.git $MySB_InstallDir >>/tmp/"$(basename "$0")".log
 while (screen -ls | grep -q 'MySB_GitClone'); do
 	echo -n "."
 	sleep 1
 done
-if [ $? -eq 0 ]; then
-	echo -e "$Done"
-else
-	ExitOnError 1 "git clone --progress -b $gsCurrentVersion https://github.com/toulousain79/MySB.git $MySB_InstallDir"
-fi
+echo -e "$Done"
 
 # /etc/MySB/config
 if [ ! -d /etc/MySB/ ]; then mkdir /etc/MySB/; fi
@@ -511,7 +500,7 @@ chmod 0640 /etc/MySB/config
 
 # load variables
 # shellcheck source=inc/vars
-source $MySB_InstallDir/inc/vars
+source "$MySB_InstallDir"/inc/vars
 
 # Create directories
 echo -e -n "$CreatingDir"
@@ -524,23 +513,24 @@ gfnScriptInvoke 'ScreenWAIT' "$MySB_InstallDir/install/MySQL" 'INSTALL'
 gfnStatusSTD
 
 # Update DB with usable values
-cmdMySQL 'MySB_db' "UPDATE system SET mysb_version='$gsCurrentVersion' WHERE id_system='1';" -v >>"/tmp/$(basename "$0").log"
-[ $? -gt 0 ] && ExitOnError 1 "UPDATE system SET mysb_version='$gsCurrentVersion' WHERE id_system='1';"
-cmdMySQL 'MySB_db' "INSERT INTO users (users_ident,users_email,language,admin) VALUES ('MySB','MySB','$EnvLang','1');" -v >>"/tmp/$(basename "$0").log"
-[ $? -gt 0 ] && ExitOnError 1 "INSERT INTO users (users_ident,users_email,language,admin) VALUES ('MySB','MySB','$EnvLang','1');"
+if (! cmdMySQL 'MySB_db' "UPDATE system SET mysb_version='$gsCurrentVersion' WHERE id_system='1';" -v >>/tmp/"$(basename "$0")".log); then
+	ExitOnError 1 "UPDATE system SET mysb_version='$gsCurrentVersion' WHERE id_system='1';"
+fi
+if (! cmdMySQL 'MySB_db' "INSERT INTO users (users_ident,users_email,language,admin) VALUES ('MySB','MySB','$EnvLang','1');" -v >>/tmp/"$(basename "$0")".log); then
+	ExitOnError 1 "INSERT INTO users (users_ident,users_email,language,admin) VALUES ('MySB','MySB','$EnvLang','1');"
+fi
 # shellcheck source=inc/vars
-source $MySB_InstallDir/inc/vars
-[ $? -gt 0 ] && ExitOnError 1 "source $MySB_InstallDir/inc/vars"
+source "$MySB_InstallDir"/inc/vars
 
 # Some questions
-/bin/bash $MySB_InstallDir/install/Questions $$ 'INSTALL'
+/bin/bash "$MySB_InstallDir"/install/Questions $$ 'INSTALL'
 echo
 echo
 
 # Start install script
 echo -e "$StartingScreen"
-screen -wipe >>"/tmp/$(basename "$0").log"
-screen -dmS MySB_bsh /bin/bash $MySB_InstallDir/install/MySB.bsh
+screen -wipe >>/tmp/"$(basename "$0")".log
+screen -dmS MySB_bsh /bin/bash "$MySB_InstallDir"/install/MySB.bsh
 echo -e -n "$PleaseWait"
 fnCountDown 5
 screen -r MySB_bsh
@@ -551,6 +541,6 @@ export REBOOT
 
 # -----------------------------------------
 # shellcheck source=inc/includes_after
-if [ -f $MySB_InstallDir/inc/includes_after ]; then source $MySB_InstallDir/inc/includes_after; fi
+if [ -f "$MySB_InstallDir"/inc/includes_after ]; then source "$MySB_InstallDir"/inc/includes_after; fi
 # -----------------------------------------
 ##################### LAST LINE ######################################
