@@ -51,4 +51,5 @@ else
 fi
 echo -e "${CYELLOW}Secret Variable \$HUB_PASSWORD:${CEND} ${sValue}"
 
+export nReturn
 ##################### LAST LINE ######################################

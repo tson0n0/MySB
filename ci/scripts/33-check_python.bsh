@@ -33,4 +33,6 @@ for file in $(find /builds/"${CI_PROJECT_PATH}"/ -type f -name '*.py' -print0 | 
 	fi
 done
 
+export nReturn
+
 ##################### LAST LINE ######################################

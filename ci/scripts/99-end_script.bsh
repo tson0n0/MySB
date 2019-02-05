@@ -23,7 +23,7 @@
 ##################### FIRST LINE #####################################
 
 echo
-echo
+echo "${nReturn:-}"
 exit "${nReturn:-}"
 # case "${nReturn:?}" in
 # 	0)  return "$nReturn";;

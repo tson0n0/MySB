@@ -65,11 +65,11 @@ fi
 
 echo && echo -e "${CBLUE}*** Check Syntax with Shellcheck (sh) ***${CEND}"
 
-sFilesList="$(grep -IRl "\(#\!/opt/bin/\|#\!/bin/\|shell\=\)sh" --exclude-dir ".git" --exclude-dir ".vscode" "${sDirToScan}/")"
+sFilesList="$(grep -IRl "\(#\!/bin/\|shell\=\)sh" --exclude-dir ".git" --exclude-dir ".vscode" "${sDirToScan}/")"
 for sFile in ${sFilesList}; do
 	if ! shellcheck -s sh -x -f tty -S error "${sFile}"; then
 		echo -e "${CYELLOW}${sFile}:${CEND} ${CRED}Failed${CEND}"
-		((nReturn+1))
+		((nReturn + 1))
 	else
 		echo -e "${CYELLOW}${sFile}:${CEND} ${CGREEN}Passed${CEND}"
 	fi
@@ -77,11 +77,11 @@ done
 
 echo && echo -e "${CBLUE}*** Check Syntax with Shellcheck (bash) ***${CEND}"
 
-sFilesList="$(grep -IRl "\(#\!/opt/bin/\|#\!/bin/\|shell\=\)bash" --exclude-dir ".git" --exclude-dir ".vscode" --exclude-dir ".vscode" "${sDirToScan}/")"
+sFilesList="$(grep -IRl "\(#\!/bin/\|shell\=\)bash" --exclude-dir ".git" --exclude-dir ".vscode" --exclude-dir ".vscode" "${sDirToScan}/")"
 for sFile in ${sFilesList}; do
 	if ! shellcheck -s bash -xa -f tty -S error "${sFile}"; then
 		echo -e "${CYELLOW}${sFile}:${CEND} ${CRED}Failed${CEND}"
-		((nReturn+1))
+		((nReturn + 1))
 	else
 		echo -e "${CYELLOW}${sFile}:${CEND} ${CGREEN}Passed${CEND}"
 	fi
@@ -97,10 +97,15 @@ for file in ${sFilesList}; do
 	dos2unix "${file}" &>/dev/null
 	if (! bash "${file}"); then
 		echo -e "${CYELLOW}${file}:${CEND} ${CRED}Failed${CEND}"
-		((nReturn+1))
+		((nReturn + 1))
 	else
 		echo -e "${CYELLOW}${file}:${CEND} ${CGREEN}Passed${CEND}"
 	fi
 done
+
+((nReturn + 1))
+
+echo "${nReturn}"
+export nReturn
 
 ##################### LAST LINE ######################################
