@@ -497,7 +497,6 @@ if [ -n "$gbDevMode" ] && [ $gbDevMode -eq 1 ] && [ -d "${MySB_InstallDir:?}/log
 	) | grep -e '^gs' -e '^gb' -e '^gn' >"${MySB_InstallDir:?}/logs/VARs/${gsScriptName:?}_VARs.log"
 fi
 
-export vars
 export CEND CBLACK CRED CGREEN CYELLOW CBLUE
 export gsScriptName gsDirName
 export gsInstallDirEscaped gsFilesDirEscaped gsProcessors gsMemory gsDebianRelease gsUrlCheckList binCURL
