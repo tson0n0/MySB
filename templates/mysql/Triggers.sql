@@ -1,6 +1,10 @@
 -- MySQL dump 10.16  Distrib 10.1.37-MariaDB, for debian-linux-gnu (x86_64)
 --
+<<<<<<< HEAD
 -- Host: localhost	Database: MySB_db
+=======
+-- Host: localhost	Database: MySB_db
+>>>>>>> de9cf1d41345d9d581474564386c83515efb4824
 -- ------------------------------------------------------
 -- Server version	10.1.37-MariaDB-0+deb9u1
 
@@ -19,14 +23,24 @@
 -- Déclencheurs `system`
 --
 
+<<<<<<< HEAD
 /*!50003 SET @saved_cs_client	  = @@character_set_client */ ;
 /*!50003 SET @saved_cs_results	 = @@character_set_results */ ;
+=======
+/*!50003 SET @saved_cs_client	  = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results	 = @@character_set_results */ ;
+>>>>>>> de9cf1d41345d9d581474564386c83515efb4824
 /*!50003 SET @saved_col_connection = @@collation_connection */ ;
 /*!50003 SET character_set_client  = utf8 */ ;
 /*!50003 SET character_set_results = utf8 */ ;
 /*!50003 SET collation_connection  = utf8_general_ci */ ;
+<<<<<<< HEAD
 /*!50003 SET @saved_sql_mode	   = @@sql_mode */ ;
 /*!50003 SET sql_mode			  = 'NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
+=======
+/*!50003 SET @saved_sql_mode	   = @@sql_mode */ ;
+/*!50003 SET sql_mode			  = 'NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
+>>>>>>> de9cf1d41345d9d581474564386c83515efb4824
 DELIMITER ;;
 /*!50003 CREATE*/ /*!50017 DEFINER=`MySB_user`@`localhost`*/ /*!50003 TRIGGER `PricePerUser` BEFORE UPDATE ON `system`
  FOR EACH ROW BEGIN
@@ -53,7 +67,11 @@ DELIMITER ;;
 	END IF;
 END */;;
 DELIMITER ;
+<<<<<<< HEAD
 /*!50003 SET sql_mode			  = @saved_sql_mode */ ;
+=======
+/*!50003 SET sql_mode			  = @saved_sql_mode */ ;
+>>>>>>> de9cf1d41345d9d581474564386c83515efb4824
 /*!50003 SET character_set_client  = @saved_cs_client */ ;
 /*!50003 SET character_set_results = @saved_cs_results */ ;
 /*!50003 SET collation_connection  = @saved_col_connection */ ;
@@ -62,14 +80,24 @@ DELIMITER ;
 -- Déclencheurs `tracking_rent_history`
 --
 
+<<<<<<< HEAD
 /*!50003 SET @saved_cs_client	  = @@character_set_client */ ;
 /*!50003 SET @saved_cs_results	 = @@character_set_results */ ;
+=======
+/*!50003 SET @saved_cs_client	  = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results	 = @@character_set_results */ ;
+>>>>>>> de9cf1d41345d9d581474564386c83515efb4824
 /*!50003 SET @saved_col_connection = @@collation_connection */ ;
 /*!50003 SET character_set_client  = utf8 */ ;
 /*!50003 SET character_set_results = utf8 */ ;
 /*!50003 SET collation_connection  = utf8_general_ci */ ;
+<<<<<<< HEAD
 /*!50003 SET @saved_sql_mode	   = @@sql_mode */ ;
 /*!50003 SET sql_mode			  = 'NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
+=======
+/*!50003 SET @saved_sql_mode	   = @@sql_mode */ ;
+/*!50003 SET sql_mode			  = 'NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
+>>>>>>> de9cf1d41345d9d581474564386c83515efb4824
 DELIMITER ;;
 /*!50003 CREATE*/ /*!50017 DEFINER=`MySB_user`@`localhost`*/ /*!50003 TRIGGER `PeriodPrice_OnInsert` BEFORE INSERT ON `tracking_rent_history`
  FOR EACH ROW BEGIN
@@ -117,18 +145,32 @@ DELIMITER ;;
 	UPDATE tracking_rent_status SET nb_days_used=(NbDaysUsed+NEW.remain_days), period_cost=PeriodCost WHERE id_users=NEW.id_users AND year=NEW.year AND month=NEW.month;
 END */;;
 DELIMITER ;
+<<<<<<< HEAD
 /*!50003 SET sql_mode			  = @saved_sql_mode */ ;
 /*!50003 SET character_set_client  = @saved_cs_client */ ;
 /*!50003 SET character_set_results = @saved_cs_results */ ;
 /*!50003 SET collation_connection  = @saved_col_connection */ ;
 /*!50003 SET @saved_cs_client	  = @@character_set_client */ ;
 /*!50003 SET @saved_cs_results	 = @@character_set_results */ ;
+=======
+/*!50003 SET sql_mode			  = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 SET @saved_cs_client	  = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results	 = @@character_set_results */ ;
+>>>>>>> de9cf1d41345d9d581474564386c83515efb4824
 /*!50003 SET @saved_col_connection = @@collation_connection */ ;
 /*!50003 SET character_set_client  = utf8 */ ;
 /*!50003 SET character_set_results = utf8 */ ;
 /*!50003 SET collation_connection  = utf8_general_ci */ ;
+<<<<<<< HEAD
 /*!50003 SET @saved_sql_mode	   = @@sql_mode */ ;
 /*!50003 SET sql_mode			  = 'NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
+=======
+/*!50003 SET @saved_sql_mode	   = @@sql_mode */ ;
+/*!50003 SET sql_mode			  = 'NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
+>>>>>>> de9cf1d41345d9d581474564386c83515efb4824
 DELIMITER ;;
 /*!50003 CREATE*/ /*!50017 DEFINER=`MySB_user`@`localhost`*/ /*!50003 TRIGGER `PeriodPrice_OnUpdate` BEFORE UPDATE ON `tracking_rent_history`
  FOR EACH ROW BEGIN
@@ -170,7 +212,11 @@ DELIMITER ;;
 	UPDATE tracking_rent_status SET nb_days_used=(nb_days_used+(NEW.remain_days-OLD.remain_days)), period_cost=PeriodCost, already_payed=AlreadyPayed WHERE id_users=NEW.id_users AND year=NEW.year AND month=NEW.month;
 END */;;
 DELIMITER ;
+<<<<<<< HEAD
 /*!50003 SET sql_mode			  = @saved_sql_mode */ ;
+=======
+/*!50003 SET sql_mode			  = @saved_sql_mode */ ;
+>>>>>>> de9cf1d41345d9d581474564386c83515efb4824
 /*!50003 SET character_set_client  = @saved_cs_client */ ;
 /*!50003 SET character_set_results = @saved_cs_results */ ;
 /*!50003 SET collation_connection  = @saved_col_connection */ ;
@@ -179,14 +225,24 @@ DELIMITER ;
 -- Déclencheurs `tracking_rent_payments`
 --
 
+<<<<<<< HEAD
 /*!50003 SET @saved_cs_client	  = @@character_set_client */ ;
 /*!50003 SET @saved_cs_results	 = @@character_set_results */ ;
+=======
+/*!50003 SET @saved_cs_client	  = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results	 = @@character_set_results */ ;
+>>>>>>> de9cf1d41345d9d581474564386c83515efb4824
 /*!50003 SET @saved_col_connection = @@collation_connection */ ;
 /*!50003 SET character_set_client  = utf8 */ ;
 /*!50003 SET character_set_results = utf8 */ ;
 /*!50003 SET collation_connection  = utf8_general_ci */ ;
+<<<<<<< HEAD
 /*!50003 SET @saved_sql_mode	   = @@sql_mode */ ;
 /*!50003 SET sql_mode			  = 'NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
+=======
+/*!50003 SET @saved_sql_mode	   = @@sql_mode */ ;
+/*!50003 SET sql_mode			  = 'NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
+>>>>>>> de9cf1d41345d9d581474564386c83515efb4824
 DELIMITER ;;
 /*!50003 CREATE*/ /*!50017 DEFINER=`MySB_user`@`localhost`*/ /*!50003 TRIGGER `TreasuryUpdate_OnInsert` BEFORE INSERT ON `tracking_rent_payments`
  FOR EACH ROW BEGIN
@@ -229,18 +285,32 @@ DELIMITER ;;
 	UPDATE users SET treasury=@Treasury WHERE id_users=@MainUserId;
  END */;;
 DELIMITER ;
+<<<<<<< HEAD
 /*!50003 SET sql_mode			  = @saved_sql_mode */ ;
 /*!50003 SET character_set_client  = @saved_cs_client */ ;
 /*!50003 SET character_set_results = @saved_cs_results */ ;
 /*!50003 SET collation_connection  = @saved_col_connection */ ;
 /*!50003 SET @saved_cs_client	  = @@character_set_client */ ;
 /*!50003 SET @saved_cs_results	 = @@character_set_results */ ;
+=======
+/*!50003 SET sql_mode			  = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 SET @saved_cs_client	  = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results	 = @@character_set_results */ ;
+>>>>>>> de9cf1d41345d9d581474564386c83515efb4824
 /*!50003 SET @saved_col_connection = @@collation_connection */ ;
 /*!50003 SET character_set_client  = utf8 */ ;
 /*!50003 SET character_set_results = utf8 */ ;
 /*!50003 SET collation_connection  = utf8_general_ci */ ;
+<<<<<<< HEAD
 /*!50003 SET @saved_sql_mode	   = @@sql_mode */ ;
 /*!50003 SET sql_mode			  = 'NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
+=======
+/*!50003 SET @saved_sql_mode	   = @@sql_mode */ ;
+/*!50003 SET sql_mode			  = 'NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
+>>>>>>> de9cf1d41345d9d581474564386c83515efb4824
 DELIMITER ;;
 /*!50003 CREATE*/ /*!50017 DEFINER=`MySB_user`@`localhost`*/ /*!50003 TRIGGER `TreasuryUpdate_OnDelete` BEFORE DELETE ON `tracking_rent_payments`
  FOR EACH ROW BEGIN
@@ -281,7 +351,11 @@ DELIMITER ;;
 	UPDATE users SET treasury=@Treasury WHERE id_users=@MainUserId;
  END */;;
 DELIMITER ;
+<<<<<<< HEAD
 /*!50003 SET sql_mode			  = @saved_sql_mode */ ;
+=======
+/*!50003 SET sql_mode			  = @saved_sql_mode */ ;
+>>>>>>> de9cf1d41345d9d581474564386c83515efb4824
 /*!50003 SET character_set_client  = @saved_cs_client */ ;
 /*!50003 SET character_set_results = @saved_cs_results */ ;
 /*!50003 SET collation_connection  = @saved_col_connection */ ;
@@ -290,14 +364,24 @@ DELIMITER ;
 -- Déclencheurs `tracking_rent_status`
 --
 
+<<<<<<< HEAD
 /*!50003 SET @saved_cs_client	  = @@character_set_client */ ;
 /*!50003 SET @saved_cs_results	 = @@character_set_results */ ;
+=======
+/*!50003 SET @saved_cs_client	  = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results	 = @@character_set_results */ ;
+>>>>>>> de9cf1d41345d9d581474564386c83515efb4824
 /*!50003 SET @saved_col_connection = @@collation_connection */ ;
 /*!50003 SET character_set_client  = utf8 */ ;
 /*!50003 SET character_set_results = utf8 */ ;
 /*!50003 SET collation_connection  = utf8_general_ci */ ;
+<<<<<<< HEAD
 /*!50003 SET @saved_sql_mode	   = @@sql_mode */ ;
 /*!50003 SET sql_mode			  = 'NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
+=======
+/*!50003 SET @saved_sql_mode	   = @@sql_mode */ ;
+/*!50003 SET sql_mode			  = 'NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
+>>>>>>> de9cf1d41345d9d581474564386c83515efb4824
 DELIMITER ;;
 /*!50003 CREATE*/ /*!50017 DEFINER=`MySB_user`@`localhost`*/ /*!50003 TRIGGER `NewStatus_OnInsert` BEFORE INSERT ON `tracking_rent_status`
  FOR EACH ROW BEGIN
@@ -310,18 +394,32 @@ DELIMITER ;;
 	SET NEW.date = CONCAT(NEW.year, NEW.month);
  END */;;
 DELIMITER ;
+<<<<<<< HEAD
 /*!50003 SET sql_mode			  = @saved_sql_mode */ ;
 /*!50003 SET character_set_client  = @saved_cs_client */ ;
 /*!50003 SET character_set_results = @saved_cs_results */ ;
 /*!50003 SET collation_connection  = @saved_col_connection */ ;
 /*!50003 SET @saved_cs_client	  = @@character_set_client */ ;
 /*!50003 SET @saved_cs_results	 = @@character_set_results */ ;
+=======
+/*!50003 SET sql_mode			  = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 SET @saved_cs_client	  = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results	 = @@character_set_results */ ;
+>>>>>>> de9cf1d41345d9d581474564386c83515efb4824
 /*!50003 SET @saved_col_connection = @@collation_connection */ ;
 /*!50003 SET character_set_client  = utf8 */ ;
 /*!50003 SET character_set_results = utf8 */ ;
 /*!50003 SET collation_connection  = utf8_general_ci */ ;
+<<<<<<< HEAD
 /*!50003 SET @saved_sql_mode	   = @@sql_mode */ ;
 /*!50003 SET sql_mode			  = 'NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
+=======
+/*!50003 SET @saved_sql_mode	   = @@sql_mode */ ;
+/*!50003 SET sql_mode			  = 'NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
+>>>>>>> de9cf1d41345d9d581474564386c83515efb4824
 DELIMITER ;;
 /*!50003 CREATE*/ /*!50017 DEFINER=`MySB_user`@`localhost`*/ /*!50003 TRIGGER `NewStatus_OnUpdate` BEFORE UPDATE ON `tracking_rent_status`
  FOR EACH ROW BEGIN
@@ -331,7 +429,11 @@ DELIMITER ;;
 	END IF;
 END */;;
 DELIMITER ;
+<<<<<<< HEAD
 /*!50003 SET sql_mode			  = @saved_sql_mode */ ;
+=======
+/*!50003 SET sql_mode			  = @saved_sql_mode */ ;
+>>>>>>> de9cf1d41345d9d581474564386c83515efb4824
 /*!50003 SET character_set_client  = @saved_cs_client */ ;
 /*!50003 SET character_set_results = @saved_cs_results */ ;
 /*!50003 SET collation_connection  = @saved_col_connection */ ;
@@ -340,14 +442,24 @@ DELIMITER ;
 -- Déclencheurs `users`
 --
 
+<<<<<<< HEAD
 /*!50003 SET @saved_cs_client	  = @@character_set_client */ ;
 /*!50003 SET @saved_cs_results	 = @@character_set_results */ ;
+=======
+/*!50003 SET @saved_cs_client	  = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results	 = @@character_set_results */ ;
+>>>>>>> de9cf1d41345d9d581474564386c83515efb4824
 /*!50003 SET @saved_col_connection = @@collation_connection */ ;
 /*!50003 SET character_set_client  = utf8 */ ;
 /*!50003 SET character_set_results = utf8 */ ;
 /*!50003 SET collation_connection  = utf8_general_ci */ ;
+<<<<<<< HEAD
 /*!50003 SET @saved_sql_mode	   = @@sql_mode */ ;
 /*!50003 SET sql_mode			  = 'NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
+=======
+/*!50003 SET @saved_sql_mode	   = @@sql_mode */ ;
+/*!50003 SET sql_mode			  = 'NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
+>>>>>>> de9cf1d41345d9d581474564386c83515efb4824
 DELIMITER ;;
 /*!50003 CREATE*/ /*!50017 DEFINER=`MySB_user`@`localhost`*/ /*!50003 TRIGGER `AddUsersHistory_BeforeInsert` BEFORE INSERT ON `users`
  FOR EACH ROW BEGIN
@@ -355,18 +467,32 @@ DELIMITER ;;
 	UPDATE system SET rt_nb_users=rt_nb_users+1 WHERE id_system=1;
 END */;;
 DELIMITER ;
+<<<<<<< HEAD
 /*!50003 SET sql_mode			  = @saved_sql_mode */ ;
 /*!50003 SET character_set_client  = @saved_cs_client */ ;
 /*!50003 SET character_set_results = @saved_cs_results */ ;
 /*!50003 SET collation_connection  = @saved_col_connection */ ;
 /*!50003 SET @saved_cs_client	  = @@character_set_client */ ;
 /*!50003 SET @saved_cs_results	 = @@character_set_results */ ;
+=======
+/*!50003 SET sql_mode			  = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 SET @saved_cs_client	  = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results	 = @@character_set_results */ ;
+>>>>>>> de9cf1d41345d9d581474564386c83515efb4824
 /*!50003 SET @saved_col_connection = @@collation_connection */ ;
 /*!50003 SET character_set_client  = utf8 */ ;
 /*!50003 SET character_set_results = utf8 */ ;
 /*!50003 SET collation_connection  = utf8_general_ci */ ;
+<<<<<<< HEAD
 /*!50003 SET @saved_sql_mode	   = @@sql_mode */ ;
 /*!50003 SET sql_mode			  = 'NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
+=======
+/*!50003 SET @saved_sql_mode	   = @@sql_mode */ ;
+/*!50003 SET sql_mode			  = 'NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
+>>>>>>> de9cf1d41345d9d581474564386c83515efb4824
 DELIMITER ;;
 /*!50003 CREATE*/ /*!50017 DEFINER=`MySB_user`@`localhost`*/ /*!50003 TRIGGER `AddUsersHistory_AfterInsert` AFTER INSERT ON `users`
  FOR EACH ROW BEGIN
@@ -382,18 +508,32 @@ DELIMITER ;;
 	END IF;
 END */;;
 DELIMITER ;
+<<<<<<< HEAD
 /*!50003 SET sql_mode			  = @saved_sql_mode */ ;
 /*!50003 SET character_set_client  = @saved_cs_client */ ;
 /*!50003 SET character_set_results = @saved_cs_results */ ;
 /*!50003 SET collation_connection  = @saved_col_connection */ ;
 /*!50003 SET @saved_cs_client	  = @@character_set_client */ ;
 /*!50003 SET @saved_cs_results	 = @@character_set_results */ ;
+=======
+/*!50003 SET sql_mode			  = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 SET @saved_cs_client	  = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results	 = @@character_set_results */ ;
+>>>>>>> de9cf1d41345d9d581474564386c83515efb4824
 /*!50003 SET @saved_col_connection = @@collation_connection */ ;
 /*!50003 SET character_set_client  = utf8 */ ;
 /*!50003 SET character_set_results = utf8 */ ;
 /*!50003 SET collation_connection  = utf8_general_ci */ ;
+<<<<<<< HEAD
 /*!50003 SET @saved_sql_mode	   = @@sql_mode */ ;
 /*!50003 SET sql_mode			  = 'NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
+=======
+/*!50003 SET @saved_sql_mode	   = @@sql_mode */ ;
+/*!50003 SET sql_mode			  = 'NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
+>>>>>>> de9cf1d41345d9d581474564386c83515efb4824
 DELIMITER ;;
 /*!50003 CREATE*/ /*!50017 DEFINER=`MySB_user`@`localhost`*/ /*!50003 TRIGGER `UpdateUsersHistory_BeforeUpdate` BEFORE UPDATE ON `users`
  FOR EACH ROW BEGIN
@@ -407,7 +547,11 @@ DELIMITER ;;
 	END IF;
 END */;;
 DELIMITER ;
+<<<<<<< HEAD
 /*!50003 SET sql_mode			  = @saved_sql_mode */ ;
+=======
+/*!50003 SET sql_mode			  = @saved_sql_mode */ ;
+>>>>>>> de9cf1d41345d9d581474564386c83515efb4824
 /*!50003 SET character_set_client  = @saved_cs_client */ ;
 /*!50003 SET character_set_results = @saved_cs_results */ ;
 /*!50003 SET collation_connection  = @saved_col_connection */ ;

@@ -32,15 +32,12 @@ export funcs_MySB_CreateUser
 
 #### NextCloud account manage
 gfnNextCloudAccountManage() {
-	local sSwitch sUserAccount sPassword tTimeStamp sUserMail
+	local sSwitch sUserAccount sPassword sUserMail
 
 	sSwitch="$1"
 	sUserAccount="$2"
 	sPassword="$3"
-	tTimeStamp=$(date +%s)
-	sUserMail="$(cmdMySQL 'MySB_db' "SELECT users_email FROM users WHERE users_ident='$sUserAccount';")"
 	OC_PASS="$sPassword"
-	export OC_PASS
 
 	case "$sSwitch" in
 	'create')

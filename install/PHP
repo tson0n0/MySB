@@ -30,13 +30,15 @@ gfnManageServices stop "$binPhpService redis-server"
 #### Redis
 install -v -o root -g root -m 0755 -d "/etc/redis"
 install -v -o root -g root -m 0777 $MySB_InstallDir/templates/php/etc.redis.redis.conf.tmpl /etc/redis/redis.conf
-[[ -z $(grep '# Redis - BoF' /etc/sysctl.conf) ]] && cat $MySB_InstallDir/templates/sysctl/redis.tmpl >> /etc/sysctl.conf; sysctl --system
+[[ -z $(grep '# Redis - BoF' /etc/sysctl.conf) ]] && cat $MySB_InstallDir/templates/sysctl/redis.tmpl >>/etc/sysctl.conf
+sysctl --system
 
 #### Install packages
 sPeclModules="smbclient"
 sDebModulesWithPecl="php-geoip php-imagick php-redis"
 # gfnPackagesManage purge "$sDebModulesWithPecl"
-gfnPackageBundleInstall "redis-server php php-common php-cli php-fpm php-dev php-pear php-curl php-gd php-gmp php-imap php-intl php-json php-mcrypt php-mysql php-readline php-sqlite3 php-xmlrpc php-xml php-zip php-mbstring php-smbclient libgeoip-dev $sDebModulesWithPecl"
+sPackages=(redis-server php php-common php-cli php-fpm php-dev php-pear php-curl php-gd php-gmp php-imap php-intl php-json php-mcrypt php-mysql php-readline php-sqlite3 php-xmlrpc php-xml php-zip php-mbstring php-smbclient libgeoip-dev $sDebModulesWithPecl)
+gfnPackageBundleInstall "${sPackages[@]}"
 gfnPackagesManage purge "apache2"
 
 #### STOP services
@@ -57,11 +59,11 @@ perl -pi -e "s/disable_functions = /;disable_functions = /g" /etc/php/7.0/cli/ph
 
 #### Modules inventory
 sExtDir="/usr/lib/php/20151012"
-sExtList="`ls -A1 $sExtDir | cut -d "." -f 1`"
-sAllExtList="`echo $sAllExtList | xargs -n1 | sort -u | xargs | sed -e 's/^ //g;' | sed 's/\s+$//'`"
+sExtList="$(ls -A1 $sExtDir | cut -d "." -f 1)"
+sAllExtList="$(echo $sAllExtList | xargs -n1 | sort -u | xargs | sed -e 's/^ //g;' | sed 's/\s+$//')"
 
 #### PEAR/PECL config
-update-ca-certificates --verbose --fresh &> /dev/null
+update-ca-certificates --verbose --fresh &>/dev/null
 pear config-set auto_discover 1
 pear config-set php_ini $gsPhpDir/cli/php.ini
 pear config-set ext_dir $sExtDir
@@ -73,10 +75,10 @@ pear upgrade --force
 for Ext in $sPeclModules; do
 	[ -f $gsPhpDir/mods-available/$Ext.ini ] && phpdismod $Ext
 	rm -fv $gsPhpDir/mods-available/$Ext.ini
-	[ ! -z "`pecl list | grep "$Ext"`" ] && pecl uninstall $Ext
+	[ ! -z "$(pecl list | grep "$Ext")" ] && pecl uninstall $Ext
 done
 if [ -d "${sExtDir}-zts" ]; then
-	sExtListZts="`ls -A1 ${sExtDir}-zts | cut -d "." -f 1`"
+	sExtListZts="$(ls -A1 ${sExtDir}-zts | cut -d "." -f 1)"
 	for Ext in $sExtListZts; do
 		[ -f $gsPhpDir/mods-available/$Ext.ini ] && phpdismod $Ext
 		rm -fv $gsPhpDir/mods-available/$Ext.ini
@@ -91,35 +93,35 @@ done
 #### Enable all modules
 for Ext in $sAllExtList; do
 	case "$Ext" in
-		'opcache')
-			echo "zend_extension=opcache.so" > $gsPhpDir/mods-available/opcache.ini
-			[ -z "`php -m | grep 'opcache'`" ] && $binPhpEnmod opcache
+	'opcache')
+		echo "zend_extension=opcache.so" >$gsPhpDir/mods-available/opcache.ini
+		[ -z "$(php -m | grep 'opcache')" ] && $binPhpEnmod opcache
 		;;
-		*)
-			echo "extension=$Ext.so" > $gsPhpDir/mods-available/$Ext.ini
-			[ -z "`php -m | grep "$Ext"`" ] && $binPhpEnmod $Ext
+	*)
+		echo "extension=$Ext.so" >$gsPhpDir/mods-available/$Ext.ini
+		[ -z "$(php -m | grep "$Ext")" ] && $binPhpEnmod $Ext
 		;;
 	esac
 done
 for Ext in $sPeclModules; do
 	case "$Ext" in
-		'smbclient')
-			gfnGetRepoValues 'libsmbclient-php' && gfnRepoManageByType
-			gfnRepoManageByType
-			cd $gsRepoDir/ || continue
-			phpize
-			./configure
-			make
-			make install
-			make test
-			echo "extension=smbclient.so" > $gsPhpDir/mods-available/smbclient.ini
-			$binPhpEnmod smbclient
+	'smbclient')
+		gfnGetRepoValues 'libsmbclient-php' && gfnRepoManageByType
+		gfnRepoManageByType
+		cd ${gsRepoDir}/ || continue
+		phpize
+		./configure
+		make
+		make install
+		make test
+		echo "extension=smbclient.so" >$gsPhpDir/mods-available/smbclient.ini
+		$binPhpEnmod smbclient
 		;;
-		'htscanner')
-			pecl install htscanner
-			echo "extension=htscanner.so" > $gsPhpDir/mods-available/htscanner.ini
-			$binPhpEnmod htscanner
-			rm -fv $gsPhpDir/cli/conf.d/20-htscanner.ini
+	'htscanner')
+		pecl install htscanner
+		echo "extension=htscanner.so" >$gsPhpDir/mods-available/htscanner.ini
+		$binPhpEnmod htscanner
+		rm -fv $gsPhpDir/cli/conf.d/20-htscanner.ini
 		;;
 	esac
 done
@@ -132,8 +134,8 @@ $binPhpFpm -i | grep 'smbclient'
 
 #### TMPFS
 sed -i '/\/mnt\/tmpFS\/php/d' /etc/fstab
-echo "# /mnt/tmpFS/php" >> /etc/fstab
-echo "tmpfs /mnt/tmpFS/php tmpfs defaults,nosuid,noatime,mode=1777,size=32M 0 0" >> /etc/fstab
+echo "# /mnt/tmpFS/php" >>/etc/fstab
+echo "tmpfs /mnt/tmpFS/php tmpfs defaults,nosuid,noatime,mode=1777,size=32M 0 0" >>/etc/fstab
 [ ! -d /mnt/tmpFS/php ] && mkdir -pv /mnt/tmpFS/php
 [[ -z $(df -H | grep '/mnt/tmpFS/php') ]] && mount /mnt/tmpFS/php
 

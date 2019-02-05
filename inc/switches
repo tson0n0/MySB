@@ -24,10 +24,10 @@
 ##################### FIRST LINE #####################################
 
 #### SWITCHES
-BANNER=ON     # Banner for all script (ON/OFF)
-LOGSTD=NO     # Standard Outpout redirected to 'scriptname.log' (STDOUT/NO)
-USAGE=ON      # All usage display to user, like questions (ON/OFF)
-END=OFF       # Launch some commands at the end (ldconfig, updatedb, drop cache, mandb) (see includes_after) (ON/OFF)
+BANNER=ON	 # Banner for all script (ON/OFF)
+LOGSTD=NO	 # Standard Outpout redirected to 'scriptname.log' (STDOUT/NO)
+USAGE=ON	  # All usage display to user, like questions (ON/OFF)
+END=OFF	   # Launch some commands at the end (ldconfig, updatedb, drop cache, mandb) (see includes_after) (ON/OFF)
 TIMESTAMP=OFF # Adds a time stamp at the beginning and end of the script in the logs (ON/OFF)
 
 # Check by script name BEFORE arguments (to force switches)

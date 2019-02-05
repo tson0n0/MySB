@@ -126,7 +126,11 @@ gfnLoadingKernelModules() {
 	# /sbin/modprobe ip_conntrack_irc &> /dev/null
 
 	# NFS module
+<<<<<<< HEAD
+	if [ "${gbIsInstalled_OpenVPN:-}" == "YES" ]; then
+=======
 	if [ "${gbIsInstalled_OpenVPN:?}" == "YES" ]; then
+>>>>>>> de9cf1d41345d9d581474564386c83515efb4824
 		/sbin/modprobe nfs &>/dev/null
 	fi
 }
@@ -135,7 +139,11 @@ gfnKernelParamConfig() {
 	# See http://ipsysctl-tutorial.frozentux.net/chunkyhtml/index.html
 	# for a detailed tutorial on sysctl and the various settings available.
 
+<<<<<<< HEAD
+	if [ "${gbIsInstalled_OpenVPN}" == "YES" ]; then
+=======
 	if [ "${gbIsInstalled_OpenVPN:?}" == "YES" ]; then
+>>>>>>> de9cf1d41345d9d581474564386c83515efb4824
 		# Required to enable IPv4 forwarding.
 		# Redhat users can try setting FORWARD_IPV4 in /etc/sysconfig/network to true
 		# Alternatively, it can be set in /etc/sysctl.conf
@@ -226,10 +234,17 @@ gfnCreatingUserChain() {
 gfnPopulatingBadChain() {
 	## bad_packets chain
 	# Drop packets received on the external interface claiming a source of the local network
+<<<<<<< HEAD
+	if [ "${gbIsInstalled_OpenVPN}" == "YES" ]; then
+		for ip in ${gsVpnLocalIps:-}; do
+			iptables -A bad_packets -p ALL -i "${gsPrimaryInet:?}" -s "$ip" -j LOG --log-prefix "[MySB] Illegal source: " -m comment --comment "OpenVPN - Illegal source - $ip"
+			iptables -A bad_packets -p ALL -i "${gsPrimaryInet}" -s "$ip" -j DROP
+=======
 	if [ "${gbIsInstalled_OpenVPN:?}" == "YES" ]; then
 		for ip in ${gsVpnLocalIps:?}; do
 			iptables -A bad_packets -p ALL -i "${gsPrimaryInet:?}" -s "$ip" -j LOG --log-prefix "[MySB] Illegal source: " -m comment --comment "OpenVPN - Illegal source - $ip"
 			iptables -A bad_packets -p ALL -i "${gsPrimaryInet:?}" -s "$ip" -j DROP
+>>>>>>> de9cf1d41345d9d581474564386c83515efb4824
 		done
 	fi
 
@@ -248,7 +263,11 @@ gfnPopulatingBadChain() {
 	#
 	# Return to the calling chain if the bad packets originate from the local interface.
 	# This maintains the approach throughout this firewall of a largely trusted internal network.
+<<<<<<< HEAD
+	if [ "${gbIsInstalled_OpenVPN}" == "YES" ]; then
+=======
 	if [ "${gbIsInstalled_OpenVPN:?}" == "YES" ]; then
+>>>>>>> de9cf1d41345d9d581474564386c83515efb4824
 		iptables -A bad_tcp_packets -p TCP -i tun+ -j RETURN
 		iptables -A bad_tcp_packets -p TCP -i br0 -j RETURN
 	fi
@@ -309,6 +328,15 @@ gfnPopulatingIcmpChain() {
 	#### Allow provider monitoring by ICMP
 	case "$1" in
 	"create")
+<<<<<<< HEAD
+		if [ -n "${gsServerProvider:-}" ] && [ "${gsServerProvider}" != "NONE" ]; then
+			case "${gsServerProvider}" in
+			"OVH")
+				sOvhIPv4="$(cmdMySQL 'MySB_db' "SELECT ipv4 FROM providers_monitoring WHERE provider = 'OVH' AND ipv4 !='';")"
+				for IPv4 in $sOvhIPv4; do
+					iptables -A icmp_packets -p ICMP -s "$IPv4" --icmp-type 8 -j LOG --log-prefix "[MySB] Ping detected: " -m comment --comment "${gsServerProvider} monitoring"
+					iptables -A icmp_packets -p ICMP -s "$IPv4" --icmp-type 8 -j ACCEPT -m comment --comment "${gsServerProvider} monitoring"
+=======
 		if [ -n "${gsServerProvider:?}" ] && [ "${gsServerProvider:?}" != "NONE" ]; then
 			case "${gsServerProvider:?}" in
 			"OVH")
@@ -316,27 +344,43 @@ gfnPopulatingIcmpChain() {
 				for IPv4 in $sOvhIPv4; do
 					iptables -A icmp_packets -p ICMP -s "$IPv4" --icmp-type 8 -j LOG --log-prefix "[MySB] Ping detected: " -m comment --comment "${gsServerProvider:?} monitoring"
 					iptables -A icmp_packets -p ICMP -s "$IPv4" --icmp-type 8 -j ACCEPT -m comment --comment "${gsServerProvider:?} monitoring"
+>>>>>>> de9cf1d41345d9d581474564386c83515efb4824
 				done
 				;;
 			"ONLINE")
 				sOnlineIPv4="$(cmdMySQL 'MySB_db' "SELECT ipv4 FROM providers_monitoring WHERE provider = 'ONLINE' AND ipv4 !='';")"
 				for IPv4 in $sOnlineIPv4; do
+<<<<<<< HEAD
+					iptables -A icmp_packets -p ICMP -s "$IPv4" --icmp-type 8 -j LOG --log-prefix "[MySB] Ping detected: " -m comment --comment "${gsServerProvider} monitoring"
+					iptables -A icmp_packets -p ICMP -s "$IPv4" --icmp-type 8 -j ACCEPT -m comment --comment "${gsServerProvider} monitoring"
+=======
 					iptables -A icmp_packets -p ICMP -s "$IPv4" --icmp-type 8 -j LOG --log-prefix "[MySB] Ping detected: " -m comment --comment "${gsServerProvider:?} monitoring"
 					iptables -A icmp_packets -p ICMP -s "$IPv4" --icmp-type 8 -j ACCEPT -m comment --comment "${gsServerProvider:?} monitoring"
+>>>>>>> de9cf1d41345d9d581474564386c83515efb4824
 				done
 				;;
 			"DIGICUBE")
 				sDigicubeIPv4="$(cmdMySQL 'MySB_db' "SELECT ipv4 FROM providers_monitoring WHERE provider = 'DIGICUBE' AND ipv4 !='';")"
 				for IPv4 in $sDigicubeIPv4; do
+<<<<<<< HEAD
+					iptables -A icmp_packets -p ICMP -s "$IPv4" --icmp-type 8 -j LOG --log-prefix "[MySB] Ping detected: " -m comment --comment "${gsServerProvider} monitoring"
+					iptables -A icmp_packets -p ICMP -s "$IPv4" --icmp-type 8 -j ACCEPT -m comment --comment "${gsServerProvider} monitoring"
+=======
 					iptables -A icmp_packets -p ICMP -s "$IPv4" --icmp-type 8 -j LOG --log-prefix "[MySB] Ping detected: " -m comment --comment "${gsServerProvider:?} monitoring"
 					iptables -A icmp_packets -p ICMP -s "$IPv4" --icmp-type 8 -j ACCEPT -m comment --comment "${gsServerProvider:?} monitoring"
+>>>>>>> de9cf1d41345d9d581474564386c83515efb4824
 				done
 				;;
 			"HETZNER")
 				sHetznerIPv4="$(cmdMySQL 'MySB_db' "SELECT ipv4 FROM providers_monitoring WHERE provider = 'HETZNER' AND ipv4 !='';")"
 				for IPv4 in $sHetznerIPv4; do
+<<<<<<< HEAD
+					iptables -A icmp_packets -p ICMP -s "$IPv4" --icmp-type 8 -j LOG --log-prefix "[MySB] Ping detected: " -m comment --comment "${gsServerProvider} monitoring"
+					iptables -A icmp_packets -p ICMP -s "$IPv4" --icmp-type 8 -j ACCEPT -m comment --comment "${gsServerProvider} monitoring"
+=======
 					iptables -A icmp_packets -p ICMP -s "$IPv4" --icmp-type 8 -j LOG --log-prefix "[MySB] Ping detected: " -m comment --comment "${gsServerProvider:?} monitoring"
 					iptables -A icmp_packets -p ICMP -s "$IPv4" --icmp-type 8 -j ACCEPT -m comment --comment "${gsServerProvider:?} monitoring"
+>>>>>>> de9cf1d41345d9d581474564386c83515efb4824
 				done
 				;;
 			esac
@@ -354,12 +398,21 @@ gfnPopulatingIcmpChain() {
 		;;
 	"refresh")
 		nNumLine=$(grep 'Allow ICMP for users' -n -m 1 "${MySB_InstallDir:?}"/temp/current-iptables-rules | cut -d ':' -f 1)
+<<<<<<< HEAD
+		sed -i '/Allow ICMP for users/d' "${MySB_InstallDir}"/temp/current-iptables-rules
+		for ip in $AllUsersIPs; do
+			# ICMP
+			sed -i "${nNumLine}i\-A icmp_packets -s $ip -p icmp -m icmp --icmp-type 8 -m comment --comment \"Allow ICMP for users\" -j LOG --log-prefix \"[MySB] Ping detected:\"" "${MySB_InstallDir}"/temp/current-iptables-rules
+			((nNumLine++))
+			sed -i "${nNumLine}i\-A icmp_packets -s $ip -p icmp -m icmp --icmp-type 8 -m comment --comment \"Allow ICMP for users\" -j ACCEPT" "${MySB_InstallDir}"/temp/current-iptables-rules
+=======
 		sed -i '/Allow ICMP for users/d' "${MySB_InstallDir:?}"/temp/current-iptables-rules
 		for ip in $AllUsersIPs; do
 			# ICMP
 			sed -i "${nNumLine}i\-A icmp_packets -s $ip -p icmp -m icmp --icmp-type 8 -m comment --comment \"Allow ICMP for users\" -j LOG --log-prefix \"[MySB] Ping detected:\"" "${MySB_InstallDir:?}"/temp/current-iptables-rules
 			((nNumLine++))
 			sed -i "${nNumLine}i\-A icmp_packets -s $ip -p icmp -m icmp --icmp-type 8 -m comment --comment \"Allow ICMP for users\" -j ACCEPT" "${MySB_InstallDir:?}"/temp/current-iptables-rules
+>>>>>>> de9cf1d41345d9d581474564386c83515efb4824
 			((nNumLine++))
 		done
 		;;
@@ -368,7 +421,11 @@ gfnPopulatingIcmpChain() {
 	#### Allow ICMP over VPN tunneling
 	case "$1" in
 	"create")
+<<<<<<< HEAD
+		if [ "${gbIsInstalled_OpenVPN}" == "YES" ]; then
+=======
 		if [ "${gbIsInstalled_OpenVPN:?}" == "YES" ]; then
+>>>>>>> de9cf1d41345d9d581474564386c83515efb4824
 			iptables -A icmp_packets -p ICMP -s 0/0 -i tun+ --icmp-type 8 -j LOG --log-prefix "[MySB] Ping detected: " -m comment --comment "Allow ICMP over OpenVPN"
 			iptables -A icmp_packets -p ICMP -s 0/0 -i tun+ --icmp-type 8 -j ACCEPT -m comment --comment "Allow ICMP over OpenVPN"
 			iptables -A icmp_packets -p ICMP -s 0/0 -i br0 --icmp-type 8 -j LOG --log-prefix "[MySB] Ping detected: " -m comment --comment "Allow ICMP over OpenVPN"
@@ -415,7 +472,11 @@ gfnPopulatingUdpInboundChain() {
 	# This prevents them from traversing the whole chain and keeps the log from getting cluttered with chatter from Windows systems.
 	case "$1" in
 	"create")
+<<<<<<< HEAD
+		if [ "${gbIsInstalled_OpenVPN}" == "YES" ]; then
+=======
 		if [ "${gbIsInstalled_OpenVPN:?}" == "YES" ]; then
+>>>>>>> de9cf1d41345d9d581474564386c83515efb4824
 			# Samba
 			iptables -A udp_inbound -p UDP -s 0/0 -i tun+ --destination-port 135 -j ACCEPT -m comment --comment "Samba over OpenVPN"
 			iptables -A udp_inbound -p UDP -s 0/0 -i tun+ --destination-port 137:138 -j ACCEPT -m comment --comment "Samba over OpenVPN"
@@ -423,12 +484,21 @@ gfnPopulatingUdpInboundChain() {
 			iptables -A udp_inbound -p UDP -s 0/0 -i br0 --destination-port 135 -j ACCEPT -m comment --comment "Samba over OpenVPN"
 			iptables -A udp_inbound -p UDP -s 0/0 -i br0 --destination-port 137:138 -j ACCEPT -m comment --comment "Samba over OpenVPN"
 			iptables -A udp_inbound -p UDP -s 0/0 -i br0 --destination-port 445 -j ACCEPT -m comment --comment "Samba over OpenVPN"
+<<<<<<< HEAD
+			iptables -A udp_inbound -p UDP -s 0/0 -i "${gsPrimaryInet}" --destination-port 135 -j DROP
+			iptables -A udp_inbound -p UDP -s 0/0 -i "${gsPrimaryInet}" --destination-port 135 -j LOG --log-prefix "[MySB] NetBIOS UDP IN 135: " -m comment --comment "NetBIOS UDP IN"
+			iptables -A udp_inbound -p UDP -s 0/0 -i "${gsPrimaryInet}" --destination-port 137:138 -j DROP
+			iptables -A udp_inbound -p UDP -s 0/0 -i "${gsPrimaryInet}" --destination-port 137:138 -j LOG --log-prefix "[MySB] NetBIOS UDP IN 137:138: " -m comment --comment "NetBIOS UDP IN"
+			iptables -A udp_inbound -p UDP -s 0/0 -i "${gsPrimaryInet}" --destination-port 445 -j DROP
+			iptables -A udp_inbound -p UDP -s 0/0 -i "${gsPrimaryInet}" --destination-port 445 -j LOG --log-prefix "[MySB] NetBIOS UDP IN 445: " -m comment --comment "NetBIOS UDP IN"
+=======
 			iptables -A udp_inbound -p UDP -s 0/0 -i "${gsPrimaryInet:?}" --destination-port 135 -j DROP
 			iptables -A udp_inbound -p UDP -s 0/0 -i "${gsPrimaryInet:?}" --destination-port 135 -j LOG --log-prefix "[MySB] NetBIOS UDP IN 135: " -m comment --comment "NetBIOS UDP IN"
 			iptables -A udp_inbound -p UDP -s 0/0 -i "${gsPrimaryInet:?}" --destination-port 137:138 -j DROP
 			iptables -A udp_inbound -p UDP -s 0/0 -i "${gsPrimaryInet:?}" --destination-port 137:138 -j LOG --log-prefix "[MySB] NetBIOS UDP IN 137:138: " -m comment --comment "NetBIOS UDP IN"
 			iptables -A udp_inbound -p UDP -s 0/0 -i "${gsPrimaryInet:?}" --destination-port 445 -j DROP
 			iptables -A udp_inbound -p UDP -s 0/0 -i "${gsPrimaryInet:?}" --destination-port 445 -j LOG --log-prefix "[MySB] NetBIOS UDP IN 445: " -m comment --comment "NetBIOS UDP IN"
+>>>>>>> de9cf1d41345d9d581474564386c83515efb4824
 		fi
 		;;
 	esac
@@ -436,7 +506,11 @@ gfnPopulatingUdpInboundChain() {
 	# Network Time Protocol (NTP) Server
 	case "$1" in
 	"create")
+<<<<<<< HEAD
+		if [ "${gbIsInstalled_OpenVPN}" == "YES" ]; then
+=======
 		if [ "${gbIsInstalled_OpenVPN:?}" == "YES" ]; then
+>>>>>>> de9cf1d41345d9d581474564386c83515efb4824
 			iptables -A udp_inbound -p UDP -s 0/0 -i tun+ --destination-port 123 -j ACCEPT -m comment --comment "NTP over OpenVPN"
 			iptables -A udp_inbound -p UDP -s 0/0 -i tun+ --destination-port 123 -j LOG --log-prefix "[MySB] NTP request: " -m comment --comment "NTP over OpenVPN"
 			iptables -A udp_inbound -p UDP -s 0/0 -i br0 --destination-port 123 -j ACCEPT -m comment --comment "NTP over OpenVPN"
@@ -448,12 +522,21 @@ gfnPopulatingUdpInboundChain() {
 		done
 		;;
 	"refresh")
+<<<<<<< HEAD
+		nNumLine=$(grep 'NTP for users' -n -m 1 "${MySB_InstallDir}"/temp/current-iptables-rules | cut -d ':' -f 1)
+		sed -i '/NTP for users/d' "${MySB_InstallDir}"/temp/current-iptables-rules
+		for ip in $AllUsersIPs; do
+			sed -i "${nNumLine}i\-A udp_inbound -s $ip -p udp -m udp --dport 123 -m comment --comment \"NTP for users\" -j LOG --log-prefix \"[MySB] NTP request:\"" "${MySB_InstallDir}"/temp/current-iptables-rules
+			((nNumLine++))
+			sed -i "${nNumLine}i\-A udp_inbound -s $ip -p udp -m udp --dport 123 -m comment --comment \"NTP for users\" -j ACCEPT" "${MySB_InstallDir}"/temp/current-iptables-rules
+=======
 		nNumLine=$(grep 'NTP for users' -n -m 1 "${MySB_InstallDir:?}"/temp/current-iptables-rules | cut -d ':' -f 1)
 		sed -i '/NTP for users/d' "${MySB_InstallDir:?}"/temp/current-iptables-rules
 		for ip in $AllUsersIPs; do
 			sed -i "${nNumLine}i\-A udp_inbound -s $ip -p udp -m udp --dport 123 -m comment --comment \"NTP for users\" -j LOG --log-prefix \"[MySB] NTP request:\"" "${MySB_InstallDir:?}"/temp/current-iptables-rules
 			((nNumLine++))
 			sed -i "${nNumLine}i\-A udp_inbound -s $ip -p udp -m udp --dport 123 -m comment --comment \"NTP for users\" -j ACCEPT" "${MySB_InstallDir:?}"/temp/current-iptables-rules
+>>>>>>> de9cf1d41345d9d581474564386c83515efb4824
 			((nNumLine++))
 		done
 		;;
@@ -462,13 +545,22 @@ gfnPopulatingUdpInboundChain() {
 	# Provider monitoring
 	case "$1" in
 	"create")
+<<<<<<< HEAD
+		if [ -n "${gsServerProvider}" ] && [ "${gsServerProvider}" != "NONE" ]; then
+			case "${gsServerProvider}" in
+=======
 		if [ -n "${gsServerProvider:?}" ] && [ "${gsServerProvider:?}" != "NONE" ]; then
 			case "${gsServerProvider:?}" in
+>>>>>>> de9cf1d41345d9d581474564386c83515efb4824
 			"OVH")
 				sOvhIpRtm="${gsSrvIpAddress//$(echo "${gsSrvIpAddress:?}" | cut -d '.' -f 4)/251}"
 
 				if [ -n "$sOvhIpRtm" ]; then
+<<<<<<< HEAD
+					iptables -A udp_inbound -p UDP -s "$sOvhIpRtm" --destination-port 6100:6200 -j ACCEPT -m comment --comment "${gsServerProvider} monitoring"
+=======
 					iptables -A udp_inbound -p UDP -s "$sOvhIpRtm" --destination-port 6100:6200 -j ACCEPT -m comment --comment "${gsServerProvider:?} monitoring"
+>>>>>>> de9cf1d41345d9d581474564386c83515efb4824
 				fi
 				;;
 			esac
@@ -489,7 +581,11 @@ gfnPopulatingUdpInboundChain() {
 	# Network File System (NFS) Server
 	case "$1" in
 	"create")
+<<<<<<< HEAD
+		if [ "${gbIsInstalled_OpenVPN}" == "YES" ]; then
+=======
 		if [ "${gbIsInstalled_OpenVPN:?}" == "YES" ]; then
+>>>>>>> de9cf1d41345d9d581474564386c83515efb4824
 			iptables -A udp_inbound -p UDP -s 0/0 -i br0 -m multiport --ports 111,2049,32764:32769 -j ACCEPT -m comment --comment "NFS TCP over OpenVPN"
 			iptables -A udp_inbound -p UDP -s 0/0 -i tun+ -m multiport --ports 111,2049,32764:32769 -j ACCEPT -m comment --comment "NFS TCP over OpenVPN"
 		fi
@@ -499,6 +595,23 @@ gfnPopulatingUdpInboundChain() {
 	#### OpenVPN
 	case "$1" in
 	"create")
+<<<<<<< HEAD
+		if [ "${gbIsInstalled_OpenVPN}" == "YES" ] && [ "$gsOpenVPN_Proto" == "udp" ]; then
+			iptables -A udp_inbound -p UDP -s 0/0 -i "${gsPrimaryInet}" --destination-port "$gsPort_OpenVPN_WithGW" -j ACCEPT -m comment --comment "OpenVPN with GW for users"
+			iptables -A udp_inbound -p UDP -s 0/0 -i "${gsPrimaryInet}" --destination-port "$gsPort_OpenVPN_WithoutGW" -j ACCEPT -m comment --comment "OpenVPN without GW for users"
+			iptables -A udp_inbound -p UDP -s 0/0 -i "${gsPrimaryInet}" --destination-port "$gsPort_OpenVPN_TAP_WithoutGW" -j ACCEPT -m comment --comment "OpenVPN bridged without GW for users"
+		fi
+		;;
+	"refresh")
+		if [ "${gbIsInstalled_OpenVPN}" == "YES" ] && [ "$gsOpenVPN_Proto" == "udp" ]; then
+			nNumLine=$(grep 'OpenVPN with GW for users' -n -m 1 "${MySB_InstallDir}"/temp/current-iptables-rules | cut -d ':' -f 1)
+			sed -i '/OpenVPN with GW for users/d' "${MySB_InstallDir}"/temp/current-iptables-rules
+			sed -i '/OpenVPN without GW for users/d' "${MySB_InstallDir}"/temp/current-iptables-rules
+			sed -i '/OpenVPN bridged without GW for users/d' "${MySB_InstallDir}"/temp/current-iptables-rules
+			sed -i "${nNumLine}i\-A udp_inbound -s 0/0 -p udp -m udp --dport $gsPort_OpenVPN_TAP_WithoutGW -m comment --comment \"OpenVPN bridged without GW for users\" -j ACCEPT" "${MySB_InstallDir}"/temp/current-iptables-rules
+			sed -i "${nNumLine}i\-A udp_inbound -s 0/0 -p udp -m udp --dport $gsPort_OpenVPN_WithoutGW -m comment --comment \"OpenVPN without GW for users\" -j ACCEPT" "${MySB_InstallDir}"/temp/current-iptables-rules
+			sed -i "${nNumLine}i\-A udp_inbound -s 0/0 -p udp -m udp --dport $gsPort_OpenVPN_WithGW -m comment --comment \"OpenVPN with GW for users\" -j ACCEPT" "${MySB_InstallDir}"/temp/current-iptables-rules
+=======
 		if [ "${gbIsInstalled_OpenVPN:?}" == "YES" ] && [ "$gsOpenVPN_Proto" == "udp" ]; then
 			iptables -A udp_inbound -p UDP -s 0/0 -i "${gsPrimaryInet:?}" --destination-port "$gsPort_OpenVPN_WithGW" -j ACCEPT -m comment --comment "OpenVPN with GW for users"
 			iptables -A udp_inbound -p UDP -s 0/0 -i "${gsPrimaryInet:?}" --destination-port "$gsPort_OpenVPN_WithoutGW" -j ACCEPT -m comment --comment "OpenVPN without GW for users"
@@ -514,6 +627,7 @@ gfnPopulatingUdpInboundChain() {
 			sed -i "${nNumLine}i\-A udp_inbound -s 0/0 -p udp -m udp --dport $gsPort_OpenVPN_TAP_WithoutGW -m comment --comment \"OpenVPN bridged without GW for users\" -j ACCEPT" "${MySB_InstallDir:?}"/temp/current-iptables-rules
 			sed -i "${nNumLine}i\-A udp_inbound -s 0/0 -p udp -m udp --dport $gsPort_OpenVPN_WithoutGW -m comment --comment \"OpenVPN without GW for users\" -j ACCEPT" "${MySB_InstallDir:?}"/temp/current-iptables-rules
 			sed -i "${nNumLine}i\-A udp_inbound -s 0/0 -p udp -m udp --dport $gsPort_OpenVPN_WithGW -m comment --comment \"OpenVPN with GW for users\" -j ACCEPT" "${MySB_InstallDir:?}"/temp/current-iptables-rules
+>>>>>>> de9cf1d41345d9d581474564386c83515efb4824
 		fi
 		;;
 	esac
@@ -521,7 +635,11 @@ gfnPopulatingUdpInboundChain() {
 	#### PlexMedia Server
 	case "$1" in
 	"create")
+<<<<<<< HEAD
+		if [ "${gbIsInstalled_OpenVPN}" == "YES" ] && [ "${gbIsInstalled_PlexMedia:-}" == "YES" ]; then
+=======
 		if [ "${gbIsInstalled_OpenVPN:?}" == "YES" ] && [ "${gbIsInstalled_PlexMedia:?}" == "YES" ]; then
+>>>>>>> de9cf1d41345d9d581474564386c83515efb4824
 			for PlexUdpPort in $gsPorts_UDP_PlexMedia; do
 				iptables -A udp_inbound -p UDP -s 0/0 -i br0 --destination-port "$PlexUdpPort" -j ACCEPT -m comment --comment "Plex Media Server UDP over OpenVPN"
 			done
@@ -592,6 +710,26 @@ gfnPopulatingTcpInboundChain() {
 		done
 		;;
 	"refresh")
+<<<<<<< HEAD
+		sed -i '/SSH and SFTP for users/d' "${MySB_InstallDir}"/temp/current-iptables-rules
+		sed -i '/FTP for users/d' "${MySB_InstallDir}"/temp/current-iptables-rules
+		sed -i '/FTP Data for users/d' "${MySB_InstallDir}"/temp/current-iptables-rules
+		sed -i '/FTP Passive for users/d' "${MySB_InstallDir}"/temp/current-iptables-rules
+		nNumLine=$(grep 'comment --comment "Nginx - MySB HTTPs" -j ACCEPT' -n -m 1 "${MySB_InstallDir}"/temp/current-iptables-rules | cut -d ':' -f 1)
+		for ip in $AllUsersIPs; do
+			# SSHd
+			((nNumLine++))
+			sed -i "${nNumLine}i\-A tcp_inbound -s $ip -p tcp -m tcp --dport ${gsPort_SSH} -m comment --comment \"SSH and SFTP for users\" -j ACCEPT" "${MySB_InstallDir}"/temp/current-iptables-rules
+			# FTP Server (Control)
+			((nNumLine++))
+			sed -i "${nNumLine}i\-A tcp_inbound -s $ip -p tcp -m tcp --dport ${gsPort_FTP} -m comment --comment \"FTP for users\" -j ACCEPT" "${MySB_InstallDir}"/temp/current-iptables-rules
+			# FTP Client (Data Port for non-PASV transfers)
+			((nNumLine++))
+			sed -i "${nNumLine}i\-A tcp_inbound -s $ip -p tcp -m tcp --sport ${gsPort_FTP_Data} -m comment --comment \"FTP Data for users\" -j ACCEPT" "${MySB_InstallDir}"/temp/current-iptables-rules
+			# Passive FTP
+			((nNumLine++))
+			sed -i "${nNumLine}i\-A tcp_inbound -s $ip -p tcp -m tcp --dport ${gsPort_FTP_Passive} -m comment --comment \"FTP Passive for users\" -j ACCEPT" "${MySB_InstallDir}"/temp/current-iptables-rules
+=======
 		sed -i '/SSH and SFTP for users/d' "${MySB_InstallDir:?}"/temp/current-iptables-rules
 		sed -i '/FTP for users/d' "${MySB_InstallDir:?}"/temp/current-iptables-rules
 		sed -i '/FTP Data for users/d' "${MySB_InstallDir:?}"/temp/current-iptables-rules
@@ -610,6 +748,7 @@ gfnPopulatingTcpInboundChain() {
 			# Passive FTP
 			((nNumLine++))
 			sed -i "${nNumLine}i\-A tcp_inbound -s $ip -p tcp -m tcp --dport ${gsPort_FTP_Passive:?} -m comment --comment \"FTP Passive for users\" -j ACCEPT" "${MySB_InstallDir:?}"/temp/current-iptables-rules
+>>>>>>> de9cf1d41345d9d581474564386c83515efb4824
 		done
 		;;
 	esac
@@ -617,11 +756,19 @@ gfnPopulatingTcpInboundChain() {
 	#### OpenVPN
 	case "$1" in
 	"create")
+<<<<<<< HEAD
+		if [ "${gbIsInstalled_OpenVPN}" == "YES" ]; then
+			if [ "$gsOpenVPN_Proto" == "tcp" ]; then
+				iptables -A tcp_inbound -p TCP -s 0/0 -i "${gsPrimaryInet}" --destination-port "$gsPort_OpenVPN_WithGW" -j ACCEPT -m comment --comment "OpenVPN with GW for users"
+				iptables -A tcp_inbound -p TCP -s 0/0 -i "${gsPrimaryInet}" --destination-port "$gsPort_OpenVPN_WithoutGW" -j ACCEPT -m comment --comment "OpenVPN without GW for users"
+				iptables -A tcp_inbound -p TCP -s 0/0 -i "${gsPrimaryInet}" --destination-port "$gsPort_OpenVPN_TAP_WithoutGW" -j ACCEPT -m comment --comment "OpenVPN bridged without GW for users"
+=======
 		if [ "${gbIsInstalled_OpenVPN:?}" == "YES" ]; then
 			if [ "$gsOpenVPN_Proto" == "tcp" ]; then
 				iptables -A tcp_inbound -p TCP -s 0/0 -i "${gsPrimaryInet:?}" --destination-port "$gsPort_OpenVPN_WithGW" -j ACCEPT -m comment --comment "OpenVPN with GW for users"
 				iptables -A tcp_inbound -p TCP -s 0/0 -i "${gsPrimaryInet:?}" --destination-port "$gsPort_OpenVPN_WithoutGW" -j ACCEPT -m comment --comment "OpenVPN without GW for users"
 				iptables -A tcp_inbound -p TCP -s 0/0 -i "${gsPrimaryInet:?}" --destination-port "$gsPort_OpenVPN_TAP_WithoutGW" -j ACCEPT -m comment --comment "OpenVPN bridged without GW for users"
+>>>>>>> de9cf1d41345d9d581474564386c83515efb4824
 			fi
 
 			# Samba
@@ -633,6 +780,20 @@ gfnPopulatingTcpInboundChain() {
 			iptables -A tcp_inbound -p TCP -s 0/0 -i br0 --destination-port 137 -j ACCEPT -m comment --comment "Samba over OpenVPN"
 			iptables -A tcp_inbound -p TCP -s 0/0 -i br0 --destination-port 139 -j ACCEPT -m comment --comment "Samba over OpenVPN"
 			iptables -A tcp_inbound -p TCP -s 0/0 -i br0 --destination-port 445 -j ACCEPT -m comment --comment "Samba over OpenVPN"
+<<<<<<< HEAD
+			iptables -A tcp_inbound -p TCP -s 0/0 -i "${gsPrimaryInet}" --destination-port 135 -j DROP
+			iptables -A tcp_inbound -p TCP -s 0/0 -i "${gsPrimaryInet}" --destination-port 135 -j LOG --log-prefix "[MySB] NetBIOS UDP IN 135: " -m comment --comment "NetBIOS UDP IN"
+			iptables -A tcp_inbound -p TCP -s 0/0 -i "${gsPrimaryInet}" --destination-port 137 -j DROP
+			iptables -A tcp_inbound -p TCP -s 0/0 -i "${gsPrimaryInet}" --destination-port 137 -j LOG --log-prefix "[MySB] NetBIOS UDP IN 137: " -m comment --comment "NetBIOS UDP IN"
+			iptables -A tcp_inbound -p TCP -s 0/0 -i "${gsPrimaryInet}" --destination-port 139 -j DROP
+			iptables -A tcp_inbound -p TCP -s 0/0 -i "${gsPrimaryInet}" --destination-port 139 -j LOG --log-prefix "[MySB] NetBIOS UDP IN 139: " -m comment --comment "NetBIOS UDP IN"
+			iptables -A tcp_inbound -p TCP -s 0/0 -i "${gsPrimaryInet}" --destination-port 445 -j DROP
+			iptables -A tcp_inbound -p TCP -s 0/0 -i "${gsPrimaryInet}" --destination-port 445 -j LOG --log-prefix "[MySB] NetBIOS UDP IN 445: " -m comment --comment "NetBIOS UDP IN"
+
+			# SSHd
+			iptables -A tcp_inbound -p TCP -s 0/0 -i tun+ --destination-port "${gsPort_SSH}" -j ACCEPT -m comment --comment "SSH and SFTP over OpenVPN"
+			iptables -A tcp_inbound -p TCP -s 0/0 -i br0 --destination-port "${gsPort_SSH}" -j ACCEPT -m comment --comment "SSH and SFTP over OpenVPN"
+=======
 			iptables -A tcp_inbound -p TCP -s 0/0 -i "${gsPrimaryInet:?}" --destination-port 135 -j DROP
 			iptables -A tcp_inbound -p TCP -s 0/0 -i "${gsPrimaryInet:?}" --destination-port 135 -j LOG --log-prefix "[MySB] NetBIOS UDP IN 135: " -m comment --comment "NetBIOS UDP IN"
 			iptables -A tcp_inbound -p TCP -s 0/0 -i "${gsPrimaryInet:?}" --destination-port 137 -j DROP
@@ -645,12 +806,32 @@ gfnPopulatingTcpInboundChain() {
 			# SSHd
 			iptables -A tcp_inbound -p TCP -s 0/0 -i tun+ --destination-port "${gsPort_SSH:?}" -j ACCEPT -m comment --comment "SSH and SFTP over OpenVPN"
 			iptables -A tcp_inbound -p TCP -s 0/0 -i br0 --destination-port "${gsPort_SSH:?}" -j ACCEPT -m comment --comment "SSH and SFTP over OpenVPN"
+>>>>>>> de9cf1d41345d9d581474564386c83515efb4824
 
 			# FTP Server (Control)
 			iptables -A tcp_inbound -p TCP -s 0/0 -i tun+ --destination-port "$gsPort_FTP" -j ACCEPT -m comment --comment "FTP over OpenVPN"
 			iptables -A tcp_inbound -p TCP -s 0/0 -i br0 --destination-port "$gsPort_FTP" -j ACCEPT -m comment --comment "FTP over OpenVPN"
 
 			# FTP Client (Data Port for non-PASV transfers)
+<<<<<<< HEAD
+			iptables -A tcp_inbound -p TCP -s 0/0 -i tun+ --source-port "${gsPort_FTP_Data}" -j ACCEPT -m comment --comment "FTP Data over OpenVPN"
+			iptables -A tcp_inbound -p TCP -s 0/0 -i br0 --source-port "${gsPort_FTP_Data}" -j ACCEPT -m comment --comment "FTP Data over OpenVPN"
+
+			# Passive FTP
+			iptables -A tcp_inbound -p TCP -s 0/0 -i tun+ --destination-port "${gsPort_FTP_Passive}" -j ACCEPT -m comment --comment "FTP Passive over OpenVPN"
+			iptables -A tcp_inbound -p TCP -s 0/0 -i br0 --destination-port "${gsPort_FTP_Passive}" -j ACCEPT -m comment --comment "FTP Passive over OpenVPN"
+		fi
+		;;
+	"refresh")
+		if [ "${gbIsInstalled_OpenVPN}" == "YES" ] && [ "$gsOpenVPN_Proto" == "tcp" ]; then
+			nNumLine=$(grep 'OpenVPN with GW for users' -n -m 1 "${MySB_InstallDir}"/temp/current-iptables-rules | cut -d ':' -f 1)
+			sed -i '/OpenVPN with GW for users/d' "${MySB_InstallDir}"/temp/current-iptables-rules
+			sed -i '/OpenVPN without GW for users/d' "${MySB_InstallDir}"/temp/current-iptables-rules
+			sed -i '/OpenVPN bridged without GW for users/d' "${MySB_InstallDir}"/temp/current-iptables-rules
+			sed -i "${nNumLine}i\-A tcp_inbound -s 0/0 -p tcp -m tcp --dport $gsPort_OpenVPN_TAP_WithoutGW -m comment --comment \"OpenVPN bridged without GW for users\" -j ACCEPT" "${MySB_InstallDir}"/temp/current-iptables-rules
+			sed -i "${nNumLine}i\-A tcp_inbound -s 0/0 -p tcp -m tcp --dport $gsPort_OpenVPN_WithoutGW -m comment --comment \"OpenVPN without GW for users\" -j ACCEPT" "${MySB_InstallDir}"/temp/current-iptables-rules
+			sed -i "${nNumLine}i\-A tcp_inbound -s 0/0 -p tcp -m tcp --dport $gsPort_OpenVPN_WithGW -m comment --comment \"OpenVPN with GW for users\" -j ACCEPT" "${MySB_InstallDir}"/temp/current-iptables-rules
+=======
 			iptables -A tcp_inbound -p TCP -s 0/0 -i tun+ --source-port "${gsPort_FTP_Data:?}" -j ACCEPT -m comment --comment "FTP Data over OpenVPN"
 			iptables -A tcp_inbound -p TCP -s 0/0 -i br0 --source-port "${gsPort_FTP_Data:?}" -j ACCEPT -m comment --comment "FTP Data over OpenVPN"
 
@@ -668,6 +849,7 @@ gfnPopulatingTcpInboundChain() {
 			sed -i "${nNumLine}i\-A tcp_inbound -s 0/0 -p tcp -m tcp --dport $gsPort_OpenVPN_TAP_WithoutGW -m comment --comment \"OpenVPN bridged without GW for users\" -j ACCEPT" "${MySB_InstallDir:?}"/temp/current-iptables-rules
 			sed -i "${nNumLine}i\-A tcp_inbound -s 0/0 -p tcp -m tcp --dport $gsPort_OpenVPN_WithoutGW -m comment --comment \"OpenVPN without GW for users\" -j ACCEPT" "${MySB_InstallDir:?}"/temp/current-iptables-rules
 			sed -i "${nNumLine}i\-A tcp_inbound -s 0/0 -p tcp -m tcp --dport $gsPort_OpenVPN_WithGW -m comment --comment \"OpenVPN with GW for users\" -j ACCEPT" "${MySB_InstallDir:?}"/temp/current-iptables-rules
+>>>>>>> de9cf1d41345d9d581474564386c83515efb4824
 		fi
 		;;
 	esac
@@ -675,22 +857,38 @@ gfnPopulatingTcpInboundChain() {
 	#### Webmin
 	case "$1" in
 	"create")
+<<<<<<< HEAD
+		if [ "${gbIsInstalled_Webmin:-}" == "YES" ]; then
+			for ip in ${gsMainUserIPs:-}; do
+				iptables -A tcp_inbound -p TCP -s "$ip" --destination-port "$gsPorts_Webmin" -j ACCEPT -m comment --comment "Webmin for main user"
+			done
+			if [ "${gbIsInstalled_OpenVPN}" == "YES" ]; then
+=======
 		if [ "${gbIsInstalled_Webmin:?}" == "YES" ]; then
 			for ip in ${gsMainUserIPs:?}; do
 				iptables -A tcp_inbound -p TCP -s "$ip" --destination-port "$gsPorts_Webmin" -j ACCEPT -m comment --comment "Webmin for main user"
 			done
 			if [ "${gbIsInstalled_OpenVPN:?}" == "YES" ]; then
+>>>>>>> de9cf1d41345d9d581474564386c83515efb4824
 				iptables -A tcp_inbound -p TCP -s 0/0 -i tun+ --destination-port "$gsPorts_Webmin" -j ACCEPT -m comment --comment "Webmin over OpenVPN"
 				iptables -A tcp_inbound -p TCP -s 0/0 -i br0 --destination-port "$gsPorts_Webmin" -j ACCEPT -m comment --comment "Webmin over OpenVPN"
 			fi
 		fi
 		;;
 	"refresh")
+<<<<<<< HEAD
+		if [ "${gbIsInstalled_Webmin}" == "YES" ]; then
+			nNumLine=$(grep 'Webmin for main user' -n -m 1 "${MySB_InstallDir}"/temp/current-iptables-rules | cut -d ':' -f 1)
+			sed -i '/Webmin for main user/d' "${MySB_InstallDir}"/temp/current-iptables-rules
+			for ip in ${gsMainUserIPs}; do
+				sed -i "${nNumLine}i\-A tcp_inbound -s $ip -p tcp -m tcp --dport $gsPorts_Webmin -m comment --comment \"Webmin for main user\" -j ACCEPT" "${MySB_InstallDir}"/temp/current-iptables-rules
+=======
 		if [ "${gbIsInstalled_Webmin:?}" == "YES" ]; then
 			nNumLine=$(grep 'Webmin for main user' -n -m 1 "${MySB_InstallDir:?}"/temp/current-iptables-rules | cut -d ':' -f 1)
 			sed -i '/Webmin for main user/d' "${MySB_InstallDir:?}"/temp/current-iptables-rules
 			for ip in ${gsMainUserIPs:?}; do
 				sed -i "${nNumLine}i\-A tcp_inbound -s $ip -p tcp -m tcp --dport $gsPorts_Webmin -m comment --comment \"Webmin for main user\" -j ACCEPT" "${MySB_InstallDir:?}"/temp/current-iptables-rules
+>>>>>>> de9cf1d41345d9d581474564386c83515efb4824
 				((nNumLine++))
 			done
 		fi
@@ -700,8 +898,13 @@ gfnPopulatingTcpInboundChain() {
 	#### PlexMedia Server
 	case "$1" in
 	"create")
+<<<<<<< HEAD
+		if [ "${gbIsInstalled_OpenVPN}" == "YES" ] && [ "${gbIsInstalled_PlexMedia}" == "YES" ]; then
+			iptables -A tcp_inbound -p TCP -s 0/0 -i "${gsPrimaryInet}" --destination-port "$gsPorts_PlexMedia" -j ACCEPT -m comment --comment "Plex Media Server"
+=======
 		if [ "${gbIsInstalled_OpenVPN:?}" == "YES" ] && [ "${gbIsInstalled_PlexMedia:?}" == "YES" ]; then
 			iptables -A tcp_inbound -p TCP -s 0/0 -i "${gsPrimaryInet:?}" --destination-port "$gsPorts_PlexMedia" -j ACCEPT -m comment --comment "Plex Media Server"
+>>>>>>> de9cf1d41345d9d581474564386c83515efb4824
 			iptables -A tcp_inbound -p TCP -s 0/0 -i br0 --destination-port "$gsPorts_PlexMedia" -j ACCEPT -m comment --comment "Plex Media Server"
 			for PlexTcpPort in $gsPorts_TCP_PlexMedia; do
 				iptables -A tcp_inbound -p TCP -s 0/0 -i br0 --destination-port "$PlexTcpPort" -j ACCEPT -m comment --comment "Plex Media Server TCP"
@@ -713,7 +916,11 @@ gfnPopulatingTcpInboundChain() {
 	#### rTorrent
 	case "$1" in
 	"create")
+<<<<<<< HEAD
+		for SeedboxUser in ${gsUsersList:-}; do
+=======
 		for SeedboxUser in ${gsUsersList:?}; do
+>>>>>>> de9cf1d41345d9d581474564386c83515efb4824
 			sValues="$(cmdMySQL 'MySB_db' "SELECT scgi_port,rtorrent_port FROM users WHERE users_ident='$SeedboxUser';" | sed 's/\t/|/g;')"
 			rTorrentPortStart="$(echo "$sValues" | awk '{split($0,a,"|"); print a[1]}')"
 			rTorrentPortEnd="$(echo "$sValues" | awk '{split($0,a,"|"); print a[2]}')"
@@ -721,6 +928,15 @@ gfnPopulatingTcpInboundChain() {
 		done
 		;;
 	"refresh")
+<<<<<<< HEAD
+		nNumLine=$(grep 'rTorrent for users' -n -m 1 "${MySB_InstallDir}"/temp/current-iptables-rules | cut -d ':' -f 1)
+		sed -i '/rTorrent for users/d' "${MySB_InstallDir}"/temp/current-iptables-rules
+		for SeedboxUser in ${gsUsersList}; do
+			sValues="$(cmdMySQL 'MySB_db' "SELECT scgi_port,rtorrent_port FROM users WHERE users_ident='$SeedboxUser';" | sed 's/\t/|/g;')"
+			rTorrentPortStart="$(echo "$sValues" | awk '{split($0,a,"|"); print a[1]}')"
+			rTorrentPortEnd="$(echo "$sValues" | awk '{split($0,a,"|"); print a[2]}')"
+			sed -i "${nNumLine}i\-A tcp_inbound -s 0/0 -p tcp -m tcp --dport $rTorrentPortStart:$rTorrentPortEnd -m comment --comment \"rTorrent for users\" -j ACCEPT" "${MySB_InstallDir}"/temp/current-iptables-rules
+=======
 		nNumLine=$(grep 'rTorrent for users' -n -m 1 "${MySB_InstallDir:?}"/temp/current-iptables-rules | cut -d ':' -f 1)
 		sed -i '/rTorrent for users/d' "${MySB_InstallDir:?}"/temp/current-iptables-rules
 		for SeedboxUser in ${gsUsersList:?}; do
@@ -728,6 +944,7 @@ gfnPopulatingTcpInboundChain() {
 			rTorrentPortStart="$(echo "$sValues" | awk '{split($0,a,"|"); print a[1]}')"
 			rTorrentPortEnd="$(echo "$sValues" | awk '{split($0,a,"|"); print a[2]}')"
 			sed -i "${nNumLine}i\-A tcp_inbound -s 0/0 -p tcp -m tcp --dport $rTorrentPortStart:$rTorrentPortEnd -m comment --comment \"rTorrent for users\" -j ACCEPT" "${MySB_InstallDir:?}"/temp/current-iptables-rules
+>>>>>>> de9cf1d41345d9d581474564386c83515efb4824
 		done
 		;;
 	esac
@@ -735,7 +952,11 @@ gfnPopulatingTcpInboundChain() {
 	#### Network File System (NFS) Server
 	case "$1" in
 	"create")
+<<<<<<< HEAD
+		if [ "${gbIsInstalled_OpenVPN}" == "YES" ]; then
+=======
 		if [ "${gbIsInstalled_OpenVPN:?}" == "YES" ]; then
+>>>>>>> de9cf1d41345d9d581474564386c83515efb4824
 			iptables -A tcp_inbound -p TCP -s 0/0 -i br0 -m multiport --ports 111,2049,32764:32769 -j ACCEPT -m comment --comment "NFS TCP over OpenVPN"
 			iptables -A tcp_inbound -p TCP -s 0/0 -i tun+ -m multiport --ports 111,2049,32764:32769 -j ACCEPT -m comment --comment "NFS TCP over OpenVPN"
 		fi
@@ -747,10 +968,17 @@ gfnPopulatingTcpInboundChain() {
 	"letsencrypt")
 		bLetsEncryptOpenPort="$(cmdMySQL 'MySB_db' "SELECT letsencrypt_openport FROM system WHERE id_system='1';")"
 		if [ "$bLetsEncryptOpenPort" -eq 1 ]; then
+<<<<<<< HEAD
+			nNumLine=$(grep '\-A tcp_inbound -p tcp -j RETURN' -n -m 1 "${MySB_InstallDir}"/temp/current-iptables-rules | cut -d ':' -f 1)
+			sed -i "${nNumLine}i\-A tcp_inbound -s 0/0 -i ${gsPrimaryInet} -p tcp -m tcp --dport 80 -m comment --comment \"Lets Encrypt HTTP\" -j ACCEPT" "${MySB_InstallDir}"/temp/current-iptables-rules
+		else
+			sed -i '/Lets Encrypt HTTP/d' "${MySB_InstallDir}"/temp/current-iptables-rules
+=======
 			nNumLine=$(grep '\-A tcp_inbound -p tcp -j RETURN' -n -m 1 "${MySB_InstallDir:?}"/temp/current-iptables-rules | cut -d ':' -f 1)
 			sed -i "${nNumLine}i\-A tcp_inbound -s 0/0 -i ${gsPrimaryInet:?} -p tcp -m tcp --dport 80 -m comment --comment \"Lets Encrypt HTTP\" -j ACCEPT" "${MySB_InstallDir:?}"/temp/current-iptables-rules
 		else
 			sed -i '/Lets Encrypt HTTP/d' "${MySB_InstallDir:?}"/temp/current-iptables-rules
+>>>>>>> de9cf1d41345d9d581474564386c83515efb4824
 		fi
 		# bLetsEncryptOpenPort="`cmdMySQL 'MySB_db' "SELECT letsencrypt_openport FROM system WHERE id_system='1';"`"
 		# if [ "$gsIpRestriction" == "YES" ]; then
@@ -763,12 +991,21 @@ gfnPopulatingTcpInboundChain() {
 		# fi
 		# LetsEncryptIPs="`echo $LetsEncryptIPs | sed -e 's/^ //g;' | sed 's/\s+$//' | sort | uniq`"
 		# if [ "$bLetsEncryptOpenPort" -eq 1 ]; then
+<<<<<<< HEAD
+		# nNumLine=$(cat "${MySB_InstallDir}"/temp/current-iptables-rules | grep '\-A tcp_inbound -p tcp -j RETURN' -n -m 1 | cut -d ':' -f 1)
+		# for IPv4 in $LetsEncryptIPs; do
+		# sed -i "${nNumLine}i\-A tcp_inbound -s $IPv4 -i ${gsPrimaryInet} -p tcp -m tcp --dport 80 -m comment --comment \"Lets Encrypt HTTP\" -j ACCEPT" "${MySB_InstallDir}"/temp/current-iptables-rules
+		# done
+		# else
+		# sed -i '/Lets Encrypt HTTP/d' "${MySB_InstallDir}"/temp/current-iptables-rules
+=======
 		# nNumLine=$(cat "${MySB_InstallDir:?}"/temp/current-iptables-rules | grep '\-A tcp_inbound -p tcp -j RETURN' -n -m 1 | cut -d ':' -f 1)
 		# for IPv4 in $LetsEncryptIPs; do
 		# sed -i "${nNumLine}i\-A tcp_inbound -s $IPv4 -i ${gsPrimaryInet:?} -p tcp -m tcp --dport 80 -m comment --comment \"Lets Encrypt HTTP\" -j ACCEPT" "${MySB_InstallDir:?}"/temp/current-iptables-rules
 		# done
 		# else
 		# sed -i '/Lets Encrypt HTTP/d' "${MySB_InstallDir:?}"/temp/current-iptables-rules
+>>>>>>> de9cf1d41345d9d581474564386c83515efb4824
 		# fi
 		;;
 	esac
@@ -810,7 +1047,11 @@ gfnProcessInputChain() {
 	# The firewall will drop all multicasts to the entire subnet (224.0.0.1) by default.
 	# To only affect IGMP multicasts, change '-p ALL' to '-p 2'.
 	# Of course, if they aren't accepted elsewhere, it will only ensure that multicasts on other protocols are logged.
+<<<<<<< HEAD
+	if [ "${gbIsInstalled_OpenVPN}" == "YES" ]; then
+=======
 	if [ "${gbIsInstalled_OpenVPN:?}" == "YES" ]; then
+>>>>>>> de9cf1d41345d9d581474564386c83515efb4824
 		# The rule to accept the packets.
 		iptables -A INPUT -p ALL -d 224.0.0.1 -j ACCEPT
 	else
@@ -819,7 +1060,11 @@ gfnProcessInputChain() {
 	fi
 
 	# Rules for the private network (accessing gateway system itself)
+<<<<<<< HEAD
+	if [ "${gbIsInstalled_OpenVPN}" == "YES" ]; then
+=======
 	if [ "${gbIsInstalled_OpenVPN:?}" == "YES" ]; then
+>>>>>>> de9cf1d41345d9d581474564386c83515efb4824
 		iptables -A INPUT -p ALL -i tun0 -s 10.0.0.0/24 -j ACCEPT
 		iptables -A INPUT -p ALL -i tun0 -d 10.0.0.255 -j ACCEPT
 		iptables -A INPUT -p ALL -i tun1 -s 10.0.1.0/24 -j ACCEPT
@@ -835,6 +1080,16 @@ gfnProcessInputChain() {
 
 	## Inbound Internet Packet Rules
 	# Accept Established Connections
+<<<<<<< HEAD
+	iptables -A INPUT -p ALL -i "${gsPrimaryInet}" -m state --state ESTABLISHED,RELATED -j ACCEPT
+
+	# Route the rest to the appropriate user chain
+	iptables -A INPUT -p ICMP -i "${gsPrimaryInet}" -j icmp_packets
+	iptables -A INPUT -p TCP -i "${gsPrimaryInet}" -j tcp_inbound
+	iptables -A INPUT -p UDP -i "${gsPrimaryInet}" -j udp_inbound
+
+	if [ "${gbIsInstalled_OpenVPN}" == "YES" ]; then
+=======
 	iptables -A INPUT -p ALL -i "${gsPrimaryInet:?}" -m state --state ESTABLISHED,RELATED -j ACCEPT
 
 	# Route the rest to the appropriate user chain
@@ -843,6 +1098,7 @@ gfnProcessInputChain() {
 	iptables -A INPUT -p UDP -i "${gsPrimaryInet:?}" -j udp_inbound
 
 	if [ "${gbIsInstalled_OpenVPN:?}" == "YES" ]; then
+>>>>>>> de9cf1d41345d9d581474564386c83515efb4824
 		iptables -A INPUT -p ICMP -i tun+ -j icmp_packets
 		iptables -A INPUT -p ICMP -i br0 -j icmp_packets
 		iptables -A INPUT -p TCP -i tun+ -j tcp_inbound
@@ -874,7 +1130,11 @@ gfnProcessForwardChain() {
 		iptables -A FORWARD -i docker0 -o docker0 -j ACCEPT -m comment --comment "Docker"
 	fi
 
+<<<<<<< HEAD
+	if [ "${gbIsInstalled_OpenVPN}" == "YES" ]; then
+=======
 	if [ "${gbIsInstalled_OpenVPN:?}" == "YES" ]; then
+>>>>>>> de9cf1d41345d9d581474564386c83515efb4824
 		# Accept TCP packets we want to forward from internal sources
 		iptables -A FORWARD -p TCP -i tun0 -j tcp_outbound
 		iptables -A FORWARD -p TCP -i tun1 -j tcp_outbound
@@ -890,14 +1150,24 @@ gfnProcessForwardChain() {
 		iptables -A FORWARD -p ALL -i tun1 -j ACCEPT
 		iptables -A FORWARD -p ALL -i br0 -j ACCEPT
 
+<<<<<<< HEAD
+		iptables -A FORWARD -i tun0 -o "${gsPrimaryInet}" -s 10.0.1.0/24 -m conntrack --ctstate NEW -j ACCEPT -m comment --comment "OpenVPN without redirect GW"
+		iptables -A FORWARD -i tun1 -o "${gsPrimaryInet}" -s 10.0.0.0/24 -m conntrack --ctstate NEW -j ACCEPT -m comment --comment "OpenVPN with redirect GW"
+		iptables -A FORWARD -i br0 -o "${gsPrimaryInet}" -s 10.0.2.0/24 -m conntrack --ctstate NEW -j ACCEPT -m comment --comment "OpenVPN bridged without GW"
+=======
 		iptables -A FORWARD -i tun0 -o "${gsPrimaryInet:?}" -s 10.0.1.0/24 -m conntrack --ctstate NEW -j ACCEPT -m comment --comment "OpenVPN without redirect GW"
 		iptables -A FORWARD -i tun1 -o "${gsPrimaryInet:?}" -s 10.0.0.0/24 -m conntrack --ctstate NEW -j ACCEPT -m comment --comment "OpenVPN with redirect GW"
 		iptables -A FORWARD -i br0 -o "${gsPrimaryInet:?}" -s 10.0.2.0/24 -m conntrack --ctstate NEW -j ACCEPT -m comment --comment "OpenVPN bridged without GW"
+>>>>>>> de9cf1d41345d9d581474564386c83515efb4824
 		iptables -A FORWARD -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT -m comment --comment "OpenVPN with redirect GW"
 	fi
 
 	# Deal with responses from the internet
+<<<<<<< HEAD
+	iptables -A FORWARD -i "${gsPrimaryInet}" -m state --state ESTABLISHED,RELATED -j ACCEPT
+=======
 	iptables -A FORWARD -i "${gsPrimaryInet:?}" -m state --state ESTABLISHED,RELATED -j ACCEPT
+>>>>>>> de9cf1d41345d9d581474564386c83515efb4824
 
 	# Log packets that still don't match
 	iptables -A FORWARD -j LOG --log-prefix "[MySB] FORWARD packet died: " -m comment --comment "FORWARD packet died"
@@ -914,7 +1184,11 @@ gfnProcessOutputChain() {
 	iptables -A OUTPUT -p ALL -o lo -j ACCEPT
 
 	# To internal network
+<<<<<<< HEAD
+	if [ "${gbIsInstalled_OpenVPN}" == "YES" ]; then
+=======
 	if [ "${gbIsInstalled_OpenVPN:?}" == "YES" ]; then
+>>>>>>> de9cf1d41345d9d581474564386c83515efb4824
 		iptables -A OUTPUT -p ALL -s 10.0.0.1 -j ACCEPT
 		iptables -A OUTPUT -p ALL -o tun0 -j ACCEPT
 		iptables -A OUTPUT -p ALL -s 10.0.1.1 -j ACCEPT
@@ -930,7 +1204,11 @@ gfnProcessOutputChain() {
 	fi
 
 	# To internet
+<<<<<<< HEAD
+	iptables -A OUTPUT -p ALL -o "${gsPrimaryInet}" -j ACCEPT
+=======
 	iptables -A OUTPUT -p ALL -o "${gsPrimaryInet:?}" -j ACCEPT
+>>>>>>> de9cf1d41345d9d581474564386c83515efb4824
 
 	# Log packets that still don't match
 	iptables -A OUTPUT -j LOG --log-prefix "[MySB] OUTPUT packet died: " -m comment --comment "OUTPUT packet died"
@@ -951,10 +1229,17 @@ gfnProcessNatPostroutingChain() {
 		iptables -t nat -A POSTROUTING -s 172.17.0.0/16 ! -o docker0 -j MASQUERADE -m comment --comment "Docker"
 	fi
 
+<<<<<<< HEAD
+	iptables -t nat -A POSTROUTING -o "${gsPrimaryInet}" -j SNAT --to-source "${gsSrvIpAddress}"
+
+	if [ "${gbIsInstalled_OpenVPN}" == "YES" ]; then
+		iptables -t nat -A POSTROUTING -s 10.0.0.0/24 -o "${gsPrimaryInet}" -j MASQUERADE -m comment --comment "OpenVPN with redirect GW"
+=======
 	iptables -t nat -A POSTROUTING -o "${gsPrimaryInet:?}" -j SNAT --to-source "${gsSrvIpAddress:?}"
 
 	if [ "${gbIsInstalled_OpenVPN:?}" == "YES" ]; then
 		iptables -t nat -A POSTROUTING -s 10.0.0.0/24 -o "${gsPrimaryInet:?}" -j MASQUERADE -m comment --comment "OpenVPN with redirect GW"
+>>>>>>> de9cf1d41345d9d581474564386c83515efb4824
 	fi
 }
 
