@@ -9,6 +9,7 @@ stages:
     image: ${CI_REGISTRY_IMAGE}/project_check/project_check:latest
     script:
         - |
+            echo ${CI_PROJECT_DIR}/ci/scripts/[0-9][0-9]-*.bsh
             for script in $(echo ${CI_PROJECT_DIR}/ci/scripts/[0-9][0-9]-*.bsh); do
                 . ${script}
             done
