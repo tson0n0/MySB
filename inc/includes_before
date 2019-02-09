@@ -42,7 +42,7 @@ fi
 source "$MySB_InstallDir"/inc/vars
 # shellcheck source=inc/switches
 source "$MySB_InstallDir"/inc/switches
-if [ -z "${funcs_Install:?}" ] && [ -n "$IsScriptInstall" ]; then
+if [ -z "${funcs_Install:-}" ] && [ -n "$IsScriptInstall" ]; then
 	# shellcheck source=inc/funcs_by_script/funcs_Install
 	source "$MySB_InstallDir"/inc/funcs_by_script/funcs_Install
 fi
@@ -52,11 +52,11 @@ if [ -f "$MySB_InstallDir/inc/funcs_by_script/funcs_$gsScriptName" ]; then
 fi
 case "$gsScriptName" in
 	From_*|BulkChanges.bsh|MySB_UpgradeMe)
-		if [ -z "${funcs_Install:?}" ]; then
+		if [ -z "${funcs_Install:-}" ]; then
 			# shellcheck source=inc/funcs_by_script/funcs_Install
 			source "$MySB_InstallDir"/inc/funcs_by_script/funcs_Install
 		fi
-		if [ -z "${funcs_Upgrade:?}" ]; then
+		if [ -z "${funcs_Upgrade:-}" ]; then
 			# shellcheck source=inc/funcs_by_script/funcs_Upgrade
 			source "$MySB_InstallDir"/inc/funcs_by_script/funcs_Upgrade
 		fi

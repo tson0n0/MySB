@@ -42,7 +42,7 @@ gfnCleanBlockList() {
 
 	case $sCommand in
 	'download')
-		if (curl -skLS --retry 3 -o "${MySB_InstallDir}/files/blocklists/$sFile.gz" "$sUrl"); then
+		if (curl -skLS --retry 3 -o "${MySB_InstallDir:?}/files/blocklists/$sFile.gz" "$sUrl"); then
 			gzip -dc "$MySB_InstallDir/files/blocklists/$sFile.gz" | cut -d: -f2 >"$MySB_InstallDir/files/blocklists/$sFile.txt"
 			sLastUpdate="$(date +%Y-%m-%d\ %H:%M:%S)"
 		else
