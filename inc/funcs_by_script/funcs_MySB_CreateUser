@@ -1,3 +1,5 @@
+#!/bin/bash
+# rev 5.5
 # ----------------------------------
 #  __/\\\\____________/\\\\___________________/\\\\\\\\\\\____/\\\\\\\\\\\\\___
 #   _\/\\\\\\________/\\\\\\_________________/\\\/////////\\\_\/\\\/////////\\\_
@@ -20,21 +22,22 @@
 #	--> Licensed under the MIT license: http://www.opensource.org/licenses/mit-license.php
 #
 ######################################################################
-([ -z "$vars" ] || [ "$vars" -ne 1 ]) && echo "Please load 'vars' file before..." && return
+{ [ -z "${vars:-}" ] || [ "${vars}" -ne 1 ]; } && {
+	echo "Please load 'vars' file before..."
+	return
+}
 funcs_MySB_CreateUser=1
+export funcs_MySB_CreateUser
 ##################### FIRST LINE #####################################
 
 #### NextCloud account manage
 gfnNextCloudAccountManage() {
-	local sSwitch sUserAccount sPassword tTimeStamp sUserMail
+	local sSwitch sUserAccount sPassword sUserMail
 
 	sSwitch="$1"
 	sUserAccount="$2"
 	sPassword="$3"
-	tTimeStamp=$(date +%s)
-	sUserMail="$(cmdMySQL 'MySB_db' "SELECT users_email FROM users WHERE users_ident='$sUserAccount';")"
 	OC_PASS="$sPassword"
-	export OC_PASS
 
 	case "$sSwitch" in
 	'create')

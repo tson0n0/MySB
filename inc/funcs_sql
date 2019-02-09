@@ -1,3 +1,5 @@
+#!/bin/bash
+# rev 5.5
 # ----------------------------------
 #  __/\\\\____________/\\\\___________________/\\\\\\\\\\\____/\\\\\\\\\\\\\___
 #   _\/\\\\\\________/\\\\\\_________________/\\\/////////\\\_\/\\\/////////\\\_
@@ -20,8 +22,12 @@
 #	--> Licensed under the MIT license: http://www.opensource.org/licenses/mit-license.php
 #
 ######################################################################
-([ -z "$vars" ] || [ "$vars" -ne 1 ]) && echo "Please load 'vars' file..." && return
+{ [ -z "${vars:-}" ] || [ "${vars}" -ne 1 ]; } && {
+	echo "Please load 'vars' file before..." >/tmp/funcs_sql.log
+	return
+}
 funcs_sql=1
+export funcs_sql
 ##################### FIRST LINE #####################################
 
 #### MySQL command
@@ -35,7 +41,7 @@ cmdMySQL() {
 		sRequest="$2"
 		sVerbose="$3"
 	fi
-	mysql --defaults-extra-file=/root/.config.cnf --database=$sDatabase -w --connect-timeout=10 -s -N -e "$sRequest" $sVerbose
+	mysql --defaults-extra-file=/root/.config.cnf --database="$sDatabase" -w --connect-timeout=10 -s -N -e "$sRequest" "$sVerbose"
 }
 
 ##################### LAST LINE ######################################

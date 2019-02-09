@@ -40,7 +40,7 @@ PackagesToRemove="`grep -rni --exclude="MySB_CleanAll.bsh" 'gfnPackagesManage in
 gfnStatusSTD
 
 echo -e -n "${CBLUE}Creating the list of packages that must be kept$CEND..."
-PackagesToKeep="`grep -rni --exclude="MySB_CleanAll.bsh" 'TOOLS=' $MySB_InstallDir/install/MySB_Install.bsh | cut -d '"' -f 2`"
+PackagesToKeep="$(grep -rni --exclude="MySB_CleanAll.bsh" 'TOOLS=' "$MySB_InstallDir"/install/MySB_Install.bsh | awk -F'[(|)]' '{print $2}')"
 gfnStatusSTD
 
 echo -e -n "${CBLUE}Creating the list of services that need to be stopped$CEND..."

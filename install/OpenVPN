@@ -57,7 +57,8 @@ CreateServer() {
 
 	#### install package
 	if ! gfnCheckCommand 0 openvpn; then
-		gfnPackageBundleInstall 'openvpn easy-rsa'
+		sPackages=(openvpn easy-rsa)
+		gfnPackageBundleInstall "${sPackages[@]}"
 	fi
 
 	#### STOP services

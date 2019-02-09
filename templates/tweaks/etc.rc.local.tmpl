@@ -17,7 +17,7 @@ MemoryFree="`free -g -h --si | grep 'Mem' | awk '{ print $4 }'`o"
 SwapTotal="`free -g -h --si | grep 'Swap' | awk '{ print $2 }'`o"
 SwapFree="`free -g -h --si | grep 'Swap' | awk '{ print $4 }'`o"
 Processors="`cat /proc/cpuinfo | grep 'processor' | wc -l`"
-case `getconf LONG_BIT` in
+case $(getconf LONG_BIT) in
 	64)	Arch="amd64";;
 	*)	Arch="i386";;
 esac
