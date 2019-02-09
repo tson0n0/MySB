@@ -6,7 +6,7 @@
 	 <a href="https://github.com/toulousain79/MySB/blob/v99.99/LICENCE.md">
 		<img src="https://img.shields.io/github/license/mashape/apistatus.svg?style=flat-square" /></a>
 	<img alt="v99.99 pipeline status" src="https://img.shields.io/gitlab/pipeline/toulousain79/MySB/v99.99.svg?label=v99.99%20pipeline%20status&style=plastic" />
-	<img alt="develop pipeline status" src=https://img.shields.io/gitlab/pipeline/toulousain79/MySB/develop.svg?label=develop%20pipeline%20status&style=plastic" />
+	<img alt="develop pipeline status" src="https://img.shields.io/gitlab/pipeline/toulousain79/MySB/develop.svg?label=develop%20pipeline%20status&style=plastic" />
 </p>
 
 # English
