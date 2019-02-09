@@ -111,10 +111,10 @@ From_*) # Upgrade ?
 	TIMESTAMP=OFF
 	[ -z "$EnvLang" ] && EnvLang="en"
 
-	#### update Git Hub
-	cd "${MySB_InstallDir:?}"/ || exit
-	gsCurrentVersion="v5.5"
-	sleep 10
+		#### update Git Hub
+		cd $MySB_InstallDir/
+		gsCurrentVersion="v99.99"
+		sleep 10
 	;;
 Questions)
 	BANNER=ON

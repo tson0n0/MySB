@@ -34,7 +34,7 @@ export funcs_PeerGuardian
 gfnIblocklistXmlGenerate() {
 	local sLine sListId sUrlInfo sUrlList sListName sNewLine nComment sListNameLower sValues
 
-	${binCURL} -o /tmp/lists.xml https://www.iblocklist.com/lists.xml
+	${binCURL:?} -o /tmp/lists.xml https://www.iblocklist.com/lists.xml
 	rm -f /tmp/lists.txt
 	[ "${1}" == "p2partisan" ] && nHeaderGlobal=1 || nHeaderGlobal=0
 	[ "${1}" == "p2partisan" ] && nHeaderCountries=1 || nHeaderCountries=0

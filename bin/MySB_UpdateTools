@@ -1,6 +1,7 @@
 #!/bin/bash
+# rev 5.5
 # ----------------------------------
-. $(dirname $0)/../inc/includes_before
+. "$(dirname "$0")"/../inc/includes_before
 # ----------------------------------
 #  __/\\\\____________/\\\\___________________/\\\\\\\\\\\____/\\\\\\\\\\\\\___
 #   _\/\\\\\\________/\\\\\\_________________/\\\/////////\\\_\/\\\/////////\\\_
@@ -56,11 +57,19 @@ fi
 gfnListCountUsers 'all'
 for seedUser in ${gsUsersList}; do
 	sUserMail="$(cmdMySQL 'MySB_db' "SELECT users_email FROM users_history WHERE users_ident='$seedUser';")"
-	(! grep -q "$seedUser" /etc/aliases) && echo "$seedUser: $sUserMail" >>/etc/aliases
-	newaliases
+	(! grep -q "$seedUser" /etc/aliases) && {
+		echo "$seedUser: $sUserMail" >>/etc/aliases
+		newaliases
+	}
+done
+## ruTorrent Plugin Check Port
+gfnListCountUsers 'normal'
+for seedUser in ${gsUsersList}; do
+	(! grep -q 'portchecker.co' "${gsRutorrentPluginsDir}"/check_port/action.php) && { cp -v "$MySB_InstallDir"/templates/rutorrent/plugins.check_port.action.php "${gsRutorrentPluginsDir}"/check_port/action.php; }
+	gfnManageServices restart "rtorrent-$seedUser"
 done
 
 # -----------------------------------------
-. $(dirname $0)/../inc/includes_after
+. "$(dirname "$0")"/../inc/includes_after
 # -----------------------------------------
 ##################### LAST LINE ######################################

@@ -191,12 +191,12 @@
 	+ selection of resolvers that do not keep logs of queries _(No Logs)_
 	+ selection of resolvers that accept the DNSsec protocol
 	+ selection of resolvers that accept the NameCoin protocol
-    * update option
+  * update option
 	+ download online 'dnscrypt-resolvers.csv'
 	+ minisign check of 'dnscrypt-resolvers.csv'
 	+ verify certificate validity of filtred resolvers
 	+ speed test of filtred resolvers
-    * speed-test option, _allows to start DNScrypt with the fastest resolvers_
+  * speed-test option, _allows to start DNScrypt with the fastest resolvers_
 - Replacing ownCloud v9.1.3 with NextCloud v12.0.0
 - Add Maxmind GeoIP automatic update script v2.4.0
 - Let's Encrypt _(certbot)_, certificate checks end date review for scheduled renew
