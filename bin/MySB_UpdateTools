@@ -28,8 +28,8 @@
 
 #### PlexMedia & Tautulli update
 if [[ "${gbIsInstalled_PlexMedia:-}" == "YES" ]]; then
-	log_daemon_msg "${UpdateTools_Plex:?}"
-	gfnScriptInvoke 'ScreenSTD' "${MySB_InstallDir:?}/install/PlexMedia" 'CRON'
+	log_daemon_msg "${UpdateTools_Plex:-}"
+	gfnScriptInvoke 'ScreenSTD' "${MySB_InstallDir:-}/install/PlexMedia" 'CRON'
 	gfnStatusLSB
 fi
 
@@ -66,7 +66,7 @@ done
 ## ruTorrent Plugin Check Port
 gfnListCountUsers 'normal'
 for seedUser in ${gsUsersList}; do
-	(! grep -q 'portchecker.co' "${gsRutorrentPluginsDir:?}"/check_port/action.php) && { cp -v "$MySB_InstallDir"/templates/rutorrent/plugins.check_port.action.php "${gsRutorrentPluginsDir}"/check_port/action.php; }
+	(! grep -q 'portchecker.co' "${gsRutorrentPluginsDir:-}"/check_port/action.php) && { cp -v "$MySB_InstallDir"/templates/rutorrent/plugins.check_port.action.php "${gsRutorrentPluginsDir}"/check_port/action.php; }
 	gfnManageServices restart "rtorrent-$seedUser"
 done
 

@@ -11,7 +11,7 @@ source "$(dirname "$0")"/../inc/includes_before
 #	   _\/\\\____\///_____\/\\\_____\//\\\____________\////\\\___\/\\\_______\/\\\_
 #		_\/\\\_____________\/\\\__/\\_/\\\______/\\\______\//\\\__\/\\\_______\/\\\_
 #		 _\/\\\_____________\/\\\_\//\\\\/______\///\\\\\\\\\\\/___\/\\\\\\\\\\\\\/__
-#		  _\///______________\///___\////__________\///////////_____\/////////////_____
+#		  _\///______________\///___\////__________\///////////_____\/////////////_	____
 #			By toulousain79 ---> https://github.com/toulousain79/
 #
 ######################################################################
@@ -30,12 +30,12 @@ sPackages=(mariadb-server mysqltuner sqlite3)
 gfnPackageBundleInstall "${sPackages[@]}"
 if [ "${gsSwitch:-}" == "UPGRADE" ]; then
 	cmdMySQL 'MySB_db' "UPDATE system SET apt_update = 1, apt_date = '$(date +%Y-%m-%d\ %H:%M:%S)' WHERE id_system='1';" -v
-	gfnScriptInvoke 'ScreenSTD' "${MySB_InstallDir:?}/bin/MySB_UpgradeSystem" 'SCREEN'
+	gfnScriptInvoke 'ScreenSTD' "${MySB_InstallDir:-}/bin/MySB_UpgradeSystem" 'SCREEN'
 fi
 
 #### Wolf database
 if gfnCheckCommand 0 sqlite3; then
-	if [ -f "${gsWolf_DB:?}" ] || [ -s "${gsWolf_DB}" ]; then
+	if [ -f "${gsWolf_DB:-}" ] || [ -s "${gsWolf_DB}" ]; then
 		sqlite3 -cmd '.timeout 150000' "$gsWolf_DB" "DELETE FROM secure_token WHERE 1"
 		sqlite3 -cmd '.timeout 150000' "$gsWolf_DB" "UPDATE user SET name='', email='', username='', password='', salt='', last_login='', last_failure='', last_failure='', created_on='', updated_on='' WHERE id='2';"
 	fi
@@ -102,7 +102,7 @@ if [ -z $MySQL_RootPassword ] && [ -z $MySQL_MysbPassword ]; then
 		FLUSH PRIVILEGES;
 	EOF
 
-	if [ "${gbToInstall_NextCloud:?}" == "YES" ] || [ "${gbIsInstalled_NextCloud:?}" != "INIT" ]; then
+	if [ "${gbToInstall_NextCloud:-}" == "YES" ] || [ "${gbIsInstalled_NextCloud:-}" != "INIT" ]; then
 		if [ ! -f /var/lib/mysql/NextCloud_db/db.opt ]; then
 			mysql -u root -p"${MySQL_RootPassword}" --verbose <<-EOF
 				CREATE DATABASE NextCloud_db CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
@@ -121,7 +121,7 @@ if [ -z $MySQL_RootPassword ] && [ -z $MySQL_MysbPassword ]; then
 
 	if [ ! -f /etc/MySB/config.php ]; then
 		cp -vf "$MySB_InstallDir"/templates/mysb/etc.mysb.config.php.tmpl /etc/MySB/config.php
-		perl -pi -e "s/<MySB_InstallDir>/${gsInstallDirEscaped:?}/g" /etc/MySB/config.php
+		perl -pi -e "s/<MySB_InstallDir>/${gsInstallDirEscaped:-}/g" /etc/MySB/config.php
 		if [ -n "$MySQL_MysbPassword" ]; then
 			perl -pi -e "s/<MySQL_MysbPassword>/$MySQL_MysbPassword/g" /etc/MySB/config.php
 		fi
@@ -154,7 +154,7 @@ if [ -z $MySQL_RootPassword ] && [ -z $MySQL_MysbPassword ]; then
 		mysql --defaults-extra-file=/root/.config.cnf --database=MySB_db --verbose <"$MySB_InstallDir"/templates/mysql/Table_system.sql
 	fi
 else
-	if [ "${gbIsInstalled_Webmin:?}" == "YES" ] && [ -f /etc/webmin/mysql/config ]; then
+	if [ "${gbIsInstalled_Webmin:-}" == "YES" ] && [ -f /etc/webmin/mysql/config ]; then
 		sed -i '/login=/d' /etc/webmin/mysql/config
 		sed -i '/pass=/d' /etc/webmin/mysql/config
 		echo "login=root" >>/etc/webmin/mysql/config

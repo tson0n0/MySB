@@ -144,7 +144,7 @@ gfnLoadingVars() {
 #### Create all rules for services (config files)
 gfnCreateServicesRules() {
 	#### NginX
-	if [ "$ApplyConfigNginx" == "YES" ] && [ "${gsIpRestriction:?}" == "YES" ]; then
+	if [ "$ApplyConfigNginx" == "YES" ] && [ "${gsIpRestriction:-}" == "YES" ]; then
 		log_daemon_msg "${SecurityRules_NginX_AllUsers:-}"
 		echo "	# Users allowed IP" >/etc/nginx/conf.d/ip_restriction
 		for IPv4 in $AllUsersIPs; do
@@ -208,7 +208,7 @@ gfnCreateServicesRules() {
 	if [ "$ApplyConfigFail2Ban" == "YES" ]; then
 		# shellcheck source=inc/funcs_by_script/funcs_Fail2Ban
 		# shellcheck disable=SC1094
-		source "${MySB_InstallDir:?}"/inc/funcs_by_script/funcs_Fail2Ban
+		source "${MySB_InstallDir:-}"/inc/funcs_by_script/funcs_Fail2Ban
 		gfnFail2BanJailLocal
 		gfnFail2BanWhitheList 1
 	fi
@@ -273,8 +273,8 @@ gfnCreateHostsFile() {
 	local nIdTracker sTracker sTrackerDomain sTrackerIPv4 sIPv4 sLign sROW
 
 	echo "127.0.0.1	 localhost.localdomain localhost" >/etc/hosts
-	echo "${gsSrvIpAddress:?}   ${gsHostNameFqdn:?} $(hostname -s)" >>/etc/hosts
-	[[ "$gsSrvIpAddress" != "${gsSrvIpAddressExt:?}" ]] && echo "$gsSrvIpAddressExt	 $gsHostNameFqdn" >>/etc/hosts
+	echo "${gsSrvIpAddress:-}   ${gsHostNameFqdn:-} $(hostname -s)" >>/etc/hosts
+	[[ "$gsSrvIpAddress" != "${gsSrvIpAddressExt:-}" ]] && echo "$gsSrvIpAddressExt	 $gsHostNameFqdn" >>/etc/hosts
 	echo "" >>/etc/hosts
 
 	cmdMySQL 'MySB_db' "SELECT id_trackers_list,tracker,tracker_domain FROM trackers_list WHERE is_active='1';" | sed 's/\t/|/g;' | while read -r sROW; do

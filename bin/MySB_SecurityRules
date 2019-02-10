@@ -30,7 +30,7 @@ source "$(dirname "$0")"/../inc/includes_before
 ##################### FIRST LINE #####################################
 
 # shellcheck source=inc/funcs_iptables
-source "${MySB_InstallDir:?}"/inc/funcs_iptables
+source "${MySB_InstallDir:-}"/inc/funcs_iptables
 
 #### Check params
 nNbArgs=$#
@@ -58,34 +58,34 @@ clean)
 
 	#### STOP services
 	gfnRestartRtorrentSessions "stop"
-	gfnManageServices stop "${ServicesToStop:?} ${rTorrentToStop:?} pglcmd fail2ban cron"
+	gfnManageServices stop "${ServicesToStop:-} ${rTorrentToStop:-} pglcmd fail2ban cron"
 	#### STOP services
 
 	#### IPtables - Removal of existing rules
-	log_daemon_msg "${SecurityRules_IPtables_RemoveAll:?}"
+	log_daemon_msg "${SecurityRules_IPtables_RemoveAll:-}"
 	gfnFlushingIptables
 	gfnStatusLSB
 	#### IPtables - Removal of existing rules
 
 	#### NginX - Satisfy all
 	if [ "${ApplyConfigNginx:-}" == "YES" ]; then
-		log_daemon_msg "${SecurityRules_NginX_SatisfyAll:?}"
+		log_daemon_msg "${SecurityRules_NginX_SatisfyAll:-}"
 		echo "	# Allow any one" >>/etc/nginx/conf.d/ip_restriction
 		echo "	satisfy all;" >/etc/nginx/conf.d/ip_restriction
 		gfnStatusLSB
 	else
-		log_daemon_msg "${SecurityRules_NginX_NotInstalled:?}"
+		log_daemon_msg "${SecurityRules_NginX_NotInstalled:-}"
 		gfnStatusLSB
 	fi
 	#### NginX - Satisfy all
 
 	#### Bind - Unblock inactive tracker domains
 	if [ "${ApplyConfigBind:-}" == "YES" ]; then
-		log_daemon_msg "${SecurityRules_Bind_UnblockTracker:?}"
+		log_daemon_msg "${SecurityRules_Bind_UnblockTracker:-}"
 		perl -pi -e "s/^include \"\/etc\/bind\/MySB.zones.blakclists\";/#include \"\/etc\/bind\/MySB.zones.blakclists\";/g" /etc/bind/named.conf.local
 		gfnStatusLSB
 	else
-		log_daemon_msg "${SecurityRules_Bind_NotInstalled:?}"
+		log_daemon_msg "${SecurityRules_Bind_NotInstalled:-}"
 		gfnStatusLSB
 	fi
 	#### Bind - Unblock inactive tracker domains
@@ -95,13 +95,13 @@ clean)
 	#### START services
 
 	#### IPtables - SAVE Iptables Rules
-	iptables-save >"${gsIptablesRules:?}"
+	iptables-save >"${gsIptablesRules:-}"
 	[ -f "${gsIptablesRules}" ] && cp -f "${gsIptablesRules}" "$MySB_InstallDir"/files/current-iptables-rules
-	if [ "${gbIsInstalled_Webmin:?}" == "YES" ] && [ -d /etc/webmin/firewall/ ]; then
+	if [ "${gbIsInstalled_Webmin:-}" == "YES" ] && [ -d /etc/webmin/firewall/ ]; then
 		cp -f "${gsIptablesRules}" /etc/webmin/firewall/iptables.save
 	fi
-	if [ -n "${gbDevMode:?}" ] && [ "$gbDevMode" -eq 1 ]; then
-		cat "${gsIptablesRules}" >>"$MySB_InstallDir/logs/IPTABLES/${gsScriptName:?}_IPTABLES.log"
+	if [ -n "${gbDevMode:-}" ] && [ "$gbDevMode" -eq 1 ]; then
+		cat "${gsIptablesRules}" >>"$MySB_InstallDir/logs/IPTABLES/${gsScriptName:-}_IPTABLES.log"
 	fi
 	#### IPtables - SAVE Iptables Rules
 	;;
@@ -117,16 +117,16 @@ create)
 	#### STOP services
 
 	#### Kernel - Loading modules
-	if [ "${LoadKernelModules:?}" == "YES" ]; then
-		log_daemon_msg "${SecurityRules_Kernel_Loading:?}"
+	if [ "${LoadKernelModules:-}" == "YES" ]; then
+		log_daemon_msg "${SecurityRules_Kernel_Loading:-}"
 		gfnLoadingKernelModules
 		gfnStatusLSB
 	fi
 	#### Kernel - Loading modules
 
 	#### Kernel - Parameter Configuration
-	if [ "${LoadKernelParameter:?}" == "YES" ]; then
-		log_daemon_msg "${SecurityRules_Kernel_Parameter:?}"
+	if [ "${LoadKernelParameter:-}" == "YES" ]; then
+		log_daemon_msg "${SecurityRules_Kernel_Parameter:-}"
 		gfnKernelParamConfig
 		gfnStatusLSB
 	fi
@@ -139,7 +139,7 @@ create)
 	#### IPtables - Removal of existing rules
 
 	#### IPtables - Prohibit any incoming/outgoing connections
-	log_daemon_msg "${SecurityRules_IPtables_ProhibitConn:?}"
+	log_daemon_msg "${SecurityRules_IPtables_ProhibitConn:-}"
 	iptables -P INPUT DROP
 	iptables -P FORWARD DROP
 	iptables -P OUTPUT DROP
@@ -147,21 +147,21 @@ create)
 	#### IPtables - Prohibit any incoming/outgoing connections
 
 	#### IPtables - Creating user chains
-	log_daemon_msg "${SecurityRules_IPtables_UserChains:?}"
+	log_daemon_msg "${SecurityRules_IPtables_UserChains:-}"
 	gfnCreatingUserChain
 	gfnStatusLSB
 	#### IPtables - Creating user chains
 
 	#### IPtables - Populating user chains
-	log_daemon_msg "${SecurityRules_IPtables_BadChains:?}"
+	log_daemon_msg "${SecurityRules_IPtables_BadChains:-}"
 	gfnPopulatingBadChain
 	gfnStatusLSB
 	#### IPtables - Populating user chains
 
 	#### IPtables - Populating ICMP chain
-	Message="${SecurityRules_IPtables_ICMP_0:?}"
-	if [ -n "${gsServerProvider:?}" ] && [ "$gsServerProvider" != "${Global_NO:?}" ]; then
-		Message="${SecurityRules_IPtables_ICMP_1:?}"
+	Message="${SecurityRules_IPtables_ICMP_0:-}"
+	if [ -n "${gsServerProvider:-}" ] && [ "$gsServerProvider" != "${Global_NO:-}" ]; then
+		Message="${SecurityRules_IPtables_ICMP_1:-}"
 	fi
 	log_daemon_msg "$Message"
 	gfnPopulatingIcmpChain 'create'
@@ -169,73 +169,73 @@ create)
 	#### IPtables - Populating ICMP chain
 
 	#### IPtables - Populating UDP inboud user chain
-	log_daemon_msg "${SecurityRules_IPtables_UdpIn:?}"
+	log_daemon_msg "${SecurityRules_IPtables_UdpIn:-}"
 	gfnPopulatingUdpInboundChain 'create'
 	gfnStatusLSB
 	#### IPtables - Populating UDP inboud chain
 
 	#### IPtables - Populating UDP outbound chain
-	log_daemon_msg "${SecurityRules_IPtables_UdpOut:?}"
+	log_daemon_msg "${SecurityRules_IPtables_UdpOut:-}"
 	gfnPopulatingUdpOutboundChain
 	gfnStatusLSB
 	#### IPtables - Populating UDP outbound chain
 
 	#### IPtables - Populating TCP inboud user chain
-	log_daemon_msg "${SecurityRules_IPtables_TcpIn:?}"
+	log_daemon_msg "${SecurityRules_IPtables_TcpIn:-}"
 	gfnPopulatingTcpInboundChain 'create'
 	gfnStatusLSB
 	#### IPtables - Populating TCP inboud chain
 
 	#### IPtables - Populating TCP outbound user chain
-	log_daemon_msg "${SecurityRules_IPtables_TcpOut:?}"
+	log_daemon_msg "${SecurityRules_IPtables_TcpOut:-}"
 	gfnPopulatingTcpOutboundChain
 	gfnStatusLSB
 	#### IPtables - Populating TCP outbound chain
 
 	#### IPtables - Process INPUT chain
-	log_daemon_msg "${SecurityRules_IPtables_Input:?}"
+	log_daemon_msg "${SecurityRules_IPtables_Input:-}"
 	gfnProcessInputChain
 	gfnStatusLSB
 	#### IPtables - Process INPUT chain
 
 	#### IPtables - Process FORWARD chain
-	log_daemon_msg "${SecurityRules_IPtables_Forward:?}"
+	log_daemon_msg "${SecurityRules_IPtables_Forward:-}"
 	gfnProcessForwardChain
 	gfnStatusLSB
 	#### IPtables - Process FORWARD chain
 
 	#### IPtables - Process OUTPUT chain
-	log_daemon_msg "${SecurityRules_IPtables_Output:?}"
+	log_daemon_msg "${SecurityRules_IPtables_Output:-}"
 	gfnProcessOutputChain
 	gfnStatusLSB
 	#### IPtables - Process OUTPUT chain
 
 	#### IPtables - Process NAT PREROUTING chain
-	log_daemon_msg "${SecurityRules_IPtables_NatPretrouting:?}"
+	log_daemon_msg "${SecurityRules_IPtables_NatPretrouting:-}"
 	gfnProcessNatPreroutingChain
 	gfnStatusLSB
 	#### IPtables - Process NAT PREROUTING chain
 
 	#### IPtables - Process NAT POSTROUTING chain
-	log_daemon_msg "${SecurityRules_IPtables_NatPostrouting:?}"
+	log_daemon_msg "${SecurityRules_IPtables_NatPostrouting:-}"
 	gfnProcessNatPostroutingChain
 	gfnStatusLSB
 	#### IPtables - Process NAT POSTROUTING chain
 
 	#### IPtables - Process NAT OUTPUT chain
-	log_daemon_msg "${SecurityRules_IPtables_NatOutput:?}"
+	log_daemon_msg "${SecurityRules_IPtables_NatOutput:-}"
 	gfnProcessNatOutputChain
 	gfnStatusLSB
 	#### IPtables - Process NAT DOCKER chain
 
 	#### IPtables - Process NAT DOCKER chain
-	log_daemon_msg "${SecurityRules_IPtables_NatDocker:?}"
+	log_daemon_msg "${SecurityRules_IPtables_NatDocker:-}"
 	gfnProcessNatDockerChain
 	gfnStatusLSB
 	#### IPtables - Process NAT DOCKER chain
 
 	#### IPtables - Process DOCKER's chains
-	log_daemon_msg "${SecurityRules_IPtables_Docker:?}"
+	log_daemon_msg "${SecurityRules_IPtables_Docker:-}"
 	gfnProcessDockerChains
 	gfnStatusLSB
 	#### IPtables - Process DOCKER's chains
@@ -280,7 +280,7 @@ create)
 				Name="$(echo "$Script" | awk '{split($0,a,"|"); print a[1]}')"
 				File="$(echo "$Script" | awk '{split($0,a,"|"); print a[2]}')"
 
-				log_daemon_msg "${SecurityRules_UpgradeEnd:?} $Name"
+				log_daemon_msg "${SecurityRules_UpgradeEnd:-} $Name"
 				gfnScriptInvoke 'ScreenSTD' "$File" 'INIT'
 				gfnStatusLSB
 			done
@@ -297,7 +297,7 @@ refresh)
 	gfnLoadingVars
 
 	#### IPtables - SAVE Iptables Rules
-	log_daemon_msg "${SecurityRules_IPtables_Save:?}"
+	log_daemon_msg "${SecurityRules_IPtables_Save:-}"
 	iptables-save >"$MySB_InstallDir"/temp/current-iptables-rules
 	if [ -n "$gbDevMode" ] && [ "$gbDevMode" -eq 1 ]; then
 		cat "$MySB_InstallDir"/temp/current-iptables-rules >>"$MySB_InstallDir/logs/IPTABLES/${gsScriptName}_IPTABLES.log"
@@ -306,18 +306,18 @@ refresh)
 	#### IPtables - SAVE Iptables Rules
 
 	#### IPtables - ALTER Iptables Rules
-	if [ "${ApplyIptablesLetsEncrypt:?}" == "YES" ]; then
-		log_daemon_msg "${SecurityRules_IPtables_LetEncrypt:?}"
+	if [ "${ApplyIptablesLetsEncrypt:-}" == "YES" ]; then
+		log_daemon_msg "${SecurityRules_IPtables_LetEncrypt:-}"
 
 		# tcp_inbound chain
 		gfnPopulatingTcpInboundChain 'letsencrypt'
-		[ "${gbIsInstalled_PeerGuardian:?}" == "YES" ] && ServicesToRestart="pglcmd" || ServicesToRestart=""
+		[ "${gbIsInstalled_PeerGuardian:-}" == "YES" ] && ServicesToRestart="pglcmd" || ServicesToRestart=""
 		# tcp_inbound chain
 
 		gfnStatusLSB
 	fi
-	if [ "${ApplyIptablesUsers:?}" == "YES" ]; then
-		log_daemon_msg "${SecurityRules_IPtables_Refresh:?}"
+	if [ "${ApplyIptablesUsers:-}" == "YES" ]; then
+		log_daemon_msg "${SecurityRules_IPtables_Refresh:-}"
 
 		# icmp_packets chain
 		gfnPopulatingIcmpChain 'refresh'
@@ -340,7 +340,7 @@ refresh)
 	#### Services - Create all security rules for services
 
 	#### IPtables - RESTORE Iptables Rules
-	log_daemon_msg "${SecurityRules_IPtables_Restore:?}"
+	log_daemon_msg "${SecurityRules_IPtables_Restore:-}"
 	if [ -n "$gbDevMode" ] && [ "$gbDevMode" -eq 1 ]; then
 		cat "$MySB_InstallDir"/temp/current-iptables-rules >>"$MySB_InstallDir/logs/IPTABLES/${gsScriptName}_IPTABLES.log"
 	fi
@@ -374,7 +374,7 @@ refresh)
 	;;
 
 *)
-	echo -e "${SecurityRules_Usage:?}"
+	echo -e "${SecurityRules_Usage:-}"
 	echo
 	END=OFF
 	export END
