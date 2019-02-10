@@ -26,7 +26,7 @@ source "$(dirname "$0")"/../inc/includes_before
 ##################### FIRST LINE #####################################
 
 #### Check GitHub access (switch DNS if needed)
-log_daemon_msg "${GitHubRepoUpdate_CheckAccess}"
+log_daemon_msg "${GitHubRepoUpdate_CheckAccess:?}"
 Swithing=0
 if (ping -c2 github.com >/dev/null 2>&1); then
 	gfnSwitchDNS "bind"
@@ -66,7 +66,7 @@ gfnStatusLSB
 
 #### Switch DNS to DNScrypt-proxy if available
 if [ $Swithing -eq 1 ] && [ "$gbIsInstalled_DNScrypt" == "YES" ] && [ "$gbDnsCryptSwitch" == "1" ]; then
-	log_daemon_msg "${GitHubRepoUpdate_RestoreDNS}"
+	log_daemon_msg "${GitHubRepoUpdate_RestoreDNS:?}"
 	install -o root -g root -m 0755 "$MySB_InstallDir"/templates/init/etc.init.d.dnscrypt-proxy.tmpl /etc/init.d/dnscrypt-proxy
 	systemctl daemon-reload &>/dev/null
 	systemctl disable dnscrypt-proxy &>/dev/null
@@ -82,7 +82,7 @@ screen -dmS Plexmedia_CheckUpgrade "$MySB_InstallDir"/bin/MySB_UpdateTools CRON
 if gfnCheckCommand 0 postfix && gfnGetPid postfix; then postfix flush; fi
 
 #### Quota
-gfnManageQuota
+gfnManageQuota ""
 
 #### Statistics
 # No credentials are retained !

@@ -89,39 +89,41 @@ if [ -n "${sFilesListBash}" ]; then
 	done
 fi
 
-# if [ -n "${sFilesListSh}" ]; then
-# 	echo && echo -e "${CBLUE}*** Check BASH Syntax (sh) ***${CEND}"
-# 	for file in ${sFilesListSh}; do
-# 		sed -i '/includes_before/d' "${file}"
-# 		sed -i '/includes_after/d' "${file}"
-# 		sed -i '/#!\/bin\/bash/d' "${file}"
-# 		sed -i '1iset -n' "${file}"
-# 		dos2unix "${file}" &>/dev/null
-# 		if (! bash "${file}"); then
-# 			echo -e "${CYELLOW}${file}:${CEND} ${CRED}Failed${CEND}"
-# 			nReturn=$((nReturn + 1))
-# 		else
-# 			echo -e "${CYELLOW}${file}:${CEND} ${CGREEN}Passed${CEND}"
-# 		fi
-# 	done
-# fi
+if [ -n "${sFilesListSh}" ]; then
+	echo && echo -e "${CBLUE}*** Check BASH Syntax (sh) ***${CEND}"
+	for file in ${sFilesListSh}; do
+		sed -i '/includes_before/d' "${file}"
+		sed -i '/includes_after/d' "${file}"
+		sed -i '/#!\/bin\/bash/d' "${file}"
+		sed -i '1iset -n' "${file}"
+		echo "set +n" >>"${file}"
+		dos2unix "${file}" &>/dev/null
+		if (! bash "${file}"); then
+			echo -e "${CYELLOW}${file}:${CEND} ${CRED}Failed${CEND}"
+			nReturn=$((nReturn + 1))
+		else
+			echo -e "${CYELLOW}${file}:${CEND} ${CGREEN}Passed${CEND}"
+		fi
+	done
+fi
 
-# if [ -n "${sFilesListBash}" ]; then
-# 	echo && echo -e "${CBLUE}*** Check BASH Syntax (bash) ***${CEND}"
-# 	for file in ${sFilesListBash}; do
-# 		sed -i '/includes_before/d' "${file}"
-# 		sed -i '/includes_after/d' "${file}"
-# 		sed -i '/#!\/bin\/bash/d' "${file}"
-# 		sed -i '1iset -n' "${file}"
-# 		dos2unix "${file}" &>/dev/null
-# 		if (! bash "${file}"); then
-# 			echo -e "${CYELLOW}${file}:${CEND} ${CRED}Failed${CEND}"
-# 			nReturn=$((nReturn + 1))
-# 		else
-# 			echo -e "${CYELLOW}${file}:${CEND} ${CGREEN}Passed${CEND}"
-# 		fi
-# 	done
-# fi
+if [ -n "${sFilesListBash}" ]; then
+	echo && echo -e "${CBLUE}*** Check BASH Syntax (bash) ***${CEND}"
+	for file in ${sFilesListBash}; do
+		sed -i '/includes_before/d' "${file}"
+		sed -i '/includes_after/d' "${file}"
+		sed -i '/#!\/bin\/bash/d' "${file}"
+		sed -i '1iset -n' "${file}"
+		echo "set +n" >>"${file}"
+		dos2unix "${file}" &>/dev/null
+		if (! bash "${file}"); then
+			echo -e "${CYELLOW}${file}:${CEND} ${CRED}Failed${CEND}"
+			nReturn=$((nReturn + 1))
+		else
+			echo -e "${CYELLOW}${file}:${CEND} ${CGREEN}Passed${CEND}"
+		fi
+	done
+fi
 
 export nReturn
 

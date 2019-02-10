@@ -249,7 +249,7 @@ gfnManageUserHomeDir() {
 	fi
 
 	# /home/user/db
-	if [ ! -f "/home/$sUser/db/$sUser.sq3" ]; then cp "$gsSync_DB" "/home/$sUser/db/$sUser.sq3"; fi
+	if [ ! -f "/home/$sUser/db/$sUser.sq3" ]; then cp "${gsSync_DB:?}" "/home/$sUser/db/$sUser.sq3"; fi
 	chmod -R 0770 /home/"$sUser"/db
 	chown -R "$sUser":www-data /home/"$sUser"/db
 	# /home/user/blocklist
@@ -318,59 +318,59 @@ gfnRuTorrentUsersConfigs() {
 	sUserUpper="$(echo "$sUser" | tr '[:lower:]' '[:upper:]')"
 
 	# share
-	if [ ! -d ${gsRutorrentDir:?}/share/users/$sUser/settings/ ]; then mkdir -p $gsRutorrentDir/share/users/$sUser/settings/; fi
-	if [ ! -d $gsRutorrentDir/share/users/$sUser/torrents/ ]; then mkdir -p $gsRutorrentDir/share/users/$sUser/torrents/; fi
-	if [ ! -f $gsRutorrentDir/share/users/$sUser/settings/uisettings.json ]; then
-		install -o www-data -g www-data -m 0666 $MySB_InstallDir/templates/rutorrent/uisettings.json.tmpl $gsRutorrentDir/share/users/$sUser/settings/uisettings.json
+	if [ ! -d "${gsRutorrentDir:?}/share/users/$sUser/settings/" ]; then mkdir -p "$gsRutorrentDir/share/users/$sUser/settings/"; fi
+	if [ ! -d "$gsRutorrentDir/share/users/$sUser/torrents/" ]; then mkdir -p "$gsRutorrentDir/share/users/$sUser/torrents/"; fi
+	if [ ! -f "$gsRutorrentDir/share/users/$sUser/settings/uisettings.json" ]; then
+		install -o www-data -g www-data -m 0666 "$MySB_InstallDir"/templates/rutorrent/uisettings.json.tmpl "$gsRutorrentDir/share/users/$sUser/settings/uisettings.json"
 	fi
 
 	# conf
-	if [ ! -d $gsRutorrentDir/conf/users/$sUser/ ]; then mkdir -p $gsRutorrentDir/conf/users/$sUser/; fi
-	install -o www-data -g www-data -m 0755 $MySB_InstallDir/templates/rutorrent/config.php.tmpl $gsRutorrentDir/conf/users/$sUser/config.php
-	perl -pi -e "s/<topDirectory>/$sHomeDirEscaped\/rtorrent/g" $gsRutorrentDir/conf/users/$sUser/config.php
-	perl -pi -e "s/<log_file>/$sHomeDirEscaped\/logs\/rutorrent.log/g" $gsRutorrentDir/conf/users/$sUser/config.php
-	perl -pi -e "s/<RPC>/$sUserUpper/g" $gsRutorrentDir/conf/users/$sUser/config.php
-	perl -pi -e "s/<scgi_port>/$sPortSCGI/g" $gsRutorrentDir/conf/users/$sUser/config.php
-	perl -pi -e "s/<quotaUser>/$sUser/g" $gsRutorrentDir/conf/users/$sUser/config.php
-	if [ -f $gsRutorrentDir/conf/access.ini ]; then cp $gsRutorrentDir/conf/access.ini $gsRutorrentDir/conf/users/$sUser/access.ini; fi
+	if [ ! -d "$gsRutorrentDir/conf/users/$sUser/" ]; then mkdir -p "$gsRutorrentDir/conf/users/$sUser/"; fi
+	install -o www-data -g www-data -m 0755 "$MySB_InstallDir"/templates/rutorrent/config.php.tmpl "$gsRutorrentDir/conf/users/$sUser/config.php"
+	perl -pi -e "s/<topDirectory>/$sHomeDirEscaped\/rtorrent/g" "$gsRutorrentDir/conf/users/$sUser/config.php"
+	perl -pi -e "s/<log_file>/$sHomeDirEscaped\/logs\/rutorrent.log/g" "$gsRutorrentDir/conf/users/$sUser/config.php"
+	perl -pi -e "s/<RPC>/$sUserUpper/g" "$gsRutorrentDir/conf/users/$sUser/config.php"
+	perl -pi -e "s/<scgi_port>/$sPortSCGI/g" "$gsRutorrentDir/conf/users/$sUser/config.php"
+	perl -pi -e "s/<quotaUser>/$sUser/g" "$gsRutorrentDir/conf/users/$sUser/config.php"
+	if [ -f "$gsRutorrentDir"/conf/access.ini ]; then cp "$gsRutorrentDir"/conf/access.ini "$gsRutorrentDir/conf/users/$sUser/access.ini"; fi
 
-	install -o www-data -g www-data -m 0755 $MySB_InstallDir/templates/rutorrent/plugins.ini.tmpl $gsRutorrentDir/conf/users/$sUser/plugins.ini
+	install -o www-data -g www-data -m 0755 "$MySB_InstallDir"/templates/rutorrent/plugins.ini.tmpl "$gsRutorrentDir/conf/users/$sUser/plugins.ini"
 
 	for sPlugin in $sPluginsList; do
 		bIsActive="$(cmdMySQL 'MySB_db' "SELECT active FROM repositories WHERE dir LIKE '%/$sPlugin';")"
 		[ -z "$bIsActive" ] && bIsActive=0
 
-		if [ -d $gsRutorrentPluginsDir/$sPlugin ]; then
-			if [ -f $gsRutorrentPluginsDir/$sPlugin/conf.php ] || [ -f $gsRutorrentPluginsDir/$sPlugin/config.php ]; then
+		if [ -d "$gsRutorrentPluginsDir/$sPlugin" ]; then
+			if [ -f "$gsRutorrentPluginsDir/$sPlugin/conf.php" ] || [ -f "$gsRutorrentPluginsDir/$sPlugin/config.php" ]; then
 				case $sPlugin in
 				'linkseedboxmanager')
-					if [ $bIsActive -eq 0 ] && [ "$gbIsInstalled_Manager" == "NO" ] && [ "$gbToInstall_Manager" == "NO" ]; then
+					if [ $bIsActive -eq 0 ] && [ "$gbIsInstalled_Manager" == "NO" ] && [ "${gbToInstall_Manager:-}" == "NO" ]; then
 						gfnDeleteDirectory $bVerbose "$gsRutorrentDir/conf/users/$sUser/plugins/$sPlugin"
 						gfnDeleteDirectory $bVerbose "$gsRutorrentPluginsDir/$sPlugin"
 					else
-						echo "[$sPlugin]" >>$gsRutorrentDir/conf/users/$sUser/plugins.ini
-						echo "enabled = user-defined" >>$gsRutorrentDir/conf/users/$sUser/plugins.ini
+						echo "[$sPlugin]" >>"$gsRutorrentDir/conf/users/$sUser/plugins.ini"
+						echo "enabled = user-defined" >>"$gsRutorrentDir/conf/users/$sUser/plugins.ini"
 					fi
 					;;
 				'linkcakebox')
-					if [ $bIsActive -eq 0 ] && [ "$gbIsInstalled_Cakebox" == "NO" ] && [ "$gbToInstall_Cakebox" == "NO" ]; then
+					if [ $bIsActive -eq 0 ] && [ "$gbIsInstalled_Cakebox" == "NO" ] && [ "${gbToInstall_Cakebox:-}" == "NO" ]; then
 						gfnDeleteDirectory $bVerbose "$gsRutorrentDir/conf/users/$sUser/plugins/$sPlugin"
 						gfnDeleteDirectory $bVerbose "$gsRutorrentPluginsDir/$sPlugin"
 					else
-						echo "[$sPlugin]" >>$gsRutorrentDir/conf/users/$sUser/plugins.ini
-						echo "enabled = user-defined" >>$gsRutorrentDir/conf/users/$sUser/plugins.ini
+						echo "[$sPlugin]" >>"$gsRutorrentDir/conf/users/$sUser/plugins.ini"
+						echo "enabled = user-defined" >>"$gsRutorrentDir/conf/users/$sUser/plugins.ini"
 					fi
 					;;
 				'fileupload')
 					if [ $bIsActive -eq 1 ]; then
-						if [ ! -d $gsRutorrentDir/conf/users/$sUser/fileupload ]; then
-							mkdir -p $gsRutorrentDir/conf/users/$sUser/fileupload
+						if [ ! -d "$gsRutorrentDir/conf/users/$sUser/fileupload/" ]; then
+							mkdir -p "$gsRutorrentDir/conf/users/$sUser/fileupload/"
 						fi
-						if [ -f $gsRutorrentPluginsDir/fileupload/conf.php ] && [ ! -f $gsRutorrentDir/conf/users/$sUser/fileupload/conf.php ]; then
-							cp $gsRutorrentPluginsDir/fileupload/conf.php $gsRutorrentDir/conf/users/$sUser/fileupload/conf.php
+						if [ -f "$gsRutorrentPluginsDir/fileupload/conf.php" ] && [ ! -f "$gsRutorrentDir/conf/users/$sUser/fileupload/conf.php" ]; then
+							cp "$gsRutorrentPluginsDir/fileupload/conf.php" "$gsRutorrentDir/conf/users/$sUser/fileupload/conf.php"
 						fi
-						echo "[$sPlugin]" >>$gsRutorrentDir/conf/users/$sUser/plugins.ini
-						echo "enabled = user-defined" >>$gsRutorrentDir/conf/users/$sUser/plugins.ini
+						echo "[$sPlugin]" >>"$gsRutorrentDir/conf/users/$sUser/plugins.ini"
+						echo "enabled = user-defined" >>"$gsRutorrentDir/conf/users/$sUser/plugins.ini"
 					else
 						gfnDeleteDirectory $bVerbose "$gsRutorrentDir/conf/users/$sUser/plugins/$sPlugin"
 						gfnDeleteDirectory $bVerbose "$gsRutorrentPluginsDir/$sPlugin"
@@ -378,28 +378,28 @@ gfnRuTorrentUsersConfigs() {
 					;;
 				'fileshare')
 					if [ $bIsActive -eq 1 ]; then
-						echo "[$sPlugin]" >>$gsRutorrentDir/conf/users/$sUser/plugins.ini
-						echo "enabled = user-defined" >>$gsRutorrentDir/conf/users/$sUser/plugins.ini
+						echo "[$sPlugin]" >>"$gsRutorrentDir/conf/users/$sUser/plugins.ini"
+						echo "enabled = user-defined" >>"$gsRutorrentDir/conf/users/$sUser/plugins.ini"
 					else
 						gfnDeleteDirectory $bVerbose "$gsRutorrentDir/conf/users/$sUser/plugins/$sPlugin"
 						gfnDeleteDirectory $bVerbose "$gsRutorrentPluginsDir/$sPlugin"
 					fi
 					;;
 				'diskspace')
-					if [ ! -d $gsRutorrentDir/conf/users/$sUser/$sPlugin ]; then
-						mkdir -p $gsRutorrentDir/conf/users/$sUser/$sPlugin
+					if [ ! -d "$gsRutorrentDir/conf/users/$sUser/$sPlugin" ]; then
+						mkdir -p "$gsRutorrentDir/conf/users/$sUser/$sPlugin"
 					fi
-					if [ -f $gsRutorrentPluginsDir/$sPlugin/conf.php ] && [ ! -f $gsRutorrentDir/conf/users/$sUser/$sPlugin/conf.php ]; then
-						cp $gsRutorrentPluginsDir/$sPlugin/conf.php $gsRutorrentDir/conf/users/$sUser/$sPlugin/conf.php
+					if [ -f "$gsRutorrentPluginsDir/$sPlugin/conf.php" ] && [ ! -f "$gsRutorrentDir/conf/users/$sUser/$sPlugin/conf.php" ]; then
+						cp "$gsRutorrentPluginsDir/$sPlugin/conf.php" "$gsRutorrentDir/conf/users/$sUser/$sPlugin/conf.php"
 					fi
-					echo "[$sPlugin]" >>$gsRutorrentDir/conf/users/$sUser/plugins.ini
-					echo "enabled = user-defined" >>$gsRutorrentDir/conf/users/$sUser/plugins.ini
+					echo "[$sPlugin]" >>"$gsRutorrentDir/conf/users/$sUser/plugins.ini"
+					echo "enabled = user-defined" >>"$gsRutorrentDir/conf/users/$sUser/plugins.ini"
 					;;
 				*)
 					# 3) Enable it for each user
 					if [ $bIsActive -eq 1 ]; then
-						echo "[$sPlugin]" >>$gsRutorrentDir/conf/users/$sUser/plugins.ini
-						echo "enabled = user-defined" >>$gsRutorrentDir/conf/users/$sUser/plugins.ini
+						echo "[$sPlugin]" >>"$gsRutorrentDir/conf/users/$sUser/plugins.ini"
+						echo "enabled = user-defined" >>"$gsRutorrentDir/conf/users/$sUser/plugins.ini"
 					else
 						gfnDeleteDirectory $bVerbose "$gsRutorrentDir/conf/users/$sUser/plugins/$sPlugin"
 					fi
@@ -409,9 +409,9 @@ gfnRuTorrentUsersConfigs() {
 		fi
 	done
 
-	chown -R www-data:www-data $gsRutorrentDir/conf/users/$sUser/
-	chmod -R 0755 $gsRutorrentDir/conf/users/$sUser/
-	find $gsRutorrentDir/conf/users/$sUser/ -type f -print0 | xargs -0 chmod 0555
+	chown -R www-data:www-data "$gsRutorrentDir/conf/users/$sUser/"
+	chmod -R 0755 "$gsRutorrentDir/conf/users/$sUser/"
+	find "$gsRutorrentDir/conf/users/$sUser/" -type f -print0 | xargs -0 chmod 0555
 }
 
 #### Manage user crontab
@@ -420,50 +420,50 @@ gfnUserCrontab() {
 
 	sUser="$1"
 	sUserValues="$(cmdMySQL 'MySB_db' "SELECT id_users,home_dir FROM users WHERE users_ident='$sUser';" | sed 's/\t/|/g;')"
-	nIdUser="$(echo $sUserValues | awk '{split($0,a,"|"); print a[1]}')"
-	sHomeDir="$(echo $sUserValues | awk '{split($0,a,"|"); print a[2]}')"
+	nIdUser="$(echo "$sUserValues" | awk '{split($0,a,"|"); print a[1]}')"
+	sHomeDir="$(echo "$sUserValues" | awk '{split($0,a,"|"); print a[2]}')"
 	sDirectories="$(cmdMySQL 'MySB_db' "SELECT sub_directory,sync_mode FROM users_rtorrent_cfg WHERE id_users='$nIdUser';" | sed 's/\t/|/g;')"
 	sCrontabValues="$(cmdMySQL 'MySB_db' "SELECT id_users_crontab,minutes,hours,days,months,numday,command FROM users_crontab WHERE id_users='$nIdUser';" | sed 's/\t/|/g;')"
 	sSyncDB="/home/$sUser/db/$sUser.sq3"
 
-	# echo "# Sync Mode for finished download" > $sHomeDir/scripts/sync_mode
-	# echo "# 0	-->	Do not start any script (no synchro)" >> $sHomeDir/scripts/sync_mode
-	# echo "# 1	-->	Execute scripts by crontab (*.cron)" >> $sHomeDir/scripts/sync_mode
-	# echo "# 2	-->	Execute scripts directly when a download is finished (*.sh)" >> $sHomeDir/scripts/sync_mode
-	sqlite3 -cmd '.timeout 150000' $sSyncDB "DELETE FROM categories;"
+	# echo "# Sync Mode for finished download" > "$sHomeDir"/scripts/sync_mode
+	# echo "# 0	-->	Do not start any script (no synchro)" >> "$sHomeDir"/scripts/sync_mode
+	# echo "# 1	-->	Execute scripts by crontab (*.cron)" >> "$sHomeDir"/scripts/sync_mode
+	# echo "# 2	-->	Execute scripts directly when a download is finished (*.sh)" >> "$sHomeDir"/scripts/sync_mode
+	sqlite3 -cmd '.timeout 150000' "$sSyncDB" "DELETE FROM categories;"
 	for sDirectory in $sDirectories; do
-		sSubDirectory="$(echo $sDirectory | awk '{split($0,a,"|"); print a[1]}')"
-		sSyncMode="$(echo $sDirectory | awk '{split($0,a,"|"); print a[2]}')"
-		sqlite3 -cmd '.timeout 150000' $sSyncDB "INSERT INTO categories (name,sync_mode) VALUES ('$sSubDirectory','$sSyncMode');"
+		sSubDirectory="$(echo "$sDirectory" | awk '{split($0,a,"|"); print a[1]}')"
+		sSyncMode="$(echo "$sDirectory" | awk '{split($0,a,"|"); print a[2]}')"
+		sqlite3 -cmd '.timeout 150000' "$sSyncDB" "INSERT INTO categories (name,sync_mode) VALUES ('$sSubDirectory','$sSyncMode');"
 	done
 
-	if [ -f $sHomeDir/scripts/crontab ]; then
-		rm -f $sHomeDir/scripts/crontab
+	if [ -f "$sHomeDir"/scripts/crontab ]; then
+		rm -f "$sHomeDir"/scripts/crontab
 	fi
-	if [ ! -z "$sCrontabValues" ]; then
+	if [ -n "$sCrontabValues" ]; then
 		for sCron in $sCrontabValues; do
-			nCronID="$(echo $sCron | awk '{split($0,a,"|"); print a[1]}')"
-			sCronMinutes="$(echo $sCron | awk '{split($0,a,"|"); print a[2]}')"
-			sCronHours="$(echo $sCron | awk '{split($0,a,"|"); print a[3]}')"
-			sCronDays="$(echo $sCron | awk '{split($0,a,"|"); print a[4]}')"
-			sCronMonths="$(echo $sCron | awk '{split($0,a,"|"); print a[5]}')"
-			sCronNumday="$(echo $sCron | awk '{split($0,a,"|"); print a[6]}')"
-			sCronCommand="$(echo $sCron | awk '{split($0,a,"|"); print a[7]}')"
+			nCronID="$(echo "$sCron" | awk '{split($0,a,"|"); print a[1]}')"
+			sCronMinutes="$(echo "$sCron" | awk '{split($0,a,"|"); print a[2]}')"
+			sCronHours="$(echo "$sCron" | awk '{split($0,a,"|"); print a[3]}')"
+			sCronDays="$(echo "$sCron" | awk '{split($0,a,"|"); print a[4]}')"
+			sCronMonths="$(echo "$sCron" | awk '{split($0,a,"|"); print a[5]}')"
+			sCronNumday="$(echo "$sCron" | awk '{split($0,a,"|"); print a[6]}')"
+			sCronCommand="$(echo "$sCron" | awk '{split($0,a,"|"); print a[7]}')"
 			# Adding cron job only if script file is present
-			if [ -f $sHomeDir/scripts/$sCronCommand ]; then
-				echo "$sCronMinutes $sCronHours $sCronDays $sCronMonths $sCronNumday /bin/bash ~/scripts/$sCronCommand > /dev/null 2>&1" >>$sHomeDir/scripts/crontab
+			if [ -f "$sHomeDir/scripts/$sCronCommand" ]; then
+				echo "$sCronMinutes $sCronHours $sCronDays $sCronMonths $sCronNumday /bin/bash ~/scripts/$sCronCommand > /dev/null 2>&1" >>"$sHomeDir"/scripts/crontab
 			else
 				cmdMySQL 'MySB_db' "DELETE FROM users_crontab WHERE id_users_crontab='$nCronID' AND id_users='$nIdUser';"
 			fi
 		done
 		unset nCronID sCronMinutes sCronHours sCronDays sCronMonths sCronNumday sCronCommand
 	else
-		echo >$sHomeDir/scripts/crontab
+		echo >"$sHomeDir"/scripts/crontab
 	fi
-	if [ -f $sHomeDir/scripts/crontab ]; then
-		crontab -u $sUser $sHomeDir/scripts/crontab
+	if [ -f "$sHomeDir"/scripts/crontab ]; then
+		crontab -u "$sUser" "$sHomeDir"/scripts/crontab
 		service cron restart >/dev/null
-		rm -f $sHomeDir/scripts/crontab
+		rm -f "$sHomeDir"/scripts/crontab
 	fi
 }
 
@@ -476,10 +476,10 @@ gfnCreateRtorrentConfigFile() {
 	[[ -n "$1" ]] && sUser="$1" || return
 	sFileSystemType="$(df -T "/home/" | awk '{print $2}' | tail -n1)"
 	sUserValues="$(cmdMySQL 'MySB_db' "SELECT id_users,scgi_port,rtorrent_port,home_dir FROM users WHERE users_ident='$sUser';" | sed 's/\t/|/g;')"
-	nIdUser="$(echo $sUserValues | awk '{split($0,a,"|"); print a[1]}')"
-	nPortSCGI="$(echo $sUserValues | awk '{split($0,a,"|"); print a[2]}')"
-	nPortRtorrent="$(echo $sUserValues | awk '{split($0,a,"|"); print a[3]}')"
-	sHomeDir="$(echo $sUserValues | awk '{split($0,a,"|"); print a[4]}')"
+	nIdUser="$(echo "$sUserValues" | awk '{split($0,a,"|"); print a[1]}')"
+	nPortSCGI="$(echo "$sUserValues" | awk '{split($0,a,"|"); print a[2]}')"
+	nPortRtorrent="$(echo "$sUserValues" | awk '{split($0,a,"|"); print a[3]}')"
+	sHomeDir="$(echo "$sUserValues" | awk '{split($0,a,"|"); print a[4]}')"
 	[[ -z "$sHomeDir" ]] && sHomeDir="/home/$sUser"
 	sDirectories="$(cmdMySQL 'MySB_db' "SELECT sub_directory,can_be_deleted,to_delete FROM users_rtorrent_cfg WHERE id_users='$nIdUser';" | sed 's/\t/|/g;')"
 
@@ -490,19 +490,19 @@ gfnCreateRtorrentConfigFile() {
 	fi
 
 	# Sub-Directories
-	if [ ! -z "$sDirectories" ]; then
+	if [ -n "$sDirectories" ]; then
 		for sDirectory in $sDirectories; do
-			sSubDirectory="$(echo $sDirectory | awk '{split($0,a,"|"); print a[1]}')"
-			bCanBeDeleted="$(echo $sDirectory | awk '{split($0,a,"|"); print a[2]}')"
-			bToDelete="$(echo $sDirectory | awk '{split($0,a,"|"); print a[3]}')"
+			sSubDirectory="$(echo "$sDirectory" | awk '{split($0,a,"|"); print a[1]}')"
+			bCanBeDeleted="$(echo "$sDirectory" | awk '{split($0,a,"|"); print a[2]}')"
+			bToDelete="$(echo "$sDirectory" | awk '{split($0,a,"|"); print a[3]}')"
 
-			install -o $sUser -g MySB_users -m 0755 -d $sHomeDir/rtorrent/complete/$sSubDirectory/
-			install -o $sUser -g MySB_users -m 0775 -d $sHomeDir/rtorrent/watch/$sSubDirectory/
-			install -o $sUser -g MySB_users -m 0755 -d $sHomeDir/rtorrent/torrents/$sSubDirectory/
+			install -o "$sUser" -g MySB_users -m 0755 -d "$sHomeDir/rtorrent/complete/$sSubDirectory/"
+			install -o "$sUser" -g MySB_users -m 0775 -d "$sHomeDir/rtorrent/watch/$sSubDirectory/"
+			install -o "$sUser" -g MySB_users -m 0755 -d "$sHomeDir/rtorrent/torrents/$sSubDirectory/"
 
-			if [ -d $sHomeDir/rtorrent/complete/$sSubDirectory/ ]; then
-				nCountFiles="$(ls -A1 $sHomeDir/rtorrent/complete/$sSubDirectory/ | wc -l)"
-				if [ $nCountFiles -eq 0 ]; then
+			if [ -d "$sHomeDir/rtorrent/complete/$sSubDirectory/" ]; then
+				nCountFiles="$(find "$sHomeDir/rtorrent/complete/$sSubDirectory/" -maxdepth 1 -mindepth 1 | wc -l)"
+				if [ "$nCountFiles" -eq 0 ]; then
 					cmdMySQL 'MySB_db' "UPDATE users_rtorrent_cfg SET can_be_deleted='1' WHERE id_users='$nIdUser' AND sub_directory='$sSubDirectory';"
 					bCanBeDeleted=1
 				else
@@ -515,19 +515,19 @@ gfnCreateRtorrentConfigFile() {
 			1) # New directory OR maybe to delete
 				case "$bToDelete" in
 				1)
-					rm -rf $sHomeDir/rtorrent/complete/$sSubDirectory/
-					rm -rf $sHomeDir/rtorrent/watch/$sSubDirectory/
-					if [ -d $sHomeDir/rtorrent/torrents/$sSubDirectory/ ]; then
-						mv -f $sHomeDir/rtorrent/torrents/$sSubDirectory/*.torrent $sHomeDir/rtorrent/torrents/
-						rm -rf $sHomeDir/rtorrent/torrents/$sSubDirectory/
+					rm -rf "$sHomeDir/rtorrent/complete/$sSubDirectory/"
+					rm -rf "$sHomeDir/rtorrent/watch/$sSubDirectory/"
+					if [ -d "$sHomeDir/rtorrent/torrents/$sSubDirectory/" ]; then
+						mv -f "$sHomeDir/rtorrent/torrents/$sSubDirectory"/*.torrent "$sHomeDir"/rtorrent/torrents/
+						rm -rf "$sHomeDir/rtorrent/torrents/$sSubDirectory/"
 					fi
 					cmdMySQL 'MySB_db' "DELETE FROM users_rtorrent_cfg WHERE id_users='$nIdUser' AND sub_directory='$sSubDirectory';"
 					bCreateNewFile=1
 					;;
 				0)
-					install -o $sUser -g MySB_users -m 0755 -d $sHomeDir/rtorrent/complete/$sSubDirectory/
-					install -o $sUser -g MySB_users -m 0775 -d $sHomeDir/rtorrent/watch/$sSubDirectory/
-					install -o $sUser -g MySB_users -m 0755 -d $sHomeDir/rtorrent/torrents/$sSubDirectory/
+					install -o "$sUser" -g MySB_users -m 0755 -d "$sHomeDir/rtorrent/complete/$sSubDirectory/"
+					install -o "$sUser" -g MySB_users -m 0775 -d "$sHomeDir/rtorrent/watch/$sSubDirectory/"
+					install -o "$sUser" -g MySB_users -m 0755 -d "$sHomeDir/rtorrent/torrents/$sSubDirectory/"
 					bCreateNewFile=1
 					;;
 				esac
@@ -540,75 +540,75 @@ gfnCreateRtorrentConfigFile() {
 	gfnUserCrontab "$sUser"
 
 	# .rTorrent.bsh
-	install -o root -g $sUser -m 0750 $MySB_InstallDir/templates/rtorrent/rtorrent.bsh.tmpl $sHomeDir/.rTorrent.bsh
-	perl -pi -e "s/<username>/$sUser/g" $sHomeDir/.rTorrent.bsh
+	install -o root -g "$sUser" -m 0750 "$MySB_InstallDir"/templates/rtorrent/rtorrent.bsh.tmpl "$sHomeDir"/.rTorrent.bsh
+	perl -pi -e "s/<username>/$sUser/g" "$sHomeDir"/.rTorrent.bsh
 
 	# Example scripts
-	install -o root -g $sUser -m 0750 $MySB_InstallDir/templates/rtorrent/synchro.sh.tmpl $sHomeDir/scripts/synchro.sh
-	echo "$Global_Readme_AvailableVariables" >/home/$sUser/scripts/README
-	chown $sUser:$sUser $sHomeDir/scripts/*
-	chmod 0770 $sHomeDir/scripts/*
-	dos2unix $sHomeDir/scripts/* &>/dev/null
+	install -o root -g "$sUser" -m 0750 "$MySB_InstallDir"/templates/rtorrent/synchro.sh.tmpl "$sHomeDir"/scripts/synchro.sh
+	echo "${Global_Readme_AvailableVariables:?}" >/home/"$sUser"/scripts/README
+	chown "$sUser":"$sUser" "$sHomeDir"/scripts/*
+	chmod 0770 "$sHomeDir"/scripts/*
+	dos2unix "$sHomeDir"/scripts/* &>/dev/null
 
 	if [ $bCreateNewFile -eq 1 ]; then
 		# .rtorrent.rc
-		if [ -f $sHomeDir/.rtorrent.rc ]; then
-			mv $sHomeDir/.rtorrent.rc $sHomeDir/.rtorrent.rc.old
+		if [ -f "$sHomeDir"/.rtorrent.rc ]; then
+			mv "$sHomeDir"/.rtorrent.rc "$sHomeDir"/.rtorrent.rc.old
 		fi
-		if [ ! -f $sHomeDir/.rtorrent.rc ] && [ ! -s $sHomeDir/.rtorrent.rc ]; then
-			install -o root -g $sUser -m 0740 $MySB_InstallDir/templates/rtorrent/rtorrent.rc.tmpl $sHomeDir/.rtorrent.rc
-			perl -pi -e "s/<InstallDir>/$gsInstallDirEscaped/g" $sHomeDir/.rtorrent.rc
-			perl -pi -e "s/<server_ip>/$gsSrvIpAddress/g" $sHomeDir/.rtorrent.rc
-			perl -pi -e "s/<username>/$sUser/g" $sHomeDir/.rtorrent.rc
-			perl -pi -e "s/<homedir>/\/home\/$sUser/g" $sHomeDir/.rtorrent.rc
-			perl -pi -e "s/<scgi_port>/$nPortSCGI/g" $sHomeDir/.rtorrent.rc
-			perl -pi -e "s/<port_range>/$nPortRtorrent-$nPortRtorrent/g" $sHomeDir/.rtorrent.rc
-			if [ "$gsMySB_PeerBlock" == "rTorrent" ]; then
-				perl -pi -e "s/#{1}ipv4_filter.load/ipv4_filter.load/g" $sHomeDir/.rtorrent.rc
-				perl -pi -e "s/#{1}print/print/g" $sHomeDir/.rtorrent.rc
-				perl -pi -e "s/#{1}schedule2=load_filter/schedule2=load_filter/g" $sHomeDir/.rtorrent.rc
+		if [ ! -f "$sHomeDir"/.rtorrent.rc ] && [ ! -s "$sHomeDir"/.rtorrent.rc ]; then
+			install -o root -g "$sUser" -m 0740 "$MySB_InstallDir"/templates/rtorrent/rtorrent.rc.tmpl "$sHomeDir"/.rtorrent.rc
+			perl -pi -e "s/<InstallDir>/${gsInstallDirEscaped:?}/g" "$sHomeDir"/.rtorrent.rc
+			perl -pi -e "s/<server_ip>/${gsSrvIpAddress:?}/g" "$sHomeDir"/.rtorrent.rc
+			perl -pi -e "s/<username>/$sUser/g" "$sHomeDir"/.rtorrent.rc
+			perl -pi -e "s/<homedir>/\/home\/$sUser/g" "$sHomeDir"/.rtorrent.rc
+			perl -pi -e "s/<scgi_port>/$nPortSCGI/g" "$sHomeDir"/.rtorrent.rc
+			perl -pi -e "s/<port_range>/$nPortRtorrent-$nPortRtorrent/g" "$sHomeDir"/.rtorrent.rc
+			if [ "${gsMySB_PeerBlock:?}" == "rTorrent" ]; then
+				perl -pi -e "s/#{1}ipv4_filter.load/ipv4_filter.load/g" "$sHomeDir"/.rtorrent.rc
+				perl -pi -e "s/#{1}print/print/g" "$sHomeDir"/.rtorrent.rc
+				perl -pi -e "s/#{1}schedule2=load_filter/schedule2=load_filter/g" "$sHomeDir"/.rtorrent.rc
 			fi
 
 			case "$sFileSystemType" in
-			"ext4" | "xfs" | "btrfs") perl -pi -e "s/system.file_allocate.set = no/system.file_allocate.set = yes/g" $sHomeDir/.rtorrent.rc ;;
-			*) perl -pi -e "s/^system.file_allocate.set = yes/system.file_allocate.set = no/g" $sHomeDir/.rtorrent.rc ;;
+			"ext4" | "xfs" | "btrfs") perl -pi -e "s/system.file_allocate.set = no/system.file_allocate.set = yes/g" "$sHomeDir"/.rtorrent.rc ;;
+			*) perl -pi -e "s/^system.file_allocate.set = yes/system.file_allocate.set = no/g" "$sHomeDir"/.rtorrent.rc ;;
 			esac
 
 			# Watch directories
-			if [ ! -z "$sDirectories" ]; then
-				nNumLine=$(sed -n "/watch_directory/=" $sHomeDir/.rtorrent.rc)
+			if [ -n "$sDirectories" ]; then
+				nNumLine=$(sed -n "/watch_directory/=" "$sHomeDir"/.rtorrent.rc)
 				nCount=0
-				sed -i '/watch_directory/d' $sHomeDir/.rtorrent.rc
-				sed -i "${nNumLine}i\schedule2 = watch_directory_$nCount,5,5,\"load.start=~\/rtorrent\/watch\/*.torrent,d.custom2.set=~\/rtorrent\/torrents\/\"" $sHomeDir/.rtorrent.rc
+				sed -i '/watch_directory/d' "$sHomeDir"/.rtorrent.rc
+				sed -i "${nNumLine}i\schedule2 = watch_directory_$nCount,5,5,\"load.start=~\/rtorrent\/watch\/*.torrent,d.custom2.set=~\/rtorrent\/torrents\/\"" "$sHomeDir"/.rtorrent.rc
 				((nNumLine++)) && ((nCount++))
 				for sDirectory in $sDirectories; do
-					sDirectory="$(echo $sDirectory | awk '{split($0,a,"|"); print a[1]}')"
-					sed -i "${nNumLine}i\schedule2 = watch_directory_$nCount,5,5,\"load.start=~\/rtorrent\/watch\/$sDirectory\/*.torrent,d.custom1.set=$sDirectory,d.custom2.set=~\/rtorrent\/torrents\/$sDirectory\/,d.directory.set=~\/rtorrent\/complete\/$sDirectory\/\"" $sHomeDir/.rtorrent.rc
+					sDirectory="$(echo "$sDirectory" | awk '{split($0,a,"|"); print a[1]}')"
+					sed -i "${nNumLine}i\schedule2 = watch_directory_$nCount,5,5,\"load.start=~\/rtorrent\/watch\/$sDirectory\/*.torrent,d.custom1.set=$sDirectory,d.custom2.set=~\/rtorrent\/torrents\/$sDirectory\/,d.directory.set=~\/rtorrent\/complete\/$sDirectory\/\"" "$sHomeDir"/.rtorrent.rc
 					((nNumLine++)) && ((nCount++))
 				done
 
 				# Disabling 'autotools' plugins
-				if [ -f $gsRutorrentDir/conf/users/$sUser/plugins.ini ]; then
-					nNumLine=$(sed -n "/\[autotools\]/=" $gsRutorrentDir/conf/users/$sUser/plugins.ini)
-					sed -i "$nNumLine"d"" $gsRutorrentDir/conf/users/$sUser/plugins.ini
-					sed -i "$nNumLine"d"" $gsRutorrentDir/conf/users/$sUser/plugins.ini
-					echo "[autotools]" >>$gsRutorrentDir/conf/users/$sUser/plugins.ini
-					echo "enabled = off" >>$gsRutorrentDir/conf/users/$sUser/plugins.ini
+				if [ -f "$gsRutorrentDir/conf/users/$sUser/plugins.ini" ]; then
+					nNumLine=$(sed -n "/\[autotools\]/=" "$gsRutorrentDir/conf/users/$sUser/plugins.ini")
+					sed -i "${nNumLine}d" "$gsRutorrentDir/conf/users/$sUser/plugins.ini"
+					sed -i "${nNumLine}d" "$gsRutorrentDir/conf/users/$sUser/plugins.ini"
+					echo "[autotools]" >>"$gsRutorrentDir/conf/users/$sUser/plugins.ini"
+					echo "enabled = off" >>"$gsRutorrentDir/conf/users/$sUser/plugins.ini"
 				fi
-				if [ -f $gsRutorrentDir/share/users/$sUser/settings/autotools.dat ]; then
-					mv $gsRutorrentDir/share/users/$sUser/settings/autotools.dat $gsRutorrentDir/share/users/$sUser/settings/autotools.dat.bak
+				if [ -f "$gsRutorrentDir/share/users/$sUser/settings/autotools.dat" ]; then
+					mv "$gsRutorrentDir/share/users/$sUser/settings/autotools.dat" "$gsRutorrentDir/share/users/$sUser/settings/autotools.dat.bak"
 				fi
 			else
 				# Enabling 'autotools' plugins
-				if [ -f $gsRutorrentDir/conf/users/$sUser/plugins.ini ]; then
-					nNumLine=$(sed -n "/\[autotools\]/=" $gsRutorrentDir/conf/users/$sUser/plugins.ini)
-					sed -i "$nNumLine"d"" $gsRutorrentDir/conf/users/$sUser/plugins.ini
-					sed -i "$nNumLine"d"" $gsRutorrentDir/conf/users/$sUser/plugins.ini
-					echo "[autotools]" >>$gsRutorrentDir/conf/users/$sUser/plugins.ini
-					echo "enabled = user-defined" >>$gsRutorrentDir/conf/users/$sUser/plugins.ini
+				if [ -f "$gsRutorrentDir/conf/users/$sUser/plugins.ini" ]; then
+					nNumLine=$(sed -n "/\[autotools\]/=" "$gsRutorrentDir/conf/users/$sUser/plugins.ini")
+					sed -i "${nNumLine}d" "$gsRutorrentDir/conf/users/$sUser/plugins.ini"
+					sed -i "${nNumLine}d" "$gsRutorrentDir/conf/users/$sUser/plugins.ini"
+					echo "[autotools]" >>"$gsRutorrentDir/conf/users/$sUser/plugins.ini"
+					echo "enabled = user-defined" >>"$gsRutorrentDir/conf/users/$sUser/plugins.ini"
 				fi
-				if [ -f $gsRutorrentDir/share/users/$sUser/settings/autotools.dat.bak ]; then
-					mv $gsRutorrentDir/share/users/$sUser/settings/autotools.dat.bak $gsRutorrentDir/share/users/$sUser/settings/autotools.dat
+				if [ -f "$gsRutorrentDir/share/users/$sUser/settings/autotools.dat.bak" ]; then
+					mv "$gsRutorrentDir/share/users/$sUser/settings/autotools.dat.bak" "$gsRutorrentDir/share/users/$sUser/settings/autotools.dat"
 				fi
 			fi
 		fi
@@ -623,11 +623,11 @@ gfnMonthlyPayment() {
 	local sRentStatusValues nSumPeriodCost nSumAlreadyPayed nUserTreasury
 	local dFirstDate dFirstMonth dFirstYear dFirstDay dLastMonth dEndOfLastMonth nNbMonths dCurrentYear dCurrentMonth
 
-	if [ ! -z "$1" ] &&
-		[ ! -z "$gsRentingTVA" ] &&
-		[ ! -z "$gsRentingModel" ] &&
-		[ "$gsRentingGlobalCost" != "0.00" ] &&
-		[ "$gsRentingCostTva" != "0.00" ]; then
+	if [ -n "$1" ] &&
+		[ -n "${gsRentingTVA:-}" ] &&
+		[ -n "${gsRentingModel:-}" ] &&
+		[ "${gsRentingGlobalCost:-}" != "0.00" ] &&
+		[ "${gsRentingCostTva:-}" != "0.00" ]; then
 
 		# VARs
 		sUser="$1"
@@ -636,14 +636,14 @@ gfnMonthlyPayment() {
 		dToday="$(date +%d)"
 		gfnListCountUsers 'all'
 
-		for SeedboxUser in $gsUsersList; do
+		for SeedboxUser in ${gsUsersList:-}; do
 			nIdUser="$(cmdMySQL 'MySB_db' "SELECT id_users FROM users WHERE users_ident='$SeedboxUser';")"
 			nCreateNewPeriodPrice=0
 			nNewMonth=0
 			nUpdateCurrentPeriodPrice=0
 			nSendMail=0
 
-			case "$gsScriptName" in
+			case "${gsScriptName:?}" in
 			PaymentReminder.bsh)
 				case "$dToday" in
 				'01')
@@ -674,7 +674,7 @@ gfnMonthlyPayment() {
 						nUpdateCurrentPeriodPrice=1
 						nCreateNewPeriodPrice=1
 						nNewMonth=1
-						sMailSubject="$Global_Subject_PaymentReminder $SeedboxUser"
+						sMailSubject="${Global_Subject_PaymentReminder:?} $SeedboxUser"
 						sCase="renting"
 						sMessage="Payment Reminder"
 						nSendMail=1
@@ -690,14 +690,14 @@ gfnMonthlyPayment() {
 				if [ "$sUser" != "$SeedboxUser" ]; then
 					# DO NOT send email about new monthly for the new user.
 					# DO NOT create new entries for renting for the new user.
-					sMailSubject="$Global_Subject_MonthlyPayment [$SeedboxUser]"
+					sMailSubject="${Global_Subject_MonthlyPayment:?} [$SeedboxUser]"
 					sCase="new_user"
-					sMessage="$CreateUser_MessageAccountChangeMonthly"
+					sMessage="${CreateUser_MessageAccountChangeMonthly:?}"
 
 					StartEnd="$(cmdMySQL 'MySB_db' "SELECT start_of_use,end_of_use FROM tracking_rent_history WHERE id_users='$nIdUser' AND year='$dYear' AND month='$dMonth' ORDER BY id_tracking_rent_history DESC LIMIT 1;" | sed 's/\t/|/g;')"
-					dStartOfUse="$(echo $StartEnd | awk '{split($0,a,"|"); print a[1]}')"
-					dEndOfUse="$(echo $StartEnd | awk '{split($0,a,"|"); print a[2]}')"
-					if [ $dStartOfUse -eq $dEndOfUse ]; then
+					dStartOfUse="$(echo "$StartEnd" | awk '{split($0,a,"|"); print a[1]}')"
+					dEndOfUse="$(echo "$StartEnd" | awk '{split($0,a,"|"); print a[2]}')"
+					if [ "$dStartOfUse" -eq "$dEndOfUse" ]; then
 						# Update existing period without creating a new one (start_of_use = end_of_use)
 						sNewValues="nb_users='$gnTotalUsers',end_of_use='$dToday'"
 					else
@@ -715,9 +715,9 @@ gfnMonthlyPayment() {
 					nSendMail=1
 					dStartOfUse="$dToday"
 					dEndOfUse="$dToday"
-					sMailSubject="$CreateUser_SubjectAccountCreated [$SeedboxUser]"
+					sMailSubject="${CreateUser_SubjectAccountCreated:?} [$SeedboxUser]"
 					sCase="account_created"
-					sMessage="$CreateUser_MessageAccountCreated"
+					sMessage="${CreateUser_MessageAccountCreated:?}"
 					# ICI, traitement pour l'ajout d'un nouvel utilisateur.
 					# 1/	On ajoute une entrée dans 'tracking_rent_status'.
 					cmdMySQL 'MySB_db' "INSERT INTO tracking_rent_status (id_users) VALUES ('$nIdUser');"
@@ -741,9 +741,9 @@ gfnMonthlyPayment() {
 					nSendMail=1
 				else
 					nSendMail=1
-					sMailSubject="$DeleteUser_SubjectDelete [$SeedboxUser]"
+					sMailSubject="${DeleteUser_SubjectDelete:?} [$SeedboxUser]"
 					sCase="delete_user"
-					sMessage="$DeleteUser_MessageDelete"
+					sMessage="${DeleteUser_MessageDelete:?}"
 				fi
 				;;
 			BulkChanges.bsh)
@@ -761,14 +761,15 @@ gfnMonthlyPayment() {
 				dLastMonth="$(date +'%Y-%m' -d 'last month')"
 				dEndOfLastMonth="$(date -d "$dLastMonth-01 +1 month -1 day" +%Y-%m-%d)"
 				# Combien de mois se sont écoulés entre ces 2 dates ?
-				local Y=$(date -d@$((($(date -ud "$dEndOfLastMonth" +'%s') - $(date -ud "$dFirstDate" +'%s')))) +'%Y')
-				local M=$(date -d@$((($(date -ud "$dEndOfLastMonth" +'%s') - $(date -ud "$dFirstDate" +'%s')))) +'%m')
-				nNbMonths=$(((($(echo $Y | sed -r 's/^([0-9]+).*/\1/') - 1970) * 12) + $M))
+				local Y M
+				Y=$(date -d@$((($(date -ud "$dEndOfLastMonth" +'%s') - $(date -ud "$dFirstDate" +'%s')))) +'%Y')
+				M=$(date -d@$((($(date -ud "$dEndOfLastMonth" +'%s') - $(date -ud "$dFirstDate" +'%s')))) +'%m')
+				nNbMonths=$(((($(echo "$Y" | sed -r 's/^([0-9]+).*/\1/') - 1970) * 12) + M))
 				# Maintenant on peut créer autant d'entrées dans l'historique que de nombre de mois.
 				cmdMySQL 'MySB_db' "DELETE FROM tracking_rent_status WHERE id_users='$nIdUser';"
 				cmdMySQL 'MySB_db' "DELETE FROM tracking_rent_history WHERE id_users='$nIdUser';"
 				cmdMySQL 'MySB_db' "UPDATE users SET treasury='0.00' WHERE id_users='$nIdUser';"
-				for ((i = 1; i <= $nNbMonths; i++)); do
+				for ((i = 1; i <= nNbMonths; i++)); do
 					if [ $i -eq $nNbMonths ]; then
 						dCurrentYear="$dYear"
 						dCurrentMonth="$dMonth"
@@ -786,7 +787,7 @@ gfnMonthlyPayment() {
 					dEndOfUse="$(date -d "$dFirstDay" '+%Y-%m')"
 					dEndOfUse="$(date -d "$dEndOfUse-01 +1 month -1 day" +%d)"
 				done
-				if [ "$nIdUser" == "$gnMainUserId" ]; then
+				if [ "$nIdUser" == "${gnMainUserId:?}" ]; then
 					cmdMySQL 'MySB_db' "UPDATE tracking_rent_status SET already_payed='9999.99' WHERE id_users='$nIdUser';"
 				fi
 				;;
@@ -824,8 +825,8 @@ gfnMonthlyPayment() {
 
 		# Update treasury for the main user
 		sRentStatusValues="$(cmdMySQL 'MySB_db' "SELECT sum(period_cost), sum(already_payed) FROM tracking_rent_status WHERE id_users!='$gnMainUserId' AND already_payed!=period_cost;" | sed 's/\t/|/g;')"
-		nSumPeriodCost="$(echo $sRentStatusValues | awk '{split($0,a,"|"); print a[1]}')"
-		nSumAlreadyPayed="$(echo $sRentStatusValues | awk '{split($0,a,"|"); print a[2]}')"
+		nSumPeriodCost="$(echo "$sRentStatusValues" | awk '{split($0,a,"|"); print a[1]}')"
+		nSumAlreadyPayed="$(echo "$sRentStatusValues" | awk '{split($0,a,"|"); print a[2]}')"
 		nUserTreasury=$(echo "($nSumAlreadyPayed - $nSumPeriodCost)" | bc)
 		cmdMySQL 'MySB_db' "UPDATE users SET treasury='$nUserTreasury' WHERE id_users='$gnMainUserId';"
 	fi
