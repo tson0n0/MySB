@@ -33,6 +33,4 @@ for file in $(find /builds/"${CI_PROJECT_PATH}"/web/ -type f -name '*.php' -prin
 	fi
 done
 
-export nReturn
-
 ##################### LAST LINE ######################################
