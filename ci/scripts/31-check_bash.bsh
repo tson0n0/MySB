@@ -103,10 +103,4 @@ for file in ${sFilesList}; do
 	fi
 done
 
-nReturn=$((nReturn + 1))
-
-echo "check_bash before ${nReturn}"
-export nReturn
-echo "check_bash after ${nReturn}"
-
 ##################### LAST LINE ######################################
