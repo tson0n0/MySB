@@ -24,9 +24,9 @@
 
 if [ -z "${vars:-}" ] || [ "$vars" -eq 0 ]; then
 	# shellcheck source=ci/scripts/00-load_vars.bsh
-	. "$(dirname "$0")/00-load_vars.bsh"
+	source "$(dirname "$0")/00-load_vars.bsh"
 fi
-if [[ -n ${1} ]]; then
+if [[ -n "${1}" ]]; then
 	rm -rf /tmp/shellcheck_scan
 	if [[ -d "${1}" ]]; then
 		cp -al "${1}" /tmp/shellcheck_scan
@@ -63,50 +63,66 @@ fi
 # 	nReturn=$((nReturn + 1))
 # fi
 
-echo && echo -e "${CBLUE}*** Check Syntax with Shellcheck (sh) ***${CEND}"
+sFilesListSh="$(grep -IRl "\(#\!/bin/\|shell\=\)sh" --exclude-dir ".git" --exclude-dir ".vscode" "${sDirToScan}/")"
+if [ -n "${sFilesListSh}" ]; then
+	echo && echo -e "${CBLUE}*** Check Syntax with Shellcheck (sh) ***${CEND}"
+	for sFile in ${sFilesListSh}; do
+		if ! shellcheck -s sh -x -f tty -S error "${sFile}"; then
+			echo -e "${CYELLOW}${sFile}:${CEND} ${CRED}Failed${CEND}"
+			nReturn=$((nReturn + 1))
+		else
+			echo -e "${CYELLOW}${sFile}:${CEND} ${CGREEN}Passed${CEND}"
+		fi
+	done
+fi
 
-sFilesList="$(grep -IRl "\(#\!/bin/\|shell\=\)sh" --exclude-dir ".git" --exclude-dir ".vscode" "${sDirToScan}/")"
-for sFile in ${sFilesList}; do
-	if ! shellcheck -s sh -x -f tty -S error "${sFile}"; then
-		echo -e "${CYELLOW}${sFile}:${CEND} ${CRED}Failed${CEND}"
-		nReturn=$((nReturn + 1))
-	else
-		echo -e "${CYELLOW}${sFile}:${CEND} ${CGREEN}Passed${CEND}"
-	fi
-done
+sFilesListBash="$(grep -IRl "\(#\!/bin/\|shell\=\)bash" --exclude-dir ".git" --exclude-dir ".vscode" --exclude-dir ".vscode" "${sDirToScan}/")"
+if [ -n "${sFilesListBash}" ]; then
+	echo && echo -e "${CBLUE}*** Check Syntax with Shellcheck (bash) ***${CEND}"
+	for sFile in ${sFilesListBash}; do
+		if ! shellcheck -s bash -xa -f tty -S error "${sFile}"; then
+			echo -e "${CYELLOW}${sFile}:${CEND} ${CRED}Failed${CEND}"
+			nReturn=$((nReturn + 1))
+		else
+			echo -e "${CYELLOW}${sFile}:${CEND} ${CGREEN}Passed${CEND}"
+		fi
+	done
+fi
 
-echo && echo -e "${CBLUE}*** Check Syntax with Shellcheck (bash) ***${CEND}"
+# if [ -n "${sFilesListSh}" ]; then
+# 	echo && echo -e "${CBLUE}*** Check BASH Syntax (sh) ***${CEND}"
+# 	for file in ${sFilesListSh}; do
+# 		sed -i '/includes_before/d' "${file}"
+# 		sed -i '/includes_after/d' "${file}"
+# 		sed -i '/#!\/bin\/bash/d' "${file}"
+# 		sed -i '1iset -n' "${file}"
+# 		dos2unix "${file}" &>/dev/null
+# 		if (! bash "${file}"); then
+# 			echo -e "${CYELLOW}${file}:${CEND} ${CRED}Failed${CEND}"
+# 			nReturn=$((nReturn + 1))
+# 		else
+# 			echo -e "${CYELLOW}${file}:${CEND} ${CGREEN}Passed${CEND}"
+# 		fi
+# 	done
+# fi
 
-sFilesList="$(grep -IRl "\(#\!/bin/\|shell\=\)bash" --exclude-dir ".git" --exclude-dir ".vscode" --exclude-dir ".vscode" "${sDirToScan}/")"
-for sFile in ${sFilesList}; do
-	if ! shellcheck -s bash -xa -f tty -S error "${sFile}"; then
-		echo -e "${CYELLOW}${sFile}:${CEND} ${CRED}Failed${CEND}"
-		nReturn=$((nReturn + 1))
-	else
-		echo -e "${CYELLOW}${sFile}:${CEND} ${CGREEN}Passed${CEND}"
-	fi
-done
+# if [ -n "${sFilesListBash}" ]; then
+# 	echo && echo -e "${CBLUE}*** Check BASH Syntax (bash) ***${CEND}"
+# 	for file in ${sFilesListBash}; do
+# 		sed -i '/includes_before/d' "${file}"
+# 		sed -i '/includes_after/d' "${file}"
+# 		sed -i '/#!\/bin\/bash/d' "${file}"
+# 		sed -i '1iset -n' "${file}"
+# 		dos2unix "${file}" &>/dev/null
+# 		if (! bash "${file}"); then
+# 			echo -e "${CYELLOW}${file}:${CEND} ${CRED}Failed${CEND}"
+# 			nReturn=$((nReturn + 1))
+# 		else
+# 			echo -e "${CYELLOW}${file}:${CEND} ${CGREEN}Passed${CEND}"
+# 		fi
+# 	done
+# fi
 
-echo && echo -e "${CBLUE}*** Check BASH Syntax ***${CEND}"
-
-for file in ${sFilesList}; do
-	sed -i '/includes_before/d' "${file}"
-	sed -i '/includes_after/d' "${file}"
-	sed -i '/#!\/bin\/bash/d' "${file}"
-	sed -i '1iset -n' "${file}"
-	dos2unix "${file}" &>/dev/null
-	if (! bash "${file}"); then
-		echo -e "${CYELLOW}${file}:${CEND} ${CRED}Failed${CEND}"
-		nReturn=$((nReturn + 1))
-	else
-		echo -e "${CYELLOW}${file}:${CEND} ${CGREEN}Passed${CEND}"
-	fi
-done
-
-nReturn=$((nReturn + 1))
-
-echo "check_bash before ${nReturn}"
 export nReturn
-echo "check_bash after ${nReturn}"
 
 ##################### LAST LINE ######################################
