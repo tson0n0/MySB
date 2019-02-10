@@ -57,12 +57,13 @@ CRED="\033[1;31m"
 CGREEN="\033[1;32m"
 CYELLOW="\033[1;33m"
 CBLUE="\033[1;34m"
+export CEND CBLACK CRED CGREEN CYELLOW CBLUE
 
 #### 2 - System
 if [ "$0" != "-bash" ]; then
 	gsScriptName=$(basename "$0")
 	gsDirName=$(dirname "$0")
-
+	export gsScriptName gsDirName
 fi
 gsInstallDirEscaped="$(echo "${MySB_InstallDir}" | sed s,/,\\\\\/,g)"
 gsFilesDirEscaped="$(echo "$MySB_Files" | sed s,/,\\\\\/,g)"
@@ -71,15 +72,19 @@ gsMemory="$(free -m | grep 'Mem' | awk '{ print $2 }')"
 gsDebianRelease="$(lsb_release -cs)"
 gsUrlCheckList="ifconfig.ovh ipv4.icanhazip.com whatismyip.akamai.com checkip.dyndns.com"
 binCURL='curl --retry 3 --silent --insecure --location --show-error'
+binMySQL="mysql --defaults-extra-file=/root/.config.cnf --database=MySB_db -w --connect-timeout=10 -s -N -e"
+export gsInstallDirEscaped gsFilesDirEscaped gsProcessors gsMemory gsDebianRelease gsUrlCheckList binCURL binMySQL
 # PHP
 gsPhpDir="/etc/php/7.0"
 binPhpFpm="php-fpm7.0"
 binPhpService="php7.0-fpm"
 binPhpEnmod="phpenmod"
+export gsPhpDir binPhpFpm binPhpService binPhpEnmod
 # GitHub API
 #gsGitHubApiLimit="$($binCURL -i https://api.github.com/users/octocat | grep 'X-RateLimit-Remaining' | head -n 1 | awk '{ print $2 }')"
 # IPtables rules
 [ -f /etc/iptables.up.rules ] && gsIptablesRules="/etc/iptables.up.rules" || gsIptablesRules="/etc/iptables/rules.v4"
+export gsIptablesRules
 
 #### 3 - Organize script call to prevent simultaneous calls
 if [ -n "$gsScriptName" ]; then
@@ -110,6 +115,7 @@ if gfnCheckCommand 0 mysql && gfnCheckCommand 0 sqlite3; then
 		fi
 	fi
 fi
+export gsWolf_DB gsSync_DB gbIsReady_MySB_Db gsIblocklists_DB
 
 #### 5 - All Variables
 if [ -n "${MySB_InstallDir}" ] && [ "$gbIsReady_MySB_Db" == "YES" ]; then
@@ -123,7 +129,6 @@ if [ -n "${MySB_InstallDir}" ] && [ "$gbIsReady_MySB_Db" == "YES" ]; then
 		;;
 	esac
 	########## USED FOR DATABASE UPGRADE - EoF ##########
-	binMySQL="mysql --defaults-extra-file=/root/.config.cnf --database=MySB_db -w --connect-timeout=10 -s -N -e"
 
 	### ----- System info
 	## Table System
@@ -148,6 +153,8 @@ if [ -n "${MySB_InstallDir}" ] && [ "$gbIsReady_MySB_Db" == "YES" ]; then
 	gsSrvAdditionnalIpAddresses="$(echo "$sRequestValues" | awk '{split($0,a,"|"); print a[16]}')"
 	gsTimeZoneEscaped="$(echo "$gsTimeZone" | sed s,/,\\\\\/,g)"
 	unset sRequestValues
+	export gsMySB_User gsMySB_Password gsServerProvider gsIpRestriction gbDnsCryptSwitch
+	export gsRentingModel gsRentingTVA gsRentingGlobalCost gsRentingCostTva gsSrvAdditionnalIpAddresses gsTimeZoneEscaped
 
 	## Table Services
 	# VSFTPd
@@ -156,6 +163,7 @@ if [ -n "${MySB_InstallDir}" ] && [ "$gbIsReady_MySB_Db" == "YES" ]; then
 	gsPort_FTP_Data="$(echo "$sRequestValues" | awk '{split($0,a,"|"); print a[2]}')"
 	gsPort_FTP_Passive="$(echo "$sRequestValues" | awk '{split($0,a,"|"); print a[3]}')"
 	unset sRequestValues
+	export gsPort_FTP gsPort_FTP_Data gsPort_FTP_Passive
 	# NginX
 	sRequestValues="$($binMySQL "SELECT port_tcp1,port_tcp2,port_tcp3 FROM services WHERE serv_name='NginX';" | sed 's/\t/|/g;')"
 	gsPort_MySB_HTTPS="$(echo "$sRequestValues" | awk '{split($0,a,"|"); print a[1]}')"
@@ -163,12 +171,16 @@ if [ -n "${MySB_InstallDir}" ] && [ "$gbIsReady_MySB_Db" == "YES" ]; then
 	gsPort_NginX_HTTPS="$(echo "$sRequestValues" | awk '{split($0,a,"|"); print a[3]}' | sed 's/NULL//g;')"
 	gsPort_System_HTTP="8888"
 	unset sRequestValues
+	export gsPort_MySB_HTTPS gsPort_NginX_HTTP gsPort_NginX_HTTPS gsPort_System_HTTP
 	# SSH
 	gsPort_SSH="$($binMySQL "SELECT port_tcp1 FROM services WHERE serv_name='SSH';")"
+	export gsPort_SSH
 
 	[ -z "$gsHostNameFqdn" ] && gsHostNameFqdn="$(hostname -f)"
+	export gsHostNameFqdn
 
 	[ -z "$gsPrimaryInet" ] && gsPrimaryInet="$(ip route get 8.8.8.8 | grep 8.8.8.8 | awk '{ print $5 }')"
+	export gsPrimaryInet
 
 	if [ -z "$gsSrvIpAddress" ] || [ -z "$gsSrvIpAddressExt" ]; then
 		gsSrvIpAddressExt="$(dig TXT +short o-o.myaddr.l.google.com @ns1.google.com @ns2.google.com @ns3.google.com @ns4.google.com | awk -F'"' '{ print $2}' 2>/dev/null)"
@@ -203,8 +215,8 @@ if [ -n "${MySB_InstallDir}" ] && [ "$gbIsReady_MySB_Db" == "YES" ]; then
 		if [ -z "$gsSrvIpAddress" ]; then
 			gsSrvIpAddress="$gsSrvIpAddressExt"
 		fi
-
 		unset sUrlCheck sIp sPrimary
+		export gsSrvIpAddress gsSrvIpAddressExt
 	fi
 
 	if [ -f /etc/timezone ] && [ -z "$gsTimeZone" ]; then
@@ -212,6 +224,7 @@ if [ -n "${MySB_InstallDir}" ] && [ "$gbIsReady_MySB_Db" == "YES" ]; then
 	else
 		gsTimeZone="Europe/Paris"
 	fi
+	export gsTimeZone
 	### ----- System info
 
 	### ----- Main user info
@@ -224,6 +237,7 @@ if [ -n "${MySB_InstallDir}" ] && [ "$gbIsReady_MySB_Db" == "YES" ]; then
 	[ -z "$EnvLang" ] && EnvLang="$(echo "$sRequestValues" | awk '{split($0,a,"|"); print a[5]}')"
 	[ -z "$EnvLang" ] && EnvLang="${LANG:0:2}"
 	unset sRequestValues
+	export gsMainUserEmail gsMainUserName gsMainUserPassword gnMainUserId EnvLang
 
 	if [ "$gsIpRestriction" == "YES" ]; then
 		unset gsMainUserIPs
@@ -237,6 +251,7 @@ if [ -n "${MySB_InstallDir}" ] && [ "$gbIsReady_MySB_Db" == "YES" ]; then
 		gsMainUserIPs="0/0"
 	fi
 	gsMainUserIPs="$(echo $gsMainUserIPs | sed -e 's/^ //g;' | sed 's/\s+$//' | sort | uniq)"
+	export gsMainUserIPs
 	### ----- Main user info
 
 	### ----- Normal users info
@@ -254,6 +269,7 @@ if [ -n "${MySB_InstallDir}" ] && [ "$gbIsReady_MySB_Db" == "YES" ]; then
 		gsSeedboxUsersIPs="0/0"
 	fi
 	gsSeedboxUsersIPs="$(echo "$gsSeedboxUsersIPs" | sed -e 's/^ //g;' | sed 's/\s+$//' | sort | uniq)"
+	export gsSeedboxUsersIPs
 	### ----- Normal users info
 
 	### ----- Services info
@@ -327,6 +343,10 @@ if [ -n "${MySB_InstallDir}" ] && [ "$gbIsReady_MySB_Db" == "YES" ]; then
 		unset nIdService bToInstall bIsInstalled
 	done
 	unset sRequestValues sValues
+	export gbIsInstalled_Blocklist gbIsInstalled_Cakebox gbIsInstalled_DNScrypt gbIsInstalled_Fail2Ban gbIsInstalled_LetsEncrypt gbIsInstalled_LogWatch gbIsInstalled_Manager
+	export gbIsInstalled_NFS gbIsInstalled_NextCloud gbIsInstalled_OpenVPN gbIsInstalled_PeerGuardian gbIsInstalled_PlexMedia gbIsInstalled_Webmin gbIsInstalled_Tautulli gbIsInstalled_Samba
+	export gbToInstall_Tautulli gbToInstall_Blocklist gbToInstall_Cakebox gbToInstall_Fail2Ban gbToInstall_DNScrypt gbToInstall_LetsEncrypt gbToInstall_LogWatch gbToInstall_Manager
+	export gbToInstall_NFS gbToInstall_NextCloud gbToInstall_OpenVPN gbToInstall_PeerGuardian gbToInstall_PlexMedia gbToInstall_Webmin gbToInstall_Tautulli gbToInstall_Samba
 
 	case "$gbToInstall_PeerGuardian" in
 	"YES") gsMySB_PeerBlock="PeerGuardian" ;;
@@ -347,9 +367,11 @@ if [ -n "${MySB_InstallDir}" ] && [ "$gbIsReady_MySB_Db" == "YES" ]; then
 		esac
 		;;
 	esac
+	export gsMySB_PeerBlock
 
 	# Webmin port
 	gsPorts_Webmin="$($binMySQL "SELECT port_tcp1 FROM services WHERE serv_name='Webmin';")"
+	export gsPorts_Webmin
 
 	# OpenVPN
 	sRequestValues="$($binMySQL "SELECT port_udp1,port_udp2,port_udp3 FROM services WHERE serv_name='OpenVPN';" | sed 's/\t/|/g;')"
@@ -366,10 +388,12 @@ if [ -n "${MySB_InstallDir}" ] && [ "$gbIsReady_MySB_Db" == "YES" ]; then
 		gsOpenVPN_Proto="tcp"
 	fi
 	unset sRequestValues
+	export gsOpenVPN_Proto gsPort_OpenVPN_TAP_WithoutGW gsPort_OpenVPN_WithoutGW gsPort_OpenVPN_WithGW
 	### ----- Services info
 
 	### ----- White IP addresses
 	gsVpnLocalIps='10.0.0.0/24 10.0.1.0/24 10.0.2.0/24'
+	export gsVpnLocalIps
 	### ----- White IP addresses
 
 	### ----- Networks ports (Services ports)
@@ -378,6 +402,7 @@ if [ -n "${MySB_InstallDir}" ] && [ "$gbIsReady_MySB_Db" == "YES" ]; then
 	gsPorts_TCP_PlexMedia="$(echo "$sRequestValues" | awk '{split($0,a,"|"); print a[2]}')"
 	gsPorts_UDP_PlexMedia="$(echo "$sRequestValues" | awk '{split($0,a,"|"); print a[3]}')"
 	unset sRequestValues
+	export gsPorts_PlexMedia gsPorts_TCP_PlexMedia gsPorts_UDP_PlexMedia
 	### ----- Networks ports (Services ports)
 
 	### ----- Repositories infos
@@ -389,6 +414,7 @@ if [ -n "${MySB_InstallDir}" ] && [ "$gbIsReady_MySB_Db" == "YES" ]; then
 	gsNextCloudDir="$(echo "$sRequestValues" | awk '{split($0,a," "); print a[5]}')"
 	gsRutorrentPluginsDir=$gsRutorrentDir/plugins
 	unset sRequestValues
+	export gsRutorrentDir gsManagerDir gsCakeboxDir gsLoadAvgDir gsNextCloudDir gsRutorrentPluginsDir
 	### ----- Repositories infos
 fi
 
@@ -396,6 +422,7 @@ fi
 if [ -f "${MySB_InstallDir}"/version ]; then
 	gsCurrentVersion="$(cat "${MySB_InstallDir}"/version)"
 fi
+export gsCurrentVersion
 
 #### Language
 gfnLoadLanguage() {
@@ -496,22 +523,6 @@ if [ -n "$gbDevMode" ] && [ $gbDevMode -eq 1 ] && [ -d "${MySB_InstallDir}/logs"
 		set
 	) | grep -e '^gs' -e '^gb' -e '^gn' >"${MySB_InstallDir}/logs/VARs/${gsScriptName:?}_VARs.log"
 fi
-
-export CEND CBLACK CRED CGREEN CYELLOW CBLUE
-export gsScriptName gsDirName
-export gsInstallDirEscaped gsFilesDirEscaped gsProcessors gsMemory gsDebianRelease gsUrlCheckList binCURL
-export gsPhpDir binPhpFpm binPhpService binPhpEnmod
-export gsIptablesRules gsSrvAdditionnalIpAddresses gsSrvIpAddress gsSrvIpAddressExt gsMainUserEmail gsMainUserIPs gsMainUserName gsMainUserPassword
-export gsWolf_DB gsSync_DB gbIsReady_MySB_Db gsIblocklists_DB
-export gsServerProvider gsTimeZoneEscaped gsVpnLocalIps
-export gsRentingModel gsRentingTVA gsRentingGlobalCost gsRentingCostTva
-export gbDnsCryptSwitch
-export gbIsInstalled_Blocklist gbIsInstalled_Cakebox gbIsInstalled_DNScrypt gbIsInstalled_Fail2Ban gbIsInstalled_LetsEncrypt gbIsInstalled_LogWatch gbIsInstalled_Manager
-export gbIsInstalled_NFS gbIsInstalled_NextCloud gbIsInstalled_OpenVPN gbIsInstalled_PeerGuardian gbIsInstalled_PlexMedia gbIsInstalled_Webmin gbIsInstalled_Tautulli gbIsInstalled_Samba
-export gbToInstall_Tautulli gbToInstall_Blocklist gbToInstall_Cakebox gbToInstall_Fail2Ban gbToInstall_DNScrypt gbToInstall_LetsEncrypt gbToInstall_LogWatch gbToInstall_Manager
-export gbToInstall_NFS gbToInstall_NextCloud gbToInstall_OpenVPN gbToInstall_PeerGuardian gbToInstall_PlexMedia gbToInstall_Webmin gbToInstall_Tautulli gbToInstall_Samba
-export gsPort_FTP gsPort_FTP_Data gsPort_FTP_Passive gsPort_MySB_HTTPS gsPort_NginX_HTTP gsPort_NginX_HTTPS gsPort_System_HTTP gsPort_SSH gsPorts_Webmin gsMySB_PeerBlock
-export gsPort_OpenVPN_TAP_WithoutGW gsPort_OpenVPN_WithGW gsPort_OpenVPN_WithoutGW gsOpenVPN_Proto gsPorts_PlexMedia gsPorts_TCP_PlexMedia gsPorts_UDP_PlexMedia
-export Global_None
+export gbDevMode
 
 ##################### LAST LINE ######################################

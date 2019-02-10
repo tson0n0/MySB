@@ -484,7 +484,7 @@ fi
 #### download files from Git
 BannerInstall
 echo -e -n "$DownloadingGithub"
-screen -dmS MySB_GitClone git clone --progress -b $gsCurrentVersion https://github.com/toulousain79/MySB.git $MySB_InstallDir >>/tmp/"$(basename "$0")".log
+screen -dmS MySB_GitClone git clone --progress -b "$gsCurrentVersion" https://github.com/toulousain79/MySB.git $MySB_InstallDir >>/tmp/"$(basename "$0")".log
 while (screen -ls | grep -q 'MySB_GitClone'); do
 	echo -n "."
 	sleep 1
