@@ -23,7 +23,6 @@
 ##################### FIRST LINE #####################################
 
 sFilesList="$(find /builds/"${CI_PROJECT_PATH}"/ -type f -name '*.py' -print0 | sort -z | xargs -r0)"
-
 if [ -n "${sFilesList}" ]; then
 	echo && echo -e "${CBLUE}*** Check Python Syntax ***${CEND}"
 

@@ -23,7 +23,6 @@
 ##################### FIRST LINE #####################################
 
 sFilesList="$(find /builds/"${CI_PROJECT_PATH}"/web/ -type f -name '*.php' -print0 | sort -z | xargs -r0)"
-
 if [ -n "${sFilesList}" ]; then
 	echo && echo -e "${CBLUE}*** Check PHP Syntax ***${CEND}"
 
