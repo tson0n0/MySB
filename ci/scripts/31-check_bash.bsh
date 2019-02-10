@@ -103,4 +103,6 @@ for file in ${sFilesList}; do
 	fi
 done
 
+export nReturn
+
 ##################### LAST LINE ######################################
