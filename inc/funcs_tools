@@ -23,7 +23,7 @@
 #
 ######################################################################
 { [ -z "${vars:-}" ] || [ "${vars}" -ne 1 ]; } && {
-	echo "Please load 'vars' file before..." >/tmp/funcs_tools.log
+	echo "Please load 'vars' file before..."
 	return
 }
 funcs_tools=1
@@ -137,7 +137,7 @@ gfnStatistics() {
 		if [ -n "$sMachineId" ] && [ "$sStatsAllowed" != "no_stats" ]; then
 			[ -z "$sCountry" ] && sCountry="unknown"
 			sResult="$(curl --silent --retry 1 -A 'MySB' --data "version=${gsCurrentVersion:?}&country=$sCountry&machine_id=$sMachineId" https://mysb.ddns.net/statistics/)"
-			[ -n "$(echo "$sResult" | grep 'Statistics updated at')" ] && echo "$sResult" >"${MySB_InstallDir}"/statistics
+			(echo "$sResult" | grep -q 'Statistics updated at') && echo "$sResult" >"${MySB_InstallDir}"/statistics
 		fi
 	fi
 }

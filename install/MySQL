@@ -28,7 +28,7 @@ source "$(dirname "$0")"/../inc/includes_before
 #### Install packages
 sPackages=(mariadb-server mysqltuner sqlite3)
 gfnPackageBundleInstall "${sPackages[@]}"
-if [ "${gsSwitch:?}" == "UPGRADE" ]; then
+if [ "${gsSwitch:-}" == "UPGRADE" ]; then
 	cmdMySQL 'MySB_db' "UPDATE system SET apt_update = 1, apt_date = '$(date +%Y-%m-%d\ %H:%M:%S)' WHERE id_system='1';" -v
 	gfnScriptInvoke 'ScreenSTD' "${MySB_InstallDir:?}/bin/MySB_UpgradeSystem" 'SCREEN'
 fi
@@ -167,7 +167,7 @@ fi
 [ -z "$MySQL_RootPassword" ] && source /etc/MySB/config_db
 mysqltuner --user root --pass $MySQL_RootPassword --nocolor >"$MySB_InstallDir"/temp/mysqltuner.log
 cat "$MySB_InstallDir"/temp/mysqltuner.log
-if [ -n "$(grep 'Run OPTIMIZE TABLE' "$MySB_InstallDir"/temp/mysqltuner.log)" ]; then
+if (grep -q 'Run OPTIMIZE TABLE' "$MySB_InstallDir"/temp/mysqltuner.log); then
 	mysqlcheck -u root -p$MySQL_RootPassword --auto-repair --optimize --all-databases
 fi
 rm -vf "$MySB_InstallDir"/temp/mysqltuner.log

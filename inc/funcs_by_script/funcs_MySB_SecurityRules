@@ -33,7 +33,7 @@ export funcs_MySB_SecurityRules
 #### Loading vars
 gfnLoadingVars() {
 	gfnListCountUsers 'normal' #($gsUsersList)
-	AllUsersIPs="${gsSeedboxUsersIPs:-} ${gsMainUserIPs:?}"
+	AllUsersIPs="${gsSeedboxUsersIPs:-} ${gsMainUserIPs:-}"
 	AllUsersIPs="$(echo "$AllUsersIPs" | sed -e 's/^ //g;' | sed 's/\s+$//' | sort | uniq)"
 	ServicesToRestart=""
 	ServicesToStop=""
