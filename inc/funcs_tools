@@ -105,7 +105,7 @@ gfnPluginDiskspaceQuotaIncluded() {
 		nFree=$((nFree * 1024))
 		echo "total:$nTotal" >/home/"$sUser"/rtorrent/.session/quota.txt
 		echo "free:$nFree" >>/home/"$sUser"/rtorrent/.session/quota.txt
-		if [ -f "${gsRutorrentDir:?}/conf/users/$sUser/diskspace/conf.php" ]; then
+		if [ -f "${gsRutorrentDir:-}/conf/users/$sUser/diskspace/conf.php" ]; then
 			nLess=$((((nTotal - 10) / 100) / 1024)) # must remain 10%
 			if [ -n "$nLess" ]; then
 				nNumLine=$(grep 'notifySpaceLimit' -n -m 1 "$gsRutorrentDir/conf/users/$sUser/diskspace/conf.php" | cut -d ':' -f 1)
@@ -125,7 +125,7 @@ gfnStatistics() {
 	local sMachineId sStatsAllowed sResult sCountry
 
 	if [ -f /etc/machine-id ]; then
-		if [ "$(gfnCheckCommand 1 geoiplookup)" == "YES" ] && [ -n "${gsSrvIpAddressExt:?}" ]; then
+		if [ "$(gfnCheckCommand 1 geoiplookup)" == "YES" ] && [ -n "${gsSrvIpAddressExt:-}" ]; then
 			sCountry="$(geoiplookup "$gsSrvIpAddressExt" | awk '{ print $5 }')"
 			[ -z "$sCountry" ] && sCountry="unknown"
 		else
@@ -133,10 +133,10 @@ gfnStatistics() {
 		fi
 
 		sMachineId="$(sha256sum <<</etc/machine-id | awk '{ print $1 }')"
-		[ -f "${MySB_InstallDir:?}"/statistics ] && sStatsAllowed="$(cat "${MySB_InstallDir}"/statistics)" || sStatsAllowed=""
+		[ -f "${MySB_InstallDir:-}"/statistics ] && sStatsAllowed="$(cat "${MySB_InstallDir}"/statistics)" || sStatsAllowed=""
 		if [ -n "$sMachineId" ] && [ "$sStatsAllowed" != "no_stats" ]; then
 			[ -z "$sCountry" ] && sCountry="unknown"
-			sResult="$(curl --silent --retry 1 -A 'MySB' --data "version=${gsCurrentVersion:?}&country=$sCountry&machine_id=$sMachineId" https://mysb.ddns.net/statistics/)"
+			sResult="$(curl --silent --retry 1 -A 'MySB' --data "version=${gsCurrentVersion:-}&country=$sCountry&machine_id=$sMachineId" https://mysb.ddns.net/statistics/)"
 			(echo "$sResult" | grep -q 'Statistics updated at') && echo "$sResult" >"${MySB_InstallDir}"/statistics
 		fi
 	fi
@@ -172,7 +172,7 @@ gfnGetPid() {
 	local sPid=""
 
 	case "$1" in
-	"${binPhpService:?}") [ -f /run/php/php7.0-fpm.pid ] && sPid="$(cat /run/php/php7.0-fpm.pid)" ;;
+	"${binPhpService:-}") [ -f /run/php/php7.0-fpm.pid ] && sPid="$(cat /run/php/php7.0-fpm.pid)" ;;
 	"fail2ban") [ -f /var/run/fail2ban/fail2ban.pid ] && sPid="$(cat /var/run/fail2ban/fail2ban.pid)" ;;
 	"webmin") [ -f /var/webmin/miniserv.pid ] && sPid="$(cat /var/webmin/miniserv.pid)" ;;
 	"tautulli") [ -f /var/run/tautulli/tautulli.pid ] && sPid="$(cat /var/run/tautulli/tautulli.pid)" ;;
@@ -313,7 +313,7 @@ gfnSwitchDNS() {
 			echo "nameserver 127.0.0.1" >>/etc/resolv.conf
 			# BIND with DNScrypt-proxy support
 			install -o root -g bind -m 0644 "${MySB_InstallDir}"/templates/bind/etc.bind.named.conf.options.tmpl /etc/bind/named.conf.options
-			sed -i "s/<gsSrvIpAddress>/${gsSrvIpAddress:?}/g;" /etc/bind/named.conf.options
+			sed -i "s/<gsSrvIpAddress>/${gsSrvIpAddress:-}/g;" /etc/bind/named.conf.options
 			for ((i = 1; i <= nNumberOfDemon; i++)); do
 				sBindForwarders="$sBindForwarders 127.0.0.$i port 52;"
 			done
@@ -380,7 +380,7 @@ gfnDeleteDirectory() {
 
 	if [ -d "$sDirectory" ]; then
 		case "$sDirectory" in
-		"${MySB_InstallDir}" | "${MySB_Files:?}" | "${MySB_InstallDir}/temp" | "${MySB_InstallDir}/files" | "/home" | "/" | "//") echo "gfnDeleteDirectory avoided, directory '$sDirectory' not permited !" ;;
+		"${MySB_InstallDir}" | "${MySB_Files:-}" | "${MySB_InstallDir}/temp" | "${MySB_InstallDir}/files" | "/home" | "/" | "//") echo "gfnDeleteDirectory avoided, directory '$sDirectory' not permited !" ;;
 		*)
 			if (rm -rf "$sDirectory") && [ "$nVerbose" -eq 1 ]; then
 				echo "'$sDirectory' deleted !"
@@ -441,7 +441,7 @@ gfnGetRepoValues() {
 		sRepoName="$1"
 	fi
 
-	sValues="$(cmdMySQL 'MySB_db' "SELECT type,dir,version,upgrade,file,url,active FROM repositories WHERE name='$sRepoName';" | sed "s/<InstallDir>/${gsInstallDirEscaped:?}/g;" | sed 's/\t/|/g;')"
+	sValues="$(cmdMySQL 'MySB_db' "SELECT type,dir,version,upgrade,file,url,active FROM repositories WHERE name='$sRepoName';" | sed "s/<InstallDir>/${gsInstallDirEscaped:-}/g;" | sed 's/\t/|/g;')"
 	gsRepoType="$(echo "$sValues" | awk '{split($0,a,"|"); print a[1]}')"
 	gsRepoDir="$(echo "$sValues" | awk '{split($0,a,"|"); print a[2]}')"
 	gsRepoVersion="$(echo "$sValues" | awk '{split($0,a,"|"); print a[3]}')"
@@ -464,7 +464,7 @@ gfnGetRepoValues() {
 		else
 			gsVersionInstalled="Not installed"
 		fi
-		gsVersionLatest="$(${binCURL:?} "$gsRepoURL" | jq -r .tag_name)"
+		gsVersionLatest="$(${binCURL:-} "$gsRepoURL" | jq -r .tag_name)"
 		gsFileURL="$($binCURL "$gsRepoURL" | grep 'tarball_url' | awk '{ print $2 }' | cut -d '"' -f 2)"
 		;;
 	'Docker-Compose')
@@ -516,7 +516,7 @@ gfnRepoManageByType() {
 	if [ -z "$gnRepoActive" ] || [ "$gnRepoActive" -eq 0 ]; then
 		return 1
 	fi
-	if [ "${gsSwitch:?}" == "REFRESH" ] || [ "$gnRepoActive" -eq 0 ]; then
+	if [ "${gsSwitch:-}" == "REFRESH" ] || [ "$gnRepoActive" -eq 0 ]; then
 		gfnDeleteDirectory 1 "$gsRepoDir"
 	fi
 

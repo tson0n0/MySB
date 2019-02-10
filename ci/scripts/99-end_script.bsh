@@ -23,7 +23,7 @@
 ##################### FIRST LINE #####################################
 
 echo
-case "${nReturn:?}" in
+case "${nReturn:-}" in
 0) return "$nReturn" ;;
 *) exit "$nReturn" ;;
 esac

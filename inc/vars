@@ -521,7 +521,7 @@ if [ -n "$gbDevMode" ] && [ $gbDevMode -eq 1 ] && [ -d "${MySB_InstallDir}/logs"
 	(
 		set -o posix
 		set
-	) | grep -e '^gs' -e '^gb' -e '^gn' >"${MySB_InstallDir}/logs/VARs/${gsScriptName:?}_VARs.log"
+	) | grep -e '^gs' -e '^gb' -e '^gn' >"${MySB_InstallDir}/logs/VARs/${gsScriptName:-}_VARs.log"
 fi
 export gbDevMode
 

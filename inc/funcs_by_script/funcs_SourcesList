@@ -79,7 +79,7 @@ gfnCreateLocalMirror() {
 	esac
 
 	#### mirror.list
-	install -v -o root -g root -m 0644 "${MySB_InstallDir:?}"/templates/apt/etc.apt.mirror.list.tmpl /etc/apt/mirror.list
+	install -v -o root -g root -m 0644 "${MySB_InstallDir:-}"/templates/apt/etc.apt.mirror.list.tmpl /etc/apt/mirror.list
 	perl -pi -e "s/<Arch>/$sArch/g" /etc/apt/mirror.list
 
 	#### postmirror.sh & clean.sh
@@ -100,7 +100,7 @@ gfnCreateLocalMirror() {
 	# Local mirrors
 	{
 		echo "# Git LFS"
-		echo "deb https://packagecloud.io/github/git-lfs/debian/ ${gsDebianRelease:?} main"
+		echo "deb https://packagecloud.io/github/git-lfs/debian/ ${gsDebianRelease:-} main"
 		echo "clean https://packagecloud.io/github/git-lfs/debian/"
 	} >>/etc/apt/mirror.list
 	# git-lfs.list (local)
