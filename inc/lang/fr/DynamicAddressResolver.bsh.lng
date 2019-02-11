@@ -29,4 +29,6 @@ SendingStatusTo="Envoi du statut à "
 NoHostnameRequiredUpdating="Aucun nom d'hôte nécessitant une mise à jour"
 UpdatedAddressSubject="MySB - Des adresses IP dynamiques ont été mises à jour"
 
+export CreatingListAllDynamicAddresses UpdatingHostname UpdatingSecurityRules SendingStatusTo NoHostnameRequiredUpdating UpdatedAddressSubject
+
 ##################### LAST LINE ######################################

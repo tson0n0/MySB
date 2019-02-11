@@ -31,4 +31,6 @@ AddTrackerDomain="Added tracker domain:"
 DeleteTrackerDomain="Deleting of tracker:"
 UpdateTrackersIPv4="Updating the IPv4 addresses:"
 
+export RemoveOfTracker RenewCertificate CleanCertificatesBadLinks GetCertificateFor CertificateRehash AddTrackerDomain DeleteTrackerDomain UpdateTrackersIPv4
+
 ##################### LAST LINE ######################################

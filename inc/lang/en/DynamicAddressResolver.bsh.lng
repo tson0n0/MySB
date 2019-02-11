@@ -29,4 +29,6 @@ SendingStatusTo="Sending status to "
 NoHostnameRequiredUpdating="No hostname requiring an update"
 UpdatedAddressSubject="MySB - Dynamic IP addresses have been updated"
 
+export CreatingListAllDynamicAddresses UpdatingHostname UpdatingSecurityRules SendingStatusTo NoHostnameRequiredUpdating UpdatedAddressSubject
+
 ##################### LAST LINE ######################################

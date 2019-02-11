@@ -32,4 +32,7 @@ DeleteLinesWithoutIpRange="Suppression des lignes sans adresses IP"
 DeleteDoubleLines="Suppression des lignes en doubles et triage"
 CopyNewGlobalList="Copie de la nouvelle liste pour "
 
+export DeleteGlobalBlocklist DownloadSelectedList AddKnowTmgIP DeleteLinesWithSpaces
+export DeleteRC DeleteLinesNotStartNumeric DeleteLinesWithoutIpRange DeleteDoubleLines CopyNewGlobalList
+
 ##################### LAST LINE ######################################

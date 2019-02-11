@@ -28,29 +28,29 @@ MySB_Install_PID=$1
 TYPE="$2"
 
 case "$TYPE" in
-	"INSTALL")
-		DisplayInfo=YES
-		DisplayServerInfo=YES
-		DisplayServerInfoFirstInstall=YES
-		DisplayUserInfo=YES
-		DisplayServices=YES
-		DisplaySecurity=YES
-		gsServerProvider=""
-		gsSmtpProvider=""
-		RepeatSurvey=NO
-		gsLogFile="/tmp/MySB_Install.bsh.log"
-		bgChangeFQDN="$Global_YES"
+"INSTALL")
+	DisplayInfo=YES
+	DisplayServerInfo=YES
+	DisplayServerInfoFirstInstall=YES
+	DisplayUserInfo=YES
+	DisplayServices=YES
+	DisplaySecurity=YES
+	gsServerProvider=""
+	gsSmtpProvider=""
+	RepeatSurvey=NO
+	gsLogFile="/tmp/MySB_Install.bsh.log"
+	bgChangeFQDN="$Global_YES"
 	;;
-	"UPGRADE")
-		DisplayInfo=YES
-		DisplayServerInfo=YES
-		DisplayServerInfoFirstInstall=NO
-		DisplayUserInfo=NO
-		DisplayServices=YES
-		DisplaySecurity=YES
-		gsLogFile="$MySB_InstallDir/logs/MySB_Install.bsh.log"
-		bgChangeFQDN="$Global_NO"
-		gsSrvIpAddressExt="$(dig TXT +short o-o.myaddr.l.google.com @ns1.google.com @ns2.google.com @ns3.google.com @ns4.google.com | awk -F'"' '{ print $2}' 2> /dev/null)"
+"UPGRADE")
+	DisplayInfo=YES
+	DisplayServerInfo=YES
+	DisplayServerInfoFirstInstall=NO
+	DisplayUserInfo=NO
+	DisplayServices=YES
+	DisplaySecurity=YES
+	gsLogFile="$MySB_InstallDir/logs/MySB_Install.bsh.log"
+	bgChangeFQDN="$Global_NO"
+	gsSrvIpAddressExt="$(dig TXT +short o-o.myaddr.l.google.com @ns1.google.com @ns2.google.com @ns3.google.com @ns4.google.com | awk -F'"' '{ print $2}' 2>/dev/null)"
 	;;
 esac
 
@@ -133,7 +133,7 @@ DisplaySurvey() {
 			echo
 			echo -e "$Global_Questions_Message_Hostname_New"
 			gfnQuestionGetString NO "$Global_Questions_Hostname_New" bgChangeFQDN "$bgChangeFQDN"
-			bgChangeFQDN="`echo $bgChangeFQDN | tr '[:lower:]' '[:upper:]'`"
+			bgChangeFQDN="$(echo $bgChangeFQDN | tr '[:lower:]' '[:upper:]')"
 		fi
 
 		# Box' hostname (FQDN)
@@ -145,27 +145,27 @@ DisplaySurvey() {
 			while [ -z "$gsHostNameFqdn" ] || [[ "$(gfnCheckFQDN "${gsHostNameFqdn}")" != 0 ]]; do
 				nCheckFqdnResult="$(gfnCheckFQDN ${gsHostNameFqdn})"
 				case "$nCheckFqdnResult" in
-					1)	echo -e "$Global_Questions_Message_Hostname_NoFqdn";;
-					2)	echo -e "$Global_Questions_Message_Hostname_Fqdn_NotPublicIp";;
+				1) echo -e "$Global_Questions_Message_Hostname_NoFqdn" ;;
+				2) echo -e "$Global_Questions_Message_Hostname_Fqdn_NotPublicIp" ;;
 				esac
 				gfnQuestionGetString NO "$Global_Questions_Hostname" gsHostNameFqdn "$gsHostNameFqdn"
 			done
 			# Add previous FQDN for Let's Encrypt renew
-			([ "$gsHostNameFqdn" != "$gsPreviousHostNameFqdn" ] && [ -z "$(grep "$gsPreviousHostNameFqdn" ${MySB_InstallDir}/ssl/letsencrypt_domains)" ]) && echo "$gsPreviousHostNameFqdn" >> ${MySB_InstallDir}/ssl/letsencrypt_domains
+			([ "$gsHostNameFqdn" != "$gsPreviousHostNameFqdn" ] && [ -z "$(grep "$gsPreviousHostNameFqdn" ${MySB_InstallDir}/ssl/letsencrypt_domains)" ]) && echo "$gsPreviousHostNameFqdn" >>${MySB_InstallDir}/ssl/letsencrypt_domains
 		fi
 
 		#if [ "$DisplayServerInfoFirstInstall" == "YES" ]; then
-			# NginX HTTPs port
-			echo
-			gfnQuestionGetString NO "$Questions_PortHTTPs" gsPort_MySB_HTTPS "$gsPort_MySB_HTTPS"
+		# NginX HTTPs port
+		echo
+		gfnQuestionGetString NO "$Questions_PortHTTPs" gsPort_MySB_HTTPS "$gsPort_MySB_HTTPS"
 
-			# SSH port
-			echo
-			gfnQuestionGetString NO "$Questions_PortSSH" gsPort_SSH "$gsPort_SSH"
+		# SSH port
+		echo
+		gfnQuestionGetString NO "$Questions_PortSSH" gsPort_SSH "$gsPort_SSH"
 
-			# FTP port
-			echo
-			gfnQuestionGetString NO "$Questions_PortFTPs" gsPort_FTP "$gsPort_FTP"
+		# FTP port
+		echo
+		gfnQuestionGetString NO "$Questions_PortFTPs" gsPort_FTP "$gsPort_FTP"
 		#fi
 	fi
 
@@ -184,7 +184,7 @@ DisplaySurvey() {
 			sValue=""
 		fi
 		gsMainUserName=""
-		while [ ! -z "`echo $gsMainUserName | grep '@'`" ] || [ -z "$gsMainUserName" ]; do
+		while [ ! -z "$(echo $gsMainUserName | grep '@')" ] || [ -z "$gsMainUserName" ]; do
 			gfnQuestionGetString NO "$Questions_MainUserUsername" gsMainUserName "$sValue"
 		done
 		unset sValue
@@ -227,10 +227,10 @@ DisplaySurvey() {
 
 		while [ $nLoop -eq 1 ]; do
 			gfnQuestionGetString NO "$Questions_SMTP" gsSmtpProvider "$sValue"
-			gsSmtpProvider="`echo $gsSmtpProvider | tr '[:lower:]' '[:upper:]'`"
+			gsSmtpProvider="$(echo $gsSmtpProvider | tr '[:lower:]' '[:upper:]')"
 			case "$gsSmtpProvider" in
-				'LOCAL'|'FREE'|'OVH'|'GMAIL'|'YAHOO'|'ZOHO')
-					nLoop=0
+			'LOCAL' | 'FREE' | 'OVH' | 'GMAIL' | 'YAHOO' | 'ZOHO')
+				nLoop=0
 				;;
 			esac
 		done
@@ -251,7 +251,7 @@ DisplaySurvey() {
 		else
 			sValue="$SMTP_Username"
 		fi
-		while ( ! gfnValidateMail "$gsMainUserEmail" ) || [ -z "$gsMainUserEmail" ]; do
+		while (! gfnValidateMail "$gsMainUserEmail") || [ -z "$gsMainUserEmail" ]; do
 			gfnQuestionGetString NO "$Questions_EmailAddress" gsMainUserEmail "$sValue"
 		done
 		unset sValue
@@ -277,13 +277,13 @@ DisplaySurvey() {
 		else
 			sValue="$Global_None"
 		fi
-		sValue="`echo $sValue | sed "s/^NO$/$Global_None/g;"`"
+		sValue="$(echo $sValue | sed "s/^NO$/$Global_None/g;")"
 		while [ $nLoop -eq 1 ]; do
 			gfnQuestionGetString NO "$Questions_ServerProvider" gsServerProvider "$sValue"
-			gsServerProvider="`echo $gsServerProvider | tr '[:lower:]' '[:upper:]'`"
+			gsServerProvider="$(echo $gsServerProvider | tr '[:lower:]' '[:upper:]')"
 			case "$gsServerProvider" in
-				"$Global_None"|'OVH'|'ONLINE'|'DIGICUBE'|'HETZNER')
-					nLoop=0
+			"$Global_None" | 'OVH' | 'ONLINE' | 'DIGICUBE' | 'HETZNER')
+				nLoop=0
 				;;
 			esac
 		done
@@ -300,10 +300,10 @@ DisplaySurvey() {
 			fi
 			while [ $nLoop -eq 1 ]; do
 				gfnQuestionGetString NO "$Questions_InstallSeedboxManager" gbToInstall_Manager "$sValue"
-				gbToInstall_Manager="`echo $gbToInstall_Manager | tr '[:lower:]' '[:upper:]'`"
+				gbToInstall_Manager="$(echo $gbToInstall_Manager | tr '[:lower:]' '[:upper:]')"
 				case "$gbToInstall_Manager" in
-					"$Global_NO"|"$Global_YES")
-						nLoop=0
+				"$Global_NO" | "$Global_YES")
+					nLoop=0
 					;;
 				esac
 			done
@@ -313,8 +313,8 @@ DisplaySurvey() {
 			else
 				bToInstall=0
 			fi
-			cmdMySQL 'MySB_db' "UPDATE services SET to_install='$bToInstall', used='1' WHERE serv_name='Seedbox-Manager';" -v >> $gsLogFile
-			cmdMySQL 'MySB_db' "UPDATE repositories SET active='$bToInstall' WHERE name='Seedbox-Manager' OR name='ruTorrent Plugin Link Manager';" -v >> $gsLogFile
+			cmdMySQL 'MySB_db' "UPDATE services SET to_install='$bToInstall', used='1' WHERE serv_name='Seedbox-Manager';" -v >>$gsLogFile
+			cmdMySQL 'MySB_db' "UPDATE repositories SET active='$bToInstall' WHERE name='Seedbox-Manager' OR name='ruTorrent Plugin Link Manager';" -v >>$gsLogFile
 			unset sValue nLoop bToInstall
 		fi
 
@@ -329,10 +329,10 @@ DisplaySurvey() {
 			fi
 			while [ $nLoop -eq 1 ]; do
 				gfnQuestionGetString NO "$Questions_InstallCakeBox" gbToInstall_Cakebox "$sValue"
-				gbToInstall_Cakebox="`echo $gbToInstall_Cakebox | tr '[:lower:]' '[:upper:]'`"
+				gbToInstall_Cakebox="$(echo $gbToInstall_Cakebox | tr '[:lower:]' '[:upper:]')"
 				case "$gbToInstall_Cakebox" in
-					"$Global_NO"|"$Global_YES")
-						nLoop=0
+				"$Global_NO" | "$Global_YES")
+					nLoop=0
 					;;
 				esac
 			done
@@ -342,8 +342,8 @@ DisplaySurvey() {
 			else
 				bToInstall=0
 			fi
-			cmdMySQL 'MySB_db' "UPDATE services SET to_install='$bToInstall', used='1' WHERE serv_name='CakeBox-Light';" -v >> $gsLogFile
-			cmdMySQL 'MySB_db' "UPDATE repositories SET active='$bToInstall' WHERE name='CakeBox-Light' OR name='ruTorrent Plugin Link Cakebox';" -v >> $gsLogFile
+			cmdMySQL 'MySB_db' "UPDATE services SET to_install='$bToInstall', used='1' WHERE serv_name='CakeBox-Light';" -v >>$gsLogFile
+			cmdMySQL 'MySB_db' "UPDATE repositories SET active='$bToInstall' WHERE name='CakeBox-Light' OR name='ruTorrent Plugin Link Cakebox';" -v >>$gsLogFile
 			unset sValue nLoop bToInstall
 		fi
 
@@ -358,10 +358,10 @@ DisplaySurvey() {
 			fi
 			while [ $nLoop -eq 1 ]; do
 				gfnQuestionGetString NO "$Questions_InstallPlexMedia" gbToInstall_PlexMedia "$sValue"
-				gbToInstall_PlexMedia="`echo $gbToInstall_PlexMedia | tr '[:lower:]' '[:upper:]'`"
+				gbToInstall_PlexMedia="$(echo $gbToInstall_PlexMedia | tr '[:lower:]' '[:upper:]')"
 				case "$gbToInstall_PlexMedia" in
-					"$Global_NO"|"$Global_YES")
-						nLoop=0
+				"$Global_NO" | "$Global_YES")
+					nLoop=0
 					;;
 				esac
 			done
@@ -371,7 +371,7 @@ DisplaySurvey() {
 			else
 				bToInstall=0
 			fi
-			cmdMySQL 'MySB_db' "UPDATE services SET to_install='$bToInstall', used='1' WHERE serv_name='Plex Media Server';" -v >> $gsLogFile
+			cmdMySQL 'MySB_db' "UPDATE services SET to_install='$bToInstall', used='1' WHERE serv_name='Plex Media Server';" -v >>$gsLogFile
 			unset sValue nLoop bToInstall
 		fi
 
@@ -386,10 +386,10 @@ DisplaySurvey() {
 			fi
 			while [ $nLoop -eq 1 ]; do
 				gfnQuestionGetString NO "$Questions_InstallNextCloud" gbToInstall_NextCloud "$sValue"
-				gbToInstall_NextCloud="`echo $gbToInstall_NextCloud | tr '[:lower:]' '[:upper:]'`"
+				gbToInstall_NextCloud="$(echo $gbToInstall_NextCloud | tr '[:lower:]' '[:upper:]')"
 				case "$gbToInstall_NextCloud" in
-					"$Global_NO"|"$Global_YES")
-						nLoop=0
+				"$Global_NO" | "$Global_YES")
+					nLoop=0
 					;;
 				esac
 			done
@@ -399,8 +399,8 @@ DisplaySurvey() {
 			else
 				bToInstall=0
 			fi
-			cmdMySQL 'MySB_db' "UPDATE services SET to_install='$bToInstall', used='1' WHERE serv_name='NextCloud';" -v >> $gsLogFile
-			cmdMySQL 'MySB_db' "UPDATE repositories SET active='$bToInstall' WHERE name='NextCloud';" -v >> $gsLogFile
+			cmdMySQL 'MySB_db' "UPDATE services SET to_install='$bToInstall', used='1' WHERE serv_name='NextCloud';" -v >>$gsLogFile
+			cmdMySQL 'MySB_db' "UPDATE repositories SET active='$bToInstall' WHERE name='NextCloud';" -v >>$gsLogFile
 			unset sValue nLoop bToInstall
 		fi
 
@@ -415,10 +415,10 @@ DisplaySurvey() {
 			fi
 			while [ $nLoop -eq 1 ]; do
 				gfnQuestionGetString NO "$Questions_InstallWebmin" gbToInstall_Webmin "$sValue"
-				gbToInstall_Webmin="`echo $gbToInstall_Webmin | tr '[:lower:]' '[:upper:]'`"
+				gbToInstall_Webmin="$(echo $gbToInstall_Webmin | tr '[:lower:]' '[:upper:]')"
 				case "$gbToInstall_Webmin" in
-					"$Global_NO"|"$Global_YES")
-						nLoop=0
+				"$Global_NO" | "$Global_YES")
+					nLoop=0
 					;;
 				esac
 			done
@@ -432,7 +432,7 @@ DisplaySurvey() {
 			else
 				bToInstall=0
 			fi
-			cmdMySQL 'MySB_db' "UPDATE services SET to_install='$bToInstall', used='1', port_tcp1='$gsPorts_Webmin' WHERE serv_name='Webmin';" -v >> $gsLogFile
+			cmdMySQL 'MySB_db' "UPDATE services SET to_install='$bToInstall', used='1', port_tcp1='$gsPorts_Webmin' WHERE serv_name='Webmin';" -v >>$gsLogFile
 			unset sValue nLoop bToInstall
 		fi
 
@@ -447,10 +447,10 @@ DisplaySurvey() {
 			fi
 			while [ $nLoop -eq 1 ]; do
 				gfnQuestionGetString NO "$Questions_InstallOpenVPN" gbToInstall_OpenVPN "$sValue"
-				gbToInstall_OpenVPN="`echo $gbToInstall_OpenVPN | tr '[:lower:]' '[:upper:]'`"
+				gbToInstall_OpenVPN="$(echo $gbToInstall_OpenVPN | tr '[:lower:]' '[:upper:]')"
 				case "$gbToInstall_OpenVPN" in
-					"$Global_NO"|"$Global_YES")
-						nLoop=0
+				"$Global_NO" | "$Global_YES")
+					nLoop=0
 					;;
 				esac
 			done
@@ -489,27 +489,27 @@ DisplaySurvey() {
 			gfnQuestionGetString NO "$Questions_PortOpenvpnTUNwithoutGW" gsPort_OpenVPN_WithoutGW "$gsPort_OpenVPN_WithoutGW"
 			gfnQuestionGetString NO "$Questions_PortOpenvpnTAPwithoutGW" gsPort_OpenVPN_TAP_WithoutGW "$gsPort_OpenVPN_TAP_WithoutGW"
 			while [ ! "$gsOpenVPN_Proto" = "udp" ] && [ ! "$gsOpenVPN_Proto" = "tcp" ]; do
-				gfnQuestionGetString NO "$Questions_ProtoOpenVPN" gsOpenVPN_Proto "$sValueProto"
-				gsOpenVPN_Proto="`echo $gsOpenVPN_Proto | tr '[:upper:]' '[:lower:]'`"
+				gfnQuestionGetString NO "${Questions_ProtoOpenVPN[@]:-}" gsOpenVPN_Proto "$sValueProto"
+				gsOpenVPN_Proto="$(echo $gsOpenVPN_Proto | tr '[:upper:]' '[:lower:]')"
 			done
 
-			if ([ "$gsOpenVPN_Proto" != "$sValueProto" ] \
-				|| [ "$sTemp_gsPort_OpenVPN_WithGW" != "$gsPort_OpenVPN_WithGW" ] \
-				|| [ "$sTemp_gsPort_OpenVPN_WithoutGW" != "$gsPort_OpenVPN_WithoutGW" ] \
-				|| [ "$sTemp_gsPort_OpenVPN_TAP_WithoutGW" != "$gsPort_OpenVPN_TAP_WithoutGW" ]); then
+			if ([ "$gsOpenVPN_Proto" != "$sValueProto" ] ||
+				[ "$sTemp_gsPort_OpenVPN_WithGW" != "$gsPort_OpenVPN_WithGW" ] ||
+				[ "$sTemp_gsPort_OpenVPN_WithoutGW" != "$gsPort_OpenVPN_WithoutGW" ] ||
+				[ "$sTemp_gsPort_OpenVPN_TAP_WithoutGW" != "$gsPort_OpenVPN_TAP_WithoutGW" ]); then
 
-				[ "$TYPE" == "UPGRADE" ] && bToInstall=2 # Refresh
+				[ "$TYPE" == "UPGRADE" ] && bToInstall=2             # Refresh
 				[ "$bgChangeFQDN" == "$Global_YES" ] && bToInstall=1 # Force reinstall
 			fi
 
 			case "$gsOpenVPN_Proto" in
-				"tcp")
-					sUdpPortsList="port_udp1='', port_udp2='', port_udp3='', ports_udp_list=''"
-					sTcpPortsList="port_tcp1='$gsPort_OpenVPN_WithGW', port_tcp2='$gsPort_OpenVPN_WithoutGW', port_tcp3='$gsPort_OpenVPN_TAP_WithoutGW', ports_tcp_list=''"
+			"tcp")
+				sUdpPortsList="port_udp1='', port_udp2='', port_udp3='', ports_udp_list=''"
+				sTcpPortsList="port_tcp1='$gsPort_OpenVPN_WithGW', port_tcp2='$gsPort_OpenVPN_WithoutGW', port_tcp3='$gsPort_OpenVPN_TAP_WithoutGW', ports_tcp_list=''"
 				;;
-				"udp")
-					sUdpPortsList="port_udp1='$gsPort_OpenVPN_WithGW', port_udp2='$gsPort_OpenVPN_WithoutGW', port_udp3='$gsPort_OpenVPN_TAP_WithoutGW', ports_udp_list=''"
-					sTcpPortsList="port_tcp1='', port_tcp2='', port_tcp3='', ports_tcp_list=''"
+			"udp")
+				sUdpPortsList="port_udp1='$gsPort_OpenVPN_WithGW', port_udp2='$gsPort_OpenVPN_WithoutGW', port_udp3='$gsPort_OpenVPN_TAP_WithoutGW', ports_udp_list=''"
+				sTcpPortsList="port_tcp1='', port_tcp2='', port_tcp3='', ports_tcp_list=''"
 				;;
 			esac
 		else
@@ -517,8 +517,8 @@ DisplaySurvey() {
 			sUdpPortsList="port_udp1='', port_udp2='', port_udp3='', ports_udp_list=''"
 			sTcpPortsList="port_tcp1='', port_tcp2='', port_tcp3='', ports_tcp_list=''"
 		fi
-		cmdMySQL 'MySB_db' "UPDATE services SET to_install='$bToInstall', used='1', $sTcpPortsList, $sUdpPortsList WHERE serv_name='OpenVPN';" -v >> $gsLogFile
-		cmdMySQL 'MySB_db' "UPDATE services SET to_install='$bToInstall', used='1' WHERE serv_name='Samba' OR serv_name='NFS';" -v >> $gsLogFile
+		cmdMySQL 'MySB_db' "UPDATE services SET to_install='$bToInstall', used='1', $sTcpPortsList, $sUdpPortsList WHERE serv_name='OpenVPN';" -v >>$gsLogFile
+		cmdMySQL 'MySB_db' "UPDATE services SET to_install='$bToInstall', used='1' WHERE serv_name='Samba' OR serv_name='NFS';" -v >>$gsLogFile
 		unset sValue nLoop bToInstall sTcpPortsList sUdpPortsList
 	fi
 
@@ -532,7 +532,7 @@ DisplaySurvey() {
 		# Let's Encrypt
 		if [ "$gsSrvIpAddress" != "$gsSrvIpAddressExt" ]; then
 			echo
-			Questions_Message_LetsEncrypt="`echo $Questions_Message_LetsEncrypt | sed "s/<gsSrvIpAddress>/$gsSrvIpAddress/g;" | sed "s/<gsSrvIpAddressExt>/$gsSrvIpAddressExt/g;"`"
+			Questions_Message_LetsEncrypt="$(echo $Questions_Message_LetsEncrypt | sed "s/<gsSrvIpAddress>/$gsSrvIpAddress/g;" | sed "s/<gsSrvIpAddressExt>/$gsSrvIpAddressExt/g;")"
 			echo -e "$Questions_Message_LetsEncrypt"
 			if [ "$RepeatSurvey" == "YES" ]; then
 				sValue="$gsHttpPortOpened"
@@ -540,7 +540,7 @@ DisplaySurvey() {
 				sValue="$Global_YES"
 			fi
 			gfnQuestionGetString NO "$Questions_HttpOpened" gsHttpPortOpened "$sValue"
-			gsHttpPortOpened="`echo $gsHttpPortOpened | tr '[:lower:]' '[:upper:]'`"
+			gsHttpPortOpened="$(echo $gsHttpPortOpened | tr '[:lower:]' '[:upper:]')"
 			unset sValue
 		fi
 
@@ -553,7 +553,7 @@ DisplaySurvey() {
 			sValue="$Global_YES"
 		fi
 		gfnQuestionGetString NO "$Questions_UseIprestriction" gsIpRestriction "$sValue"
-		gsIpRestriction="`echo $gsIpRestriction | tr '[:lower:]' '[:upper:]'`"
+		gsIpRestriction="$(echo $gsIpRestriction | tr '[:lower:]' '[:upper:]')"
 		unset sValue
 
 		# Main user IP addresses
@@ -565,7 +565,7 @@ DisplaySurvey() {
 			# get actual main user ip addresses
 			if [ "$TYPE" == "UPGRADE" ]; then
 				for sIp in $gsMainUserIPs; do
-					sIp="`echo $sIp | sed -e 's/^ //g;' | sed 's/\s+$//' | sed 's/\/32//g;'`"
+					sIp="$(echo $sIp | sed -e 's/^ //g;' | sed 's/\s+$//' | sed 's/\/32//g;')"
 					if [ -z "$sValue" ]; then
 						sValue="$sIp"
 					else
@@ -575,14 +575,14 @@ DisplaySurvey() {
 				unset sIp
 			fi
 			# get maybe a new one
-			sTempIPs="`echo $SSH_CLIENT | awk '{ print $1 }'`"
+			sTempIPs="$(echo $SSH_CLIENT | awk '{ print $1 }')"
 			if [ -z "$sTempIPs" ]; then
-				sTempIPs="`who --ips | awk '{print $6}' | grep ^[0123456789]`"
+				sTempIPs="$(who --ips | awk '{print $6}' | grep ^[0123456789])"
 				if [ -z "$sTempIPs" ]; then
-					sTempIPs="`who --ips | awk '{print $5}' | grep ^[0123456789]`"
+					sTempIPs="$(who --ips | awk '{print $5}' | grep ^[0123456789])"
 				fi
 			fi
-			if [ -z "`echo $sValue | grep "$sTempIPs"`" ]; then
+			if [ -z "$(echo $sValue | grep "$sTempIPs")" ]; then
 				if [ -z "$sValue" ]; then
 					sValue="$sTempIPs"
 				else
@@ -595,8 +595,8 @@ DisplaySurvey() {
 			gfnQuestionGetString NO "$Questions_AddAddresses" gsMainUserIPs "$sValue"
 			IFS=$','
 			for sIp in $sValue; do
-				sIp="`echo $sIp | sed -e 's/^ //g;' | sed 's/\s+$//' | sed 's/\/32//g;'`"
-				sTmp="`gfnValidateIP "$sIp"`"
+				sIp="$(echo $sIp | sed -e 's/^ //g;' | sed 's/\s+$//' | sed 's/\/32//g;')"
+				sTmp="$(gfnValidateIP "$sIp")"
 				if [ ! -z "$sTmp" ]; then
 					if [ -z "$sCheckIp" ]; then
 						sCheckIp="$sTmp"
@@ -605,7 +605,7 @@ DisplaySurvey() {
 					fi
 				fi
 			done
-			sCheckIp="`echo $sCheckIp | sed -e "s/\ /\,/g;" | sed -e "s/^$//g;"`"
+			sCheckIp="$(echo $sCheckIp | sed -e "s/\ /\,/g;" | sed -e "s/^$//g;")"
 			[ ! -z "$sCheckIp" ] && sValue="$sCheckIp"
 			unset IFS sIp sTmp
 		done
@@ -622,10 +622,10 @@ DisplaySurvey() {
 			fi
 			while [ $nLoop -eq 1 ]; do
 				gfnQuestionGetString NO "$Questions_InstallLogwatch" gbToInstall_LogWatch "$sValue"
-				gbToInstall_LogWatch="`echo $gbToInstall_LogWatch | tr '[:lower:]' '[:upper:]'`"
+				gbToInstall_LogWatch="$(echo $gbToInstall_LogWatch | tr '[:lower:]' '[:upper:]')"
 				case "$gbToInstall_LogWatch" in
-					"$Global_NO"|"$Global_YES")
-						nLoop=0
+				"$Global_NO" | "$Global_YES")
+					nLoop=0
 					;;
 				esac
 			done
@@ -635,7 +635,7 @@ DisplaySurvey() {
 			else
 				bToInstall=0
 			fi
-			cmdMySQL 'MySB_db' "UPDATE services SET to_install='$bToInstall', used='1' WHERE serv_name='LogWatch';" -v >> $gsLogFile
+			cmdMySQL 'MySB_db' "UPDATE services SET to_install='$bToInstall', used='1' WHERE serv_name='LogWatch';" -v >>$gsLogFile
 			unset sValue nLoop bToInstall
 		fi
 
@@ -650,10 +650,10 @@ DisplaySurvey() {
 			fi
 			while [ $nLoop -eq 1 ]; do
 				gfnQuestionGetString NO "$Questions_InstallFail2Ban" gbToInstall_Fail2Ban "$sValue"
-				gbToInstall_Fail2Ban="`echo $gbToInstall_Fail2Ban | tr '[:lower:]' '[:upper:]'`"
+				gbToInstall_Fail2Ban="$(echo $gbToInstall_Fail2Ban | tr '[:lower:]' '[:upper:]')"
 				case "$gbToInstall_Fail2Ban" in
-					"$Global_NO"|"$Global_YES")
-						nLoop=0
+				"$Global_NO" | "$Global_YES")
+					nLoop=0
 					;;
 				esac
 			done
@@ -663,7 +663,7 @@ DisplaySurvey() {
 			else
 				bToInstall=0
 			fi
-			cmdMySQL 'MySB_db' "UPDATE services SET to_install='$bToInstall', used='1' WHERE serv_name='Fail2Ban';" -v >> $gsLogFile
+			cmdMySQL 'MySB_db' "UPDATE services SET to_install='$bToInstall', used='1' WHERE serv_name='Fail2Ban';" -v >>$gsLogFile
 			unset sValue nLoop bToInstall
 		fi
 
@@ -678,10 +678,10 @@ DisplaySurvey() {
 			fi
 			while [ $nLoop -eq 1 ]; do
 				gfnQuestionGetString NO "$Questions_InstallDNScrypt" gbToInstall_DNScrypt "$sValue"
-				gbToInstall_DNScrypt="`echo $gbToInstall_DNScrypt | tr '[:lower:]' '[:upper:]'`"
+				gbToInstall_DNScrypt="$(echo $gbToInstall_DNScrypt | tr '[:lower:]' '[:upper:]')"
 				case "$gbToInstall_DNScrypt" in
-					"$Global_NO"|"$Global_YES")
-						nLoop=0
+				"$Global_NO" | "$Global_YES")
+					nLoop=0
 					;;
 				esac
 			done
@@ -691,8 +691,8 @@ DisplaySurvey() {
 			else
 				bToInstall=0
 			fi
-			cmdMySQL 'MySB_db' "UPDATE services SET to_install='$bToInstall', used='1' WHERE serv_name='DNScrypt-proxy';" -v >> $gsLogFile
-			cmdMySQL 'MySB_db' "UPDATE repositories SET active='$bToInstall' WHERE name='DNScrypt-proxy' OR name='Libsodium' OR name='Minisign';" -v >> $gsLogFile
+			cmdMySQL 'MySB_db' "UPDATE services SET to_install='$bToInstall', used='1' WHERE serv_name='DNScrypt-proxy';" -v >>$gsLogFile
+			cmdMySQL 'MySB_db' "UPDATE repositories SET active='$bToInstall' WHERE name='DNScrypt-proxy' OR name='Libsodium' OR name='Minisign';" -v >>$gsLogFile
 			unset sValue nLoop bToInstall
 		fi
 
@@ -708,7 +708,7 @@ DisplaySurvey() {
 		if [ "$gsMySB_PeerBlock" == "$Global_None" ] || [ -z "$gsMySB_PeerBlock" ]; then
 			echo
 			echo -e "$Questions_Message_Blocklists"
-			sQuestion="$Questions_InstallBlockList_0"
+			sQuestion="${Questions_InstallBlockList_0[*]:-}"
 
 			if [ $gsMemory -lt 2048 ]; then
 				echo -e "$Questions_Message_Blocklists_0"
@@ -722,25 +722,25 @@ DisplaySurvey() {
 				sValue="PeerGuardian"
 			fi
 			gsMySB_PeerBlock=""
-			while [ "$gsMySB_PeerBlock" != "$Global_None" ] \
-				&& [ "$gsMySB_PeerBlock" != "PeerGuardian" ] \
-				&& [ "$gsMySB_PeerBlock" != "rTorrent" ]; do
+			while [ "$gsMySB_PeerBlock" != "$Global_None" ] &&
+				[ "$gsMySB_PeerBlock" != "PeerGuardian" ] &&
+				[ "$gsMySB_PeerBlock" != "rTorrent" ]; do
 
 				gfnQuestionGetString NO "$sQuestion" gsMySB_PeerBlock "$sValue"
 			done
 
 			case "$gsMySB_PeerBlock" in
-				"PeerGuardian")
-					cmdMySQL 'MySB_db' "UPDATE services SET to_install='1', used='1' WHERE serv_name='PeerGuardian';" -v >> $gsLogFile
-					cmdMySQL 'MySB_db' "UPDATE services SET to_install='0', used='1' WHERE serv_name='rTorrent Block List';" -v >> $gsLogFile
+			"PeerGuardian")
+				cmdMySQL 'MySB_db' "UPDATE services SET to_install='1', used='1' WHERE serv_name='PeerGuardian';" -v >>$gsLogFile
+				cmdMySQL 'MySB_db' "UPDATE services SET to_install='0', used='1' WHERE serv_name='rTorrent Block List';" -v >>$gsLogFile
 				;;
-				"rTorrent")
-					cmdMySQL 'MySB_db' "UPDATE services SET to_install='0', used='1' WHERE serv_name='PeerGuardian';" -v >> $gsLogFile
-					cmdMySQL 'MySB_db' "UPDATE services SET to_install='1', used='1' WHERE serv_name='rTorrent Block List';" -v >> $gsLogFile
+			"rTorrent")
+				cmdMySQL 'MySB_db' "UPDATE services SET to_install='0', used='1' WHERE serv_name='PeerGuardian';" -v >>$gsLogFile
+				cmdMySQL 'MySB_db' "UPDATE services SET to_install='1', used='1' WHERE serv_name='rTorrent Block List';" -v >>$gsLogFile
 				;;
-				*)
-					cmdMySQL 'MySB_db' "UPDATE services SET to_install='0', used='1' WHERE serv_name='PeerGuardian';" -v >> $gsLogFile
-					cmdMySQL 'MySB_db' "UPDATE services SET to_install='0', used='1' WHERE serv_name='rTorrent Block List';" -v >> $gsLogFile
+			*)
+				cmdMySQL 'MySB_db' "UPDATE services SET to_install='0', used='1' WHERE serv_name='PeerGuardian';" -v >>$gsLogFile
+				cmdMySQL 'MySB_db' "UPDATE services SET to_install='0', used='1' WHERE serv_name='rTorrent Block List';" -v >>$gsLogFile
 				;;
 			esac
 			unset sValue
@@ -757,11 +757,11 @@ DisplaySurvey() {
 			sValue="$Global_YES"
 		fi
 		gfnQuestionGetString NO "$Questions_SendStatistics" gsStatistics "$sValue"
-		gsStatistics="`echo $gsStatistics | tr '[:lower:]' '[:upper:]'`"
+		gsStatistics="$(echo $gsStatistics | tr '[:lower:]' '[:upper:]')"
 
 		case "$gsStatistics" in
-			"$Global_NO")	echo "no_stats" > $MySB_InstallDir/statistics;;
-			*)				rm -f $MySB_InstallDir/statistics;;
+		"$Global_NO") echo "no_stats" >$MySB_InstallDir/statistics ;;
+		*) rm -f $MySB_InstallDir/statistics ;;
 		esac
 		unset sValue
 	fi
@@ -774,33 +774,33 @@ DisplaySurvey() {
 		sValue="0"
 	fi
 	nFreeSpace=$(gfnQuotaSpaceAvailable)
-	cmdMySQL 'MySB_db' "UPDATE system SET hostname='$gsHostNameFqdn', ipv4='$gsSrvIpAddress', ipv4_ext='$gsSrvIpAddressExt', ipv4_additional='$gsSrvAdditionnalIpAddresses' , primary_inet='$gsPrimaryInet', timezone='$gsTimeZone', server_provider='$gsServerProvider', ip_restriction='$sValue', quota_default='$nFreeSpace' WHERE id_system='1';" -v >> $gsLogFile
+	cmdMySQL 'MySB_db' "UPDATE system SET hostname='$gsHostNameFqdn', ipv4='$gsSrvIpAddress', ipv4_ext='$gsSrvIpAddressExt', ipv4_additional='$gsSrvAdditionnalIpAddresses' , primary_inet='$gsPrimaryInet', timezone='$gsTimeZone', server_provider='$gsServerProvider', ip_restriction='$sValue', quota_default='$nFreeSpace' WHERE id_system='1';" -v >>$gsLogFile
 
 	#### 'services' table
 	# HTTPs & HTTP
-	cmdMySQL 'MySB_db' "UPDATE services SET port_tcp1='$gsPort_MySB_HTTPS', port_tcp2='$gsPort_MySB_HTTP', port_tcp3='', ports_tcp_list='', port_udp1='', port_udp2='', port_udp3='', ports_udp_list='' WHERE serv_name='NginX';" -v >> $gsLogFile
+	cmdMySQL 'MySB_db' "UPDATE services SET port_tcp1='$gsPort_MySB_HTTPS', port_tcp2='$gsPort_MySB_HTTP', port_tcp3='', ports_tcp_list='', port_udp1='', port_udp2='', port_udp3='', ports_udp_list='' WHERE serv_name='NginX';" -v >>$gsLogFile
 	# SSH
-	cmdMySQL 'MySB_db' "UPDATE services SET port_tcp1='$gsPort_SSH', port_tcp2='$gsPort_MySB_HTTP', port_tcp3='', ports_tcp_list='', port_udp1='', port_udp2='', port_udp3='', ports_udp_list='' WHERE serv_name='SSH';" -v >> $gsLogFile
+	cmdMySQL 'MySB_db' "UPDATE services SET port_tcp1='$gsPort_SSH', port_tcp2='$gsPort_MySB_HTTP', port_tcp3='', ports_tcp_list='', port_udp1='', port_udp2='', port_udp3='', ports_udp_list='' WHERE serv_name='SSH';" -v >>$gsLogFile
 	# FTP
-	cmdMySQL 'MySB_db' "UPDATE services SET port_tcp1='$gsPort_FTP', port_tcp2='$gsPort_FTP_Data', port_tcp3='65000:65535', port_udp1='', port_udp2='', port_udp3='', ports_udp_list='' WHERE serv_name='VSFTPd';" -v >> $gsLogFile
+	cmdMySQL 'MySB_db' "UPDATE services SET port_tcp1='$gsPort_FTP', port_tcp2='$gsPort_FTP_Data', port_tcp3='65000:65535', port_udp1='', port_udp2='', port_udp3='', ports_udp_list='' WHERE serv_name='VSFTPd';" -v >>$gsLogFile
 
 	if [ "$TYPE" == "INSTALL" ]; then
 		# 'smtp' table
-		cmdMySQL 'MySB_db' "UPDATE smtp SET smtp_provider='$gsSmtpProvider', smtp_username='$SMTP_Username', smtp_passwd='$SMTP_Password', smtp_email='$gsMainUserEmail' WHERE id_smtp='1';" -v >> $gsLogFile
+		cmdMySQL 'MySB_db' "UPDATE smtp SET smtp_provider='$gsSmtpProvider', smtp_username='$SMTP_Username', smtp_passwd='$SMTP_Password', smtp_email='$gsMainUserEmail' WHERE id_smtp='1';" -v >>$gsLogFile
 
 		# 'users' table (Main user)
-		cmdMySQL 'MySB_db' "UPDATE users SET users_ident='$gsMainUserName', users_email='$gsMainUserEmail', sftp='1', sudo='1', admin='1' WHERE users_ident='MySB' OR admin='1';" -v >> $gsLogFile
-		cmdMySQL 'MySB_db' "UPDATE users SET users_passwd='$gsMainUserPassword' WHERE users_ident='MySB' OR admin='1';" >> $gsLogFile
-		cmdMySQL 'MySB_db' "UPDATE users_history SET users_ident='$gsMainUserName' WHERE users_ident='MySB';" -v >> $gsLogFile
-		sqlite3 -echo -cmd '.timeout 150000' $gsWolf_DB "UPDATE user SET name='$gsMainUserName', email='$gsMainUserEmail', username='$gsMainUserName' WHERE id='2';" >> $gsLogFile
+		cmdMySQL 'MySB_db' "UPDATE users SET users_ident='$gsMainUserName', users_email='$gsMainUserEmail', sftp='1', sudo='1', admin='1' WHERE users_ident='MySB' OR admin='1';" -v >>$gsLogFile
+		cmdMySQL 'MySB_db' "UPDATE users SET users_passwd='$gsMainUserPassword' WHERE users_ident='MySB' OR admin='1';" >>$gsLogFile
+		cmdMySQL 'MySB_db' "UPDATE users_history SET users_ident='$gsMainUserName' WHERE users_ident='MySB';" -v >>$gsLogFile
+		sqlite3 -echo -cmd '.timeout 150000' $gsWolf_DB "UPDATE user SET name='$gsMainUserName', email='$gsMainUserEmail', username='$gsMainUserName' WHERE id='2';" >>$gsLogFile
 
 		# 'users_addresses' table
-		gnMainUserId="`cmdMySQL 'MySB_db' "SELECT id_users FROM users WHERE users_ident='$gsMainUserName';"`"
-		cmdMySQL 'MySB_db' "DELETE FROM users_addresses WHERE id_users='$gnMainUserId';" -v >> $gsLogFile
+		gnMainUserId="$(cmdMySQL 'MySB_db' "SELECT id_users FROM users WHERE users_ident='$gsMainUserName';")"
+		cmdMySQL 'MySB_db' "DELETE FROM users_addresses WHERE id_users='$gnMainUserId';" -v >>$gsLogFile
 		IFS=$','
 		for sIp in $gsMainUserIPs; do
-			sHostName="`nslookup $sIp | grep 'name =' | awk '{ print $4 }' | sed 's/.\{1\}$//g'`"
-			cmdMySQL 'MySB_db' "INSERT INTO users_addresses (id_users,ipv4,hostname,check_by,is_active,last_update) VALUES ('$gnMainUserId','$sIp','$sHostName','ipv4','1','`date +%Y-%m-%d\ %H:%M:%S`');" -v >> $gsLogFile
+			sHostName="$(nslookup $sIp | grep 'name =' | awk '{ print $4 }' | sed 's/.\{1\}$//g')"
+			cmdMySQL 'MySB_db' "INSERT INTO users_addresses (id_users,ipv4,hostname,check_by,is_active,last_update) VALUES ('$gnMainUserId','$sIp','$sHostName','ipv4','1','$(date +%Y-%m-%d\ %H:%M:%S)');" -v >>$gsLogFile
 		done
 		unset IFS sIp
 	fi
@@ -898,7 +898,7 @@ ConfirmSurvey() {
 	echo -e "$Summary_ConfirmMessage"
 	while [ ! "$SurveyIsConfirmed" = "$Global_YES" ] && [ ! "$SurveyIsConfirmed" = "$Global_NO" ]; do
 		gfnQuestionGetString NO "$Summary_Confirm" SurveyIsConfirmed "$Global_NO"
-		SurveyIsConfirmed="`echo $SurveyIsConfirmed | tr '[:lower:]' '[:upper:]'`"
+		SurveyIsConfirmed="$(echo $SurveyIsConfirmed | tr '[:lower:]' '[:upper:]')"
 	done
 }
 
@@ -911,12 +911,12 @@ while [ ! "$SurveyIsConfirmed" = "$Global_YES" ]; do
 
 	#### Summary
 	case "$TYPE" in
-		'INSTALL')
-			FirstTime=0
-			ConfirmSurvey
+	'INSTALL')
+		FirstTime=0
+		ConfirmSurvey
 		;;
-		'UPGRADE')
-			SurveyIsConfirmed="$Global_YES"
+	'UPGRADE')
+		SurveyIsConfirmed="$Global_YES"
 		;;
 	esac
 done

@@ -25,4 +25,6 @@
 GitHubRepoUpdate_CheckAccess="Verifying access to GitHub (DNS switches if necessary)"
 GitHubRepoUpdate_RestoreDNS="Restoring of DNScrypt-proxy configuration"
 
+export GitHubRepoUpdate_CheckAccess GitHubRepoUpdate_RestoreDNS
+
 ##################### LAST LINE ######################################

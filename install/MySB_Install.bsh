@@ -439,7 +439,8 @@ while [ -z "$Answer" ]; do
 		if [ -z "$MySB_InstallDir" ]; then
 			MySB_InstallDir="/opt/MySB"
 		fi
-		IfEmpty="$(find $MySB_InstallDir/ -maxdepth 1 | wc -l)"
+
+		[ -d $MySB_InstallDir ] && IfEmpty="$(find $MySB_InstallDir/ -maxdepth 1 | wc -l)" || IfEmpty=0
 		while [ -z "$MySB_InstallDir" ] || [ -d $MySB_InstallDir ] || [ "$IfEmpty" -gt 0 ]; do
 			echo -e -n "$DirNotEmpty"
 			read -r MySB_InstallDir
