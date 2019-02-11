@@ -69,6 +69,29 @@ gfnNextCloudAccountManage() {
 	esac
 }
 
+#### ruTorrent Plugin Spacedisk NextCloud quotas included
+gfnPluginDiskspaceQuotaIncluded() {
+	local sUser nTotal nFree nLess nNumLine
+
+	gfnListCountUsers 'normal'
+	for sUser in ${gsUsersList:-}; do
+		nTotal="$(cmdMySQL 'MySB_db' "SELECT quota FROM users WHERE users_ident='$sUser';")"
+		nFree="$(cmdMySQL 'MySB_db' "SELECT space_used FROM users WHERE users_ident='$sUser';")"
+		{
+			echo "total:$nTotal"
+			echo "free:$nFree"
+		} >/home/"$sUser"/rtorrent/.session/quota.txt
+		if [ -f "${gsRutorrentDir:-}/conf/users/$sUser/diskspace/conf.php" ]; then
+			nLess=$((((nTotal - 10) / 100) / 1024)) # must remain 10%
+			if [ -n "$nLess" ]; then
+				nNumLine=$(grep 'notifySpaceLimit' -n -m 1 "$gsRutorrentDir/conf/users/$sUser/diskspace/conf.php" | cut -d ':' -f 1)
+				sed -i '/notifySpaceLimit/d' "$gsRutorrentDir/conf/users/$sUser/diskspace/conf.php"
+				sed -i "${nNumLine}i\$notifySpaceLimit = $nLess;		// in Mb" "$gsRutorrentDir/conf/users/$sUser/diskspace/conf.php"
+			fi
+		fi
+	done
+}
+
 #### Quota
 gfnManageQuota() {
 	local sMessage sIfExist sUser sVerbose sUsersList
@@ -545,7 +568,7 @@ gfnCreateRtorrentConfigFile() {
 
 	# Example scripts
 	install -o root -g "$sUser" -m 0750 "$MySB_InstallDir"/templates/rtorrent/synchro.sh.tmpl "$sHomeDir"/scripts/synchro.sh
-	echo "${Global_Readme_AvailableVariables:-}" >/home/"$sUser"/scripts/README
+	echo "${Global_Readme_AvailableVariables[@]:-}" >/home/"$sUser"/scripts/README
 	chown "$sUser":"$sUser" "$sHomeDir"/scripts/*
 	chmod 0770 "$sHomeDir"/scripts/*
 	dos2unix "$sHomeDir"/scripts/* &>/dev/null

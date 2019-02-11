@@ -164,7 +164,7 @@ if [ "$REBOOT" == "YES" ]; then
 	update-ca-certificates --fresh &>/dev/null
 
 	echo
-	echo -e "${IncAfter_Message_Last:-}"
+	echo -e "${IncAfter_Message_Last[@]:-}"
 	echo
 	echo -e -n "${CRED}${Global_ServerWillRestart:-}$CEND"
 	gfnCountDown 30

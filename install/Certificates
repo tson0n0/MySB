@@ -38,7 +38,7 @@ CreateCACertificate() {
 			echo -e "${CYELLOW}CA certificate already exist. Do you want to create it again ?$CEND"
 			echo -e "${CYELLOW}If you create new CA, you must create again certificates for services.$CEND"
 			echo -e "${CYELLOW}Do you understand ?$CEND"
-			gfnQuestionGetString NO "$Global_WantToContinue" CONTINUE $Global_YES
+			gfnQuestionGetString NO "${Global_WantToContinue[@]:-}" CONTINUE $Global_YES
 			if [ "$CONTINUE" == "$Global_NO" ]; then
 				echo -e "$Global_SeeYouLater"
 				echo

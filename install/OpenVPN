@@ -290,15 +290,15 @@ ZipClientFiles() {
 	perl -pi -e "s/^mtu-disc yes/;mtu-disc yes/g" /etc/openvpn/clients/"${CLIENTNAME}"_TAP_Single_WithoutGW.ovpn
 
 	zip -P "${USERPASSWORD}" -j "${MySB_InstallDir:-}/web/openvpn/openvpn_${USERNAME}.zip" \
-	/etc/openvpn/clients/"${CLIENTNAME}"_TUN_Single_WithGW.ovpn \
-	/etc/openvpn/clients/"${CLIENTNAME}"_TUN_Single_WithoutGW.ovpn \
-	/etc/openvpn/clients/"${CLIENTNAME}"_TUN_WithGW.ovpn \
-	/etc/openvpn/clients/"${CLIENTNAME}"_TUN_WithoutGW.ovpn \
-	/etc/openvpn/clients/"${CLIENTNAME}"_TAP_Single_WithoutGW.ovpn \
-	/etc/openvpn/"${CACRT:-}" \
-	/etc/openvpn/clients/"${CLIENTNAME}".crt \
-	/etc/openvpn/clients/"${CLIENTNAME}".key \
-	/etc/openvpn/"${TAKEY:-}"
+		/etc/openvpn/clients/"${CLIENTNAME}"_TUN_Single_WithGW.ovpn \
+		/etc/openvpn/clients/"${CLIENTNAME}"_TUN_Single_WithoutGW.ovpn \
+		/etc/openvpn/clients/"${CLIENTNAME}"_TUN_WithGW.ovpn \
+		/etc/openvpn/clients/"${CLIENTNAME}"_TUN_WithoutGW.ovpn \
+		/etc/openvpn/clients/"${CLIENTNAME}"_TAP_Single_WithoutGW.ovpn \
+		/etc/openvpn/"${CACRT:-}" \
+		/etc/openvpn/clients/"${CLIENTNAME}".crt \
+		/etc/openvpn/clients/"${CLIENTNAME}".key \
+		/etc/openvpn/"${TAKEY:-}"
 
 	chmod -v 0660 "${MySB_InstallDir:-}"/web/openvpn/*.zip
 	chown -v root:www-data "${MySB_InstallDir:-}"/web/openvpn/*.zip
@@ -455,7 +455,7 @@ case "$COMMAND" in
 			echo -e "${CYELLOW}OpenVPN certificate already exist. Do you want to create it again ?$CEND"
 			echo -e "${CYELLOW}I you create new certificate, you must create again certificates for all users.$CEND"
 			echo -e "${CYELLOW}Do you understand ?$CEND"
-			gfnQuestionGetString NO "${Global_WantToContinue:-}" CONTINUE NO
+			gfnQuestionGetString NO "${Global_WantToContinue[@]:-}" CONTINUE NO
 			CONTINUE="$(echo "$CONTINUE" | tr '[:lower:]' '[:upper:]')"
 			if [ "$CONTINUE" == "NO" ]; then
 				echo -e "${Global_SeeYouLater:-}"
