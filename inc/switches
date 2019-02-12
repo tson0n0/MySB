@@ -24,7 +24,7 @@
 ##################### FIRST LINE #####################################
 
 declare gsScriptName
-declare -r MySB_InstallDir
+declare MySB_InstallDir
 
 #### SWITCHES
 BANNER=ON     # Banner for all script (ON/OFF)

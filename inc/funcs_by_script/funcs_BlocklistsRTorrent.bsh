@@ -31,7 +31,7 @@ funcs_BlocklistsRTorrent=1
 export funcs_BlocklistsRTorrent
 ##################### FIRST LINE #####################################
 
-declare -r MySB_InstallDir
+declare MySB_InstallDir
 
 #### Clean the rTorrent blocklist
 gfnCleanBlockList() {

@@ -31,7 +31,7 @@ funcs_SourcesList=1
 export funcs_SourcesList
 ##################### FIRST LINE #####################################
 
-declare -r MySB_InstallDir binCURL gsDebianRelease
+declare MySB_InstallDir binCURL gsDebianRelease
 declare gbIsInstalled_PeerGuardian gbToInstall_PeerGuardian gbToInstall_Webmin gbIsInstalled_Webmin
 
 #### Delete Bad Sources

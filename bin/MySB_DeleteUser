@@ -26,9 +26,9 @@ source "$(dirname "$0")/../inc/includes_before"
 #
 ##################### FIRST LINE #####################################
 
-declare -r DeleteUser_NoUser DeleteUser_TypeUser DeleteUser_DeleteCron DeleteUser_DeleteFTP DeleteUser_DeleteNFS DeleteUser_DeleteSamba DeleteUser_DeleteNextCloudAccount
-declare -r DeleteUser_SecurituRules DeleteUser_Quota DeleteUser_PiecesMemory DeleteUser_RevokeOpenVPN DeleteUser_SystemAccount DeleteUser_RemoveFiles
-declare -r DeleteUser_RemoveFromDB DeleteUser_SystemAccount DeleteUser_DeleteWebAccount
+declare DeleteUser_NoUser DeleteUser_TypeUser DeleteUser_DeleteCron DeleteUser_DeleteFTP DeleteUser_DeleteNFS DeleteUser_DeleteSamba DeleteUser_DeleteNextCloudAccount
+declare DeleteUser_SecurituRules DeleteUser_Quota DeleteUser_PiecesMemory DeleteUser_RevokeOpenVPN DeleteUser_SystemAccount DeleteUser_RemoveFiles
+declare DeleteUser_RemoveFromDB DeleteUser_SystemAccount DeleteUser_DeleteWebAccount
 declare UserAccountType
 
 #### Includes

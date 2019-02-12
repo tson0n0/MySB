@@ -31,8 +31,8 @@ funcs_tools=1
 export funcs_tools
 ##################### FIRST LINE #####################################
 
-declare -r MySB_InstallDir binPhpService Global_Failed Global_Error_StatusSTD Global_Done MySB_Files UpgradeMe_DeleteTempFiles Global_PleaseWait binCURL
-declare -r UpgradeMe_CleanGit gsInstallDirEscaped
+declare MySB_InstallDir binPhpService Global_Failed Global_Error_StatusSTD Global_Done MySB_Files UpgradeMe_DeleteTempFiles Global_PleaseWait binCURL
+declare UpgradeMe_CleanGit gsInstallDirEscaped
 declare sVerbose gsSrvIpAddressExt gsCurrentVersion gsSrvIpAddress gsSwitch
 
 #### Get filename to download from URI

@@ -31,7 +31,7 @@ funcs_GetTrackersCert=1
 export funcs_GetTrackersCert
 ##################### FIRST LINE #####################################
 
-declare -r gsRutorrentPluginsDir AddTrackerDomain DeleteTrackerDomain UpdateTrackersIPv4
+declare gsRutorrentPluginsDir AddTrackerDomain DeleteTrackerDomain UpdateTrackersIPv4
 declare gsMainUserName
 
 #### Get ruTorrent Trackers

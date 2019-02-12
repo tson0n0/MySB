@@ -31,7 +31,7 @@ funcs_Install=1
 export funcs_Install
 ##################### FIRST LINE #####################################
 
-declare -r MySB_InstallDir gsInstallDirEscaped gbIsReady_MySB_Db
+declare MySB_InstallDir gsInstallDirEscaped gbIsReady_MySB_Db
 
 #### Logrotate
 gfnLogRotate() {
