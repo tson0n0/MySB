@@ -25,7 +25,7 @@ source $"(dirname "$0")"/../inc/includes_before
 #
 ##################### FIRST LINE #####################################
 
-declare -r MySB_InstallDir IncAfter_ConfigureDynamicLinks binPhpService
+declare MySB_InstallDir IncAfter_ConfigureDynamicLinks binPhpService
 declare funcs_Install funcs_SourcesList gsCurrentVersion gsUsersList
 declare gnMainUserId
 

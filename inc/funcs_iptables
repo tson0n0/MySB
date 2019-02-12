@@ -35,7 +35,7 @@ declare gsPort_MySB_HTTPS gsPort_SSH gsPort_FTP gsPort_FTP_Data
 declare AllUsersIPs gsPort_NginX_HTTP gsPort_NginX_HTTPS gsPorts_TCP_PlexMedia gsPorts_UDP_PlexMedia gsPorts_PlexMedia gsPorts_Webmin gsServerProvider
 declare gsOpenVPN_Proto gsPort_OpenVPN_WithGW gsPort_OpenVPN_TAP_WithoutGW gsPort_OpenVPN_WithoutGW gbIsInstalled_OpenVPN gsVpnLocalIps gsPrimaryInet
 declare gsSrvIpAddress gbIsInstalled_PlexMedia gsPort_FTP_Passive gbIsInstalled_Webmin gsMainUserIPs gsUsersList
-declare -r MySB_InstallDir
+declare MySB_InstallDir
 
 # http://easyfwgen.morizot.net/gen/
 
