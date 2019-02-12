@@ -19,7 +19,7 @@ then
 
 	STATUS=$?  # Captures exit code from script that was run
 
-	if [[ $STATUS == $SIGNAL_BUILD_STOP ]]
+	if [[ $STATUS == "$SIGNAL_BUILD_STOP" ]]
 	then
 	  echo "[init] exit signalled - ${file}"
 	  exit $STATUS

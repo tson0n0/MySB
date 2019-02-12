@@ -25,6 +25,10 @@ source "$(dirname "$0")"/../inc/includes_before
 #
 ##################### FIRST LINE #####################################
 
+declare -r UpgradeMe_Clock UpgradeMe_Error_Clock UpgradeMe_GitHubAccess UpgradeMe_Error_GitHubAccess UpgradeMe_UpdateGithub UpgradeMe_NewVersion UpgradeMe_CreateBackup
+declare UpgradeMe_Error_BackupDatabase UpgradeMe_Error_GitPull UpgradeMe_Error_GitFetch UpgradeMe_Error_GitStash
+declare -r UpgradeMe_StartScreen UpgradeMe_Error_UpgradeSciptMissing UpgradeMe_ErrorOccured UpgradeMe_Error_UpgradeSciptMissing
+
 #### VARs
 Type="$1"
 Continue=0
@@ -87,7 +91,7 @@ if [ $Continue -eq 0 ]; then
 			echo
 			echo -e "$UpgradeMe_Msg_VersionAvailable"
 			echo
-			gfnQuestionGetString NO "${Global_WantToContinue[@]}" WantToContinue "${Global_NO}"
+			gfnQuestionGetString NO "${Global_WantToContinue[*]}" WantToContinue "${Global_NO}"
 			WantToContinue="$(echo "$WantToContinue" | tr '[:lower:]' '[:upper:]')"
 			[ "$WantToContinue" == "$Global_NO" ] && gfnEndingScript 0
 			;;
@@ -169,20 +173,20 @@ if [ $Continue -eq 0 ]; then
 
 	if (! git fetch --all); then
 		Continue=6
-		Error="${UpgradeMe_Error_GitFetch[@]}"
+		Error="${UpgradeMe_Error_GitFetch[*]}"
 	fi
 
 	if [ $Continue -eq 0 ]; then
 		if (! git stash); then
 			Continue=7
-			Error="${UpgradeMe_Error_GitStash[@]}"
+			Error="${UpgradeMe_Error_GitStash[*]}"
 		fi
 	fi
 
 	if [ $Continue -eq 0 ]; then
 		if (! git checkout -b "$MySB_NewVersion" origin/"$MySB_NewVersion"); then
 			Continue=8
-			UpgradeMe_Error_GitCheckout="${UpgradeMe_Error_GitCheckout[@]//#new_version#/$MySB_NewVersion}"
+			UpgradeMe_Error_GitCheckout="${UpgradeMe_Error_GitCheckout[*]//#new_version#/$MySB_NewVersion}"
 			Error="$UpgradeMe_Error_GitCheckout"
 		fi
 	fi
@@ -190,7 +194,7 @@ if [ $Continue -eq 0 ]; then
 	if [ $Continue -eq 0 ]; then
 		if (! git pull origin "$MySB_NewVersion"); then
 			Continue=9
-			Error="${UpgradeMe_Error_GitPull[@]}"
+			Error="${UpgradeMe_Error_GitPull[*]}"
 		else
 			git stash clear
 		fi
@@ -203,13 +207,13 @@ if [ $Continue -eq 0 ]; then
 
 	if (! git fetch --all); then
 		Continue=10
-		Error="${UpgradeMe_Error_GitFetch[@]}"
+		Error="${UpgradeMe_Error_GitFetch[*]}"
 	fi
 
 	if [ $Continue -eq 0 ]; then
 		if (! git stash); then
 			Continue=11
-			Error="${UpgradeMe_Error_GitStash[@]}"
+			Error="${UpgradeMe_Error_GitStash[*]}"
 		fi
 	fi
 
@@ -224,7 +228,7 @@ if [ $Continue -eq 0 ]; then
 	if [ $Continue -eq 0 ]; then
 		if (! git pull origin "$MySB_NewVersion"); then
 			Continue=13
-			Error="${UpgradeMe_Error_GitPull[@]}"
+			Error="${UpgradeMe_Error_GitPull[*]}"
 		else
 			git stash clear
 		fi

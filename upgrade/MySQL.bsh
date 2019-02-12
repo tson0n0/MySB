@@ -1,3 +1,6 @@
+#!/bin/bash
+# rev 5.5
+
 declare MySB_InstallDir
 
 #### 1 - ALTER some tables - BoF

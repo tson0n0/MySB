@@ -66,7 +66,7 @@ sFilesListBash="$(grep -IRl "\(#\!/bin/\|shell\=\)bash" --exclude-dir ".git" --e
 if [ -n "${sFilesListBash}" ]; then
 	echo && echo -e "${CBLUE}*** Check Syntax with Shellcheck (bash) ***${CEND}"
 	for sFile in ${sFilesListBash}; do
-		if ! shellcheck -s bash -x -a -f tty -S error -S warning "${sFile}"; then
+		if ! shellcheck -s bash -x -a -f tty -S error "${sFile}"; then
 			echo -e "${CYELLOW}${sFile}:${CEND} ${CRED}Failed${CEND}"
 			nReturn=$((nReturn + 1))
 		else

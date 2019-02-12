@@ -1,4 +1,5 @@
 #!/bin/bash
+# rev 5.5
 # ----------------------------------
 #  __/\\\\____________/\\\\___________________/\\\\\\\\\\\____/\\\\\\\\\\\\\___
 #   _\/\\\\\\________/\\\\\\_________________/\\\/////////\\\_\/\\\/////////\\\_
@@ -95,7 +96,7 @@ gfnCreatePidFile() {
 	sleep 1
 	if [ -e $gsLockFile ]; then
 		cat $gsLockFile | awk -F: '{print($2)}' | sed "s/[^0-9]//g" >$gsPidFile
-		echo "Create rTorrent PID file: "$(/bin/date '+%Y-%m-%d - %H:%M:%S') >>$gsLogFile
+		echo "Create rTorrent PID file: $(/bin/date '+%Y-%m-%d - %H:%M:%S')" >>$gsLogFile
 	fi
 }
 
@@ -105,9 +106,9 @@ gfnDeletePidLockFile() {
 		pidofproc -p $gsPidFile $binScreen &>/dev/null || rm -f $gsPidFile $gsLockFile 2>>$gsLogFile
 	fi
 	rm -vf $gsLockFile >>$gsLogFile
-	echo "Delete rTorrent LOCK file: "$(/bin/date '+%Y-%m-%d - %H:%M:%S') >>$gsLogFile
+	echo "Delete rTorrent LOCK file: $(/bin/date '+%Y-%m-%d - %H:%M:%S')" >>$gsLogFile
 	rm -vf $gsPidFile >>$gsLogFile
-	echo "Delete rTorrent PID file: "$(/bin/date '+%Y-%m-%d - %H:%M:%S') >>$gsLogFile
+	echo "Delete rTorrent PID file: $(/bin/date '+%Y-%m-%d - %H:%M:%S')" >>$gsLogFile
 }
 
 ## mount share dir for seedbox users
@@ -178,7 +179,8 @@ gfnDoStart() {
 	gfnDoCrontab 'add'
 
 	# Create config file
-	source $MySB_InstallDir/inc/funcs_by_script/funcs_MySB_CreateUser
+	# shellcheck source=inc/funcs_by_script/funcs_MySB_CreateUser
+	source "$MySB_InstallDir"/inc/funcs_by_script/funcs_MySB_CreateUser
 	gfnCreateRtorrentConfigFile "$gsUsername"
 
 	# Delete ghost pid and lock file
@@ -232,7 +234,7 @@ gfnDoStop() {
 # Function that sends a SIGHUP to the daemon/service
 #
 gfnDoReload() {
-	echo "RELOAD: "$(/bin/date '+%Y-%m-%d - %H:%M:%S') >>$gsLogFile
+	echo "RELOAD: $(/bin/date '+%Y-%m-%d - %H:%M:%S')" >>$gsLogFile
 	# Delete ghost screen pid file
 	if [ -e $gsPidFile ]; then
 		pidofproc -p $gsPidFile $binScreen &>/dev/null || rm -f $gsPidFile
@@ -254,18 +256,18 @@ gfnRestartStopCase() {
 	gfnDoStart
 	case "$?" in
 	0)
-		echo "RESTART: "$(/bin/date '+%Y-%m-%d - %H:%M:%S') >>$gsLogFile
+		echo "RESTART: $(/bin/date '+%Y-%m-%d - %H:%M:%S')" >>$gsLogFile
 		gfnCreatePidFile
 		cmdMySQL 'MySB_db' "UPDATE users SET rtorrent_restart='0' WHERE users_ident='$gsUsername';"
 		log_end_msg 0
 		;;
 	1) # Old process is still running
-		echo "Could not be restarted, old process is still running: "$(/bin/date '+%Y-%m-%d - %H:%M:%S') >>$gsLogFile
+		echo "Could not be restarted, old process is still running: $(/bin/date '+%Y-%m-%d - %H:%M:%S')" >>$gsLogFile
 		gfnCreatePidFile
 		log_end_msg 1
 		;;
 	*) # Failed to start
-		echo "Could not be restarted: "$(/bin/date '+%Y-%m-%d - %H:%M:%S') >>$gsLogFile
+		echo "Could not be restarted: $(/bin/date '+%Y-%m-%d - %H:%M:%S')" >>$gsLogFile
 		gfnDeletePidLockFile
 		log_end_msg 1
 		;;
@@ -313,18 +315,18 @@ case "$1" in
 	gfnDoStart
 	case "$?" in
 	0)
-		echo "START: "$(/bin/date '+%Y-%m-%d - %H:%M:%S') >>$gsLogFile
+		echo "START: $(/bin/date '+%Y-%m-%d - %H:%M:%S')" >>$gsLogFile
 		gfnCreatePidFile
 		cmdMySQL 'MySB_db' "UPDATE users SET rtorrent_restart='0' WHERE users_ident='$gsUsername';"
 		log_end_msg 0
 		;;
 	1)
-		echo "Already running: "$(/bin/date '+%Y-%m-%d - %H:%M:%S') >>$gsLogFile
+		echo "Already running: $(/bin/date '+%Y-%m-%d - %H:%M:%S')" >>$gsLogFile
 		gfnCreatePidFile
 		log_end_msg 0
 		;;
 	2)
-		echo "Could not be started: "$(/bin/date '+%Y-%m-%d - %H:%M:%S') >>$gsLogFile
+		echo "Could not be started: $(/bin/date '+%Y-%m-%d - %H:%M:%S')" >>$gsLogFile
 		gfnDeletePidLockFile
 		log_end_msg 1
 		;;
@@ -336,15 +338,15 @@ case "$1" in
 	gfnDoStop
 	case "$?" in
 	0)
-		echo "STOP: "$(/bin/date '+%Y-%m-%d - %H:%M:%S') >>$gsLogFile
+		echo "STOP: $(/bin/date '+%Y-%m-%d - %H:%M:%S')" >>$gsLogFile
 		log_end_msg 0
 		;;
 	1)
-		echo "Already stopped: "$(/bin/date '+%Y-%m-%d - %H:%M:%S') >>$gsLogFile
+		echo "Already stopped: $(/bin/date '+%Y-%m-%d - %H:%M:%S')" >>$gsLogFile
 		log_end_msg 0
 		;;
 	2)
-		echo "Could not be stopped, the process was killed: "$(/bin/date '+%Y-%m-%d - %H:%M:%S') >>$gsLogFile
+		echo "Could not be stopped, the process was killed: $(/bin/date '+%Y-%m-%d - %H:%M:%S')" >>$gsLogFile
 		log_end_msg 1
 		;;
 	esac

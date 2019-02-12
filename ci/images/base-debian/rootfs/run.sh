@@ -6,7 +6,7 @@
 STATUS=$?  # Captures exit code from script that was run
 
 # TODO this exit code detection is also present in worker.sh, needs to be combined
-if [[ $STATUS == $SIGNAL_BUILD_STOP ]]
+if [[ $STATUS == "$SIGNAL_BUILD_STOP" ]]
 then
   echo "[run] container exit requested"
   exit # Exit cleanly
