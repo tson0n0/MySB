@@ -49,7 +49,7 @@ else
 	fi
 fi
 
-sFilesListSh="$(grep -IRl "\(#\!/bin/\|shell\=\)sh" --exclude-dir ".git" --exclude-dir ".vscode" "${sDirToScan}/")"
+sFilesListSh="$(grep -IRl "\(#\!/bin/\|shell\=\)sh" --exclude-dir ".git" --exclude-dir ".vscode" --exclude "funcs_*" "${sDirToScan}/")"
 if [ -n "${sFilesListSh}" ]; then
 	echo && echo -e "${CBLUE}*** Check Syntax with Shellcheck (sh) ***${CEND}"
 	for sFile in ${sFilesListSh}; do

@@ -25,6 +25,8 @@ source "$(dirname "$0")"/../inc/includes_before
 #
 ##################### FIRST LINE #####################################
 
+declare -r GitHubRepoUpdate_CheckAccess GitHubRepoUpdate_RestoreDNS
+
 #### Check GitHub access (switch DNS if needed)
 log_daemon_msg "${GitHubRepoUpdate_CheckAccess}"
 Swithing=0
