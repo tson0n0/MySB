@@ -22,7 +22,8 @@
 #	--> Licensed under the MIT license: http://www.opensource.org/licenses/mit-license.php
 #
 ######################################################################
-{ [ -z "${vars:-}" ] || [ "${vars}" -ne 1 ]; } && {
+declare vars
+{ [ -z "${vars}" ] || [ "${vars}" -ne 1 ]; } && {
 	echo "Please load 'vars' file before..."
 	return
 }

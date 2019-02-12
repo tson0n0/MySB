@@ -22,14 +22,14 @@
 #
 ##################### FIRST LINE #####################################
 
-if [ -z "${vars:-}" ] || [ "$vars" -eq 0 ]; then
+if [ -z "${vars}" ] || [ "$vars" -eq 0 ]; then
 	# shellcheck source=ci/scripts/00-load_vars.bsh
 	source "$(dirname "$0")/00-load_vars.bsh"
 fi
 if [[ -n "${1}" ]]; then
 	rm -rf /tmp/shellcheck_scan
 	if [[ -d "${1}" ]]; then
-		cp -al "${1}" /tmp/shellcheck_scan
+		rsync -av --exclude '.git' "${1}" /tmp/shellcheck_scan
 		sDirToScan="/tmp/shellcheck_scan"
 	else
 		echo -e "${CYELLOW}${1} not a valid directory:${CEND} ${CRED}Failed${CEND}"
@@ -49,11 +49,11 @@ else
 	fi
 fi
 
-sFilesListSh="$(grep -IRl "\(#\!/bin/\|shell\=\)sh" --exclude-dir ".git" --exclude-dir ".vscode" "${sDirToScan}/")"
+sFilesListSh="$(grep -IRl "\(#\!/bin/\|shell\=\)sh" --exclude-dir ".git" --exclude-dir ".vscode" --exclude "funcs_*" "${sDirToScan}/")"
 if [ -n "${sFilesListSh}" ]; then
 	echo && echo -e "${CBLUE}*** Check Syntax with Shellcheck (sh) ***${CEND}"
 	for sFile in ${sFilesListSh}; do
-		if ! shellcheck -s sh -x -a -f tty -S error "${sFile}"; then
+		if ! shellcheck -s sh -x -a -f tty -S error -S warning "${sFile}"; then
 			echo -e "${CYELLOW}${sFile}:${CEND} ${CRED}Failed${CEND}"
 			nReturn=$((nReturn + 1))
 		else

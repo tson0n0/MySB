@@ -22,7 +22,8 @@
 #	--> Licensed under the MIT license: http://www.opensource.org/licenses/mit-license.php
 #
 ######################################################################
-{ [ -z "${vars:-}" ] || [ "${vars}" -ne 1 ]; } && {
+declare vars
+{ [ -z "${vars}" ] || [ "${vars}" -ne 1 ]; } && {
 	echo "Please load 'vars' file before..."
 	return
 }
@@ -30,10 +31,15 @@ funcs=1
 export funcs
 ##################### FIRST LINE #####################################
 
+declare -r Header_CurrentFile Funcs_SendMail_GenerateHTML Funcs_SendMail_SendingEmail Funcs_Stopping Funcs_Killing Funcs_AlreadyStopped gsLoadAvgDir gbIsReady_MySB_Db
+declare -r Funcs_Restarting Funcs_ForceStarting Funcs_Starting Funcs_Reloading Global_Again gsProcessors
+declare gsMySB_User gsMySB_Password gsHostNameFqdn
+declare -i gsPort_System_HTTP
+
 #### Include tools functions
 if [ -z "$funcs_sql" ] || [ "$funcs_sql" -eq 0 ]; then
 	# shellcheck source=inc/funcs_sql
-	source "${MySB_InstallDir:-}"/inc/funcs_sql
+	source "${MySB_InstallDir}"/inc/funcs_sql
 fi
 if [ -z "$funcs_tools" ] || [ "$funcs_tools" -eq 0 ]; then
 	# shellcheck source=inc/funcs_tools
@@ -56,7 +62,7 @@ gfnBannerGenerator() {
 	{
 		echo "${CGREEN}#$CEND	${CYELLOW}https://github.com/toulousain79/MySB/$CEND"
 		echo "${CGREEN}#$CEND"
-		echo "${CGREEN}#$CEND	${Header_CurrentFile:-} ${CRED}$0$CEND"
+		echo "${CGREEN}#$CEND	${Header_CurrentFile} ${CRED}$0$CEND"
 		echo "${CGREEN}############################################################$CEND\""
 	} >>"$MySB_InstallDir/files/banner_$gsCurrentVersion"
 
@@ -64,7 +70,7 @@ gfnBannerGenerator() {
 		sed -i "s/,/ /g;" "$MySB_InstallDir/files/banner_$gsCurrentVersion" &>/dev/null
 		sed -i "s/\`/ /g;" "$MySB_InstallDir/files/banner_$gsCurrentVersion" &>/dev/null
 		clear
-		# shellcheck disable=SC1090
+		# shellcheck source=/dev/null
 		source "$MySB_InstallDir/files/banner_$gsCurrentVersion"
 	fi
 	echo
@@ -81,7 +87,7 @@ gfnSendMail() {
 	sAttach=""
 	bDoSendMail=1
 
-	if [ -n "$sInfo" ]; then log_daemon_msg "${Funcs_SendMail_GenerateHTML:-} [$sUser]"; fi
+	if [ -n "$sInfo" ]; then log_daemon_msg "${Funcs_SendMail_GenerateHTML} [$sUser]"; fi
 
 	if ! gfnGetPid nginx; then
 		service nginx restart &>/dev/null
@@ -119,7 +125,7 @@ gfnSendMail() {
 			fi
 			;;
 		*)
-			curl --silent --retry 2 --user "${gsMySB_User:-}":"${gsMySB_Password:-}" "http://127.0.0.1:${gsPort_System_HTTP:-}/UserInfoMail?case=$sCase&user=$sUser" >"$MySB_InstallDir/temp/$sUser.html"
+			curl --silent --retry 2 --user "${gsMySB_User}":"${gsMySB_Password}" "http://127.0.0.1:${gsPort_System_HTTP}/UserInfoMail?case=$sCase&user=$sUser" >"$MySB_InstallDir/temp/$sUser.html"
 			if [ -s "$MySB_InstallDir/temp/$sUser.html" ]; then
 				sAttach="$MySB_InstallDir/temp/$sUser.html"
 				sMailType="html"
@@ -133,12 +139,12 @@ gfnSendMail() {
 	if [ -n "$sInfo" ]; then
 		gfnStatusLSB
 
-		log_daemon_msg "${Funcs_SendMail_SendingEmail:-} [$sUser] ($sInfo)"
+		log_daemon_msg "${Funcs_SendMail_SendingEmail} [$sUser] ($sInfo)"
 	fi
 
 	if [ $bDoSendMail -eq 1 ]; then
 		if [ -z "$sAttach" ]; then
-			echo "" | mail -a "From: MySB <${gsMainUserEmail:-}>" -a "MIME-Version: 1.0" -a "Content-Type: text/$sMailType" -s "$sSubject" "$sUserMail"
+			echo "" | mail -a "From: MySB <${gsMainUserEmail}>" -a "MIME-Version: 1.0" -a "Content-Type: text/$sMailType" -s "$sSubject" "$sUserMail"
 		else
 			mail -a "From: MySB <$gsMainUserEmail>" -a "MIME-Version: 1.0" -a "Content-Type: text/$sMailType" -s "$sSubject" "$sUserMail" <"$sAttach"
 		fi
@@ -179,7 +185,7 @@ gfnManageServices() {
 	if [ -n "$sServices" ]; then
 		case "$LOGSTD" in
 		"STDOUT")
-			echo "---- $(date +"%T")" >>"$MySB_InstallDir/logs/${gsScriptName:-}.log"
+			echo "---- $(date +"%T")" >>"$MySB_InstallDir/logs/${gsScriptName}.log"
 			;;
 		esac
 
@@ -192,7 +198,7 @@ gfnManageServices() {
 					case "$Service" in
 					"pglcmd")
 						nContinue=0
-						log_daemon_msg "${Funcs_Stopping:-} PeerGuardian Linux" "pglcmd"
+						log_daemon_msg "${Funcs_Stopping} PeerGuardian Linux" "pglcmd"
 						pglcmd stop >/dev/null
 						gfnStatusLSB
 						;;
@@ -208,14 +214,14 @@ gfnManageServices() {
 						if (! service "$Service" stop >/dev/null); then
 							fuser -k 81/tcp &>/dev/null
 							[[ -n ${gsPort_System_HTTP} ]] && fuser -k "$gsPort_System_HTTP"/tcp &>/dev/null
-							[[ -n ${gsPort_MySB_HTTPS:-} ]] && fuser -k "$gsPort_MySB_HTTPS"/tcp &>/dev/null
+							[[ -n ${gsPort_MySB_HTTPS} ]] && fuser -k "$gsPort_MySB_HTTPS"/tcp &>/dev/null
 							[[ -n ${gsPort_NginX_HTTP} ]] && fuser -k "$gsPort_NginX_HTTP"/tcp &>/dev/null
 							[[ -n ${gsPort_NginX_HTTPS} ]] && fuser -k "$gsPort_NginX_HTTPS"/tcp &>/dev/null
 							gfnStatusLSB 0
 						fi
 						if gfnGetPid "$Service" || [ -n "$(pgrep -f 'nginx' >/dev/null)" ]; then
 							gfnStatusLSB 1
-							log_daemon_msg "${Funcs_Killing:-} $Service"
+							log_daemon_msg "${Funcs_Killing} $Service"
 							killall "$Service"
 							gfnStatusLSB
 						else
@@ -230,7 +236,7 @@ gfnManageServices() {
 						gfnStatusLSB
 					fi
 				else
-					log_daemon_msg "${Funcs_AlreadyStopped:-}" "$Service"
+					log_daemon_msg "${Funcs_AlreadyStopped}" "$Service"
 					gfnStatusLSB 0
 				fi
 				;;
@@ -244,17 +250,17 @@ gfnManageServices() {
 
 						nNext=0
 						if gfnGetPid "$Service"; then
-							log_daemon_msg "${Funcs_Restarting:-} PeerGuardian Linux"
+							log_daemon_msg "${Funcs_Restarting} PeerGuardian Linux"
 							if (! pglcmd restart >/dev/null); then
 								gfnStatusLSB 1
 
-								log_daemon_msg "${Funcs_ForceStarting:-} PeerGuardian Linux"
+								log_daemon_msg "${Funcs_ForceStarting} PeerGuardian Linux"
 								if (! pglcmd force-restart >/dev/null); then
 									nNext=1
 								fi
 							fi
 						else
-							log_daemon_msg "${Funcs_Starting:-} PeerGuardian Linux"
+							log_daemon_msg "${Funcs_Starting} PeerGuardian Linux"
 							if (! pglcmd start >/dev/null); then
 								nNext=1
 							fi
@@ -317,7 +323,7 @@ gfnManageServices() {
 								log_daemon_msg "${Funcs_Starting} $Service"
 								service "$Service" start >/dev/null
 							else
-								log_daemon_msg "${Funcs_Reloading:-} $Service"
+								log_daemon_msg "${Funcs_Reloading} $Service"
 								service "$Service" $sFinalCmd >/dev/null
 								if [ -z "$(pgrep -f "named" >/dev/null)" ]; then
 									gfnStatusLSB 1
@@ -455,7 +461,7 @@ gfnQuestionGetString() {
 			NEWVAR2="$NEWVAR1"
 		else
 			if [ "$ISPASSWORD" == "YES" ]; then
-				echo -e -n "${CRED}${Global_Again:-} $CEND${CGREEN}"
+				echo -e -n "${CRED}${Global_Again} $CEND${CGREEN}"
 				read -r NEWVAR2
 				echo -e -n "$CEND"
 			else
@@ -650,14 +656,14 @@ gfnManageDirAndFiles() {
 		fi
 
 		# LoadAvg
-		if [ -n "${gsLoadAvgDir:-}" ]; then
+		if [ -n "${gsLoadAvgDir}" ]; then
 			if [ -f "$gsLoadAvgDir"/configure ]; then chmod 0640 "$gsLoadAvgDir"/configure; fi
 			if [ ! -d "$gsLoadAvgDir"/logs ] && [ -d "$gsLoadAvgDir" ]; then mkdir "$gsLoadAvgDir"/logs; fi
 			if [ -d "$gsLoadAvgDir"/logs ]; then chmod 0777 "$gsLoadAvgDir"/logs; fi
 		fi
 
 		# NextCloud
-		if [ -n "${gsNextCloudDir:-}" ] && [ -d "$gsNextCloudDir" ]; then
+		if [ -n "${gsNextCloudDir}" ] && [ -d "$gsNextCloudDir" ]; then
 			if [ ! -d /home/nextcloud ]; then mkdir -p /home/nextcloud; fi
 			if [ ! -d /home/nextcloud/admin/files ]; then mkdir -p /home/nextcloud/admin/files; fi
 			if [ ! -d "$gsNextCloudDir"/assets ]; then mkdir -p "$gsNextCloudDir"/assets; fi
@@ -699,7 +705,7 @@ gfnManageDirAndFiles() {
 
 	# Users
 	if [ "$sSwitch" != "no_user" ]; then
-		if [ "${gbIsReady_MySB_Db:-}" == "YES" ]; then
+		if [ "${gbIsReady_MySB_Db}" == "YES" ]; then
 			gfnListCountUsers 'normal'
 			if [ -n "$gsUsersList" ]; then
 				for FnUser in $gsUsersList; do
@@ -807,7 +813,7 @@ fnRuTorrentGlobalConfigs() {
 			if [ "$bIsActive" -eq 1 ]; then
 				if [ -f "$gsRutorrentPluginsDir/$sPlugin/conf.php" ]; then
 					sed -i "/\$downloadpath =/d" "$gsRutorrentPluginsDir/$sPlugin/conf.php"
-					echo "\$downloadpath = 'https://${gsHostNameFqdn:-}:$gsPort_MySB_HTTPS/fileshare.php';" >>"$gsRutorrentPluginsDir/$sPlugin/conf.php"
+					echo "\$downloadpath = 'https://${gsHostNameFqdn}:$gsPort_MySB_HTTPS/fileshare.php';" >>"$gsRutorrentPluginsDir/$sPlugin/conf.php"
 				fi
 			else
 				gfnDeleteDirectory $bVerbose "$gsRutorrentPluginsDir/$sPlugin"
@@ -945,7 +951,7 @@ fnRuTorrentGlobalConfigs() {
 			;;
 		'cpuload')
 			if [ -f "$gsRutorrentPluginsDir/$sPlugin/conf.php" ]; then
-				perl -pi -e "s/\$processorsCount = null;/\$processorsCount = ${gsProcessors:-};/g" "$gsRutorrentPluginsDir/$sPlugin/conf.php"
+				perl -pi -e "s/\$processorsCount = null;/\$processorsCount = ${gsProcessors};/g" "$gsRutorrentPluginsDir/$sPlugin/conf.php"
 			fi
 			;;
 		'create')

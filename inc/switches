@@ -23,6 +23,9 @@
 #
 ##################### FIRST LINE #####################################
 
+declare gsScriptName
+declare -r MySB_InstallDir
+
 #### SWITCHES
 BANNER=ON     # Banner for all script (ON/OFF)
 LOGSTD=NO     # Standard Outpout redirected to 'scriptname.log' (STDOUT/NO)
@@ -31,7 +34,7 @@ END=OFF       # Launch some commands at the end (ldconfig, updatedb, drop cache,
 TIMESTAMP=OFF # Adds a time stamp at the beginning and end of the script in the logs (ON/OFF)
 
 # Check by script name BEFORE arguments (to force switches)
-case "${gsScriptName:-}" in
+case "${gsScriptName}" in
 ApplyConfig.bsh) # Launched by ApplyConfig.bsh (web)
 	BANNER=OFF
 	LOGSTD=NO
@@ -73,7 +76,7 @@ for Arg in "$@"; do
 done
 
 # Check by script name AFTER arguments (to reassigne switches again if needed)
-case "${gsScriptName:-}" in
+case "${gsScriptName}" in
 MySB_UpgradeMe | DynamicAddressResolver.bsh | SendMails.bsh) # Maybe used with CRON args
 	TIMESTAMP=OFF
 	END=OFF
@@ -111,7 +114,7 @@ From_*) # Upgrade ?
 	TIMESTAMP=OFF
 	[ -z "$EnvLang" ] && EnvLang="en"
 	#### update Git Hub
-	cd "${MySB_InstallDir:-}"/ || exit
+	cd "${MySB_InstallDir}"/ || exit
 	gsCurrentVersion="v99.99"
 	sleep 10
 	;;

@@ -82,7 +82,7 @@ Quota_MailMessage="Bonjour %i,||Vous avez atteint votre limite d'espace de stock
 
 IncAfter_Message_Last=("${CGREEN}On dirait que tout est fait.$CEND
 
-${CYELLOW}Rappelez-vous que votre port SSH est maintenant ======>$CEND ${CBLUE}${gsPort_SSH:-}$CEND
+${CYELLOW}Rappelez-vous que votre port SSH est maintenant ======>$CEND ${CBLUE}${gsPort_SSH}$CEND
 
 ${CRED}Le système va redémarrer dans 30 secondes.$CEND
 

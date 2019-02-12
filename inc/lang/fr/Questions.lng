@@ -93,10 +93,10 @@ votre serveur peut être redémarré en mode de sauvetage/rescue par la platefor
 ${CYELLOW}Il serait plus sage de désactiver la fonction de surveillance maintenant ET dans l'interface de votre fournisseur.$CEND
 ${CRED}Dans le cas où vous souhaitez tout de même utiliser cette fonction, désactivez d'abord le service MAINTENANT dans l'interface de votre fournisseur.
 Vous pourrez le réactiver à la fin de l'installation de MySB, une fois que vous aurez reçu le mail de confirmation.$CEND
-${CYELLOW}Choisissez entre ${CGREEN}${Global_None:-}$CEND${CYELLOW} ou l'un des fournisseurs suivants $CEND${CGREEN}OVH$CEND|${CGREEN}ONLINE$CEND|${CGREEN}DIGICUBE$CEND|${CGREEN}HETZNER$CEND${CYELLOW} .$CEND"
+${CYELLOW}Choisissez entre ${CGREEN}${Global_None}$CEND${CYELLOW} ou l'un des fournisseurs suivants $CEND${CGREEN}OVH$CEND|${CGREEN}ONLINE$CEND|${CGREEN}DIGICUBE$CEND|${CGREEN}HETZNER$CEND${CYELLOW} .$CEND"
 Questions_ServerProvider="Quelle est le fournisseur de votre serveur ? "
 
-Questions_InstallSeedboxManager="Voulez-vous installer Seedbox-Manager ? (${Global_YES:-}/${Global_NO:-})"
+Questions_InstallSeedboxManager="Voulez-vous installer Seedbox-Manager ? (${Global_YES}/${Global_NO})"
 Questions_InstallCakeBox="Voulez-vous installer CakeBox Light ? ($Global_YES/$Global_NO) "
 Questions_InstallPlexMedia="Voulez-vous installer Plex Media Server ? ($Global_YES/$Global_NO) "
 Questions_InstallWebmin="Voulez-vous installer Webmin ? ($Global_YES/$Global_NO) "
@@ -115,15 +115,15 @@ Questions_Message_Blocklists="${CYELLOW}Comment voulez-vous gérer les listes de
 ${CYELLOW}Avec$CEND ${CGREEN}PeerGuardian$CEND${CYELLOW}, vous protégez complètement votre serveur. Vous utiliserez également moins de RAM.$CEND
 ${CYELLOW}Tandis qu'avec$CEND ${CGREEN}rTorrent$CEND${CYELLOW}, vous protègerez seulement votre utilisation de rTorrent. Et la consommation de mémoire sera en fonction du nombre d'utilisateurs utilisant votre seedbox.$CEND
 ${CYELLOW}Choisissez $CEND${CGREEN}$Global_None$CEND${CYELLOW} si vous ne voulez pas utiliser de liste de blocage. Ceci est déconseillé !$CEND"
-Questions_Message_Blocklists_0="${CYELLOW}Votre serveur dispose de ${CRED}${gsMemory:-}$CEND ${CYELLOW}MB de RAM. Il est recommandé d'utiliser PeerGuardian.$CEND"
+Questions_Message_Blocklists_0="${CYELLOW}Votre serveur dispose de ${CRED}${gsMemory}$CEND ${CYELLOW}MB de RAM. Il est recommandé d'utiliser PeerGuardian.$CEND"
 Questions_Message_Blocklists_1="${CYELLOW}Votre serveur dispose de ${CRED}$gsMemory$CEND ${CYELLOW}MB de RAM. Vous pouvez choisir entre PeerGuardian et rTorrent.$CEND"
 Questions_InstallBlockList_0=("'PeerGuardian' OU 'rTorrent' OU '$Global_None' ? ")
 Questions_InstallDNScrypt="Voulez-vous installer DNScrypt-proxy (recommandé) ? ($Global_YES/$Global_NO) "
 
 Questions_Message_Statistics="${CYELLOW}Voulez-vous me signaler votre installation ?
 Les informations collectées sont:
-1/	Le numéro de version de MySB (${gsCurrentVersion:-})
-2/	Le pays où se trouve votre serveur (${sCountry:-})
+1/	Le numéro de version de MySB (${gsCurrentVersion})
+2/	Le pays où se trouve votre serveur (${sCountry})
 3/	L'ID de votre serveur crypté avec sha256 ($(sha256sum <<</etc/machine-id | awk '{ print $1 }'))
 Aucune autre information n'est envoyée.
 Les logs d'accès ne sont pas conservés, l'adresse IP de votre serveur n'est donc pas enregistrée.

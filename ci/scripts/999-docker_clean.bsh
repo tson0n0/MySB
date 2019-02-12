@@ -23,10 +23,10 @@
 ##################### FIRST LINE #####################################
 
 # entirely wipe out all the Docker containers
-docker rm $(docker ps -a -q) 2> /dev/null
+docker rm "$(docker ps -a -q)" 2> /dev/null
 
 # remove dangling images
-docker rmi $(docker images -f "dangling=true" -q) 2> /dev/null
+docker rmi "$(docker images -f "dangling=true" -q)" 2> /dev/null
 
 # Prune all...
 docker system prune -a --force

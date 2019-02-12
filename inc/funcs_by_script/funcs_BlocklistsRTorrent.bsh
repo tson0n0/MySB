@@ -22,13 +22,16 @@
 #	--> Licensed under the MIT license: http://www.opensource.org/licenses/mit-license.php
 #
 ######################################################################
-{ [ -z "${vars:-}" ] || [ "${vars}" -ne 1 ]; } && {
+declare vars
+{ [ -z "${vars}" ] || [ "${vars}" -ne 1 ]; } && {
 	echo "Please load 'vars' file before..."
 	return
 }
 funcs_BlocklistsRTorrent=1
 export funcs_BlocklistsRTorrent
 ##################### FIRST LINE #####################################
+
+declare -r MySB_InstallDir
 
 #### Clean the rTorrent blocklist
 gfnCleanBlockList() {
@@ -42,7 +45,7 @@ gfnCleanBlockList() {
 
 	case $sCommand in
 	'download')
-		if (curl -skLS --retry 3 -o "${MySB_InstallDir:-}/files/blocklists/$sFile.gz" "$sUrl"); then
+		if (curl -skLS --retry 3 -o "${MySB_InstallDir}/files/blocklists/$sFile.gz" "$sUrl"); then
 			gzip -dc "$MySB_InstallDir/files/blocklists/$sFile.gz" | cut -d: -f2 >"$MySB_InstallDir/files/blocklists/$sFile.txt"
 			sLastUpdate="$(date +%Y-%m-%d\ %H:%M:%S)"
 		else

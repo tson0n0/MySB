@@ -5,6 +5,7 @@
 
 SUPERVISOR_CONF=/etc/supervisor/conf.d/worker.conf
 SERVICES_D=/etc/services.d
+export SUPERVISOR_CONF
 
 # Signal to init processes to avoid any webserver startup
 export CONTAINER_ROLE='worker'
@@ -15,7 +16,7 @@ export CONTAINER_ROLE='worker'
 STATUS=$?  # Captures exit code from script that was run
 
 # TODO this exit code detection is also present in run.sh, needs to be combined
-if [[ $STATUS == $SIGNAL_BUILD_STOP ]]
+if [[ $STATUS == "$SIGNAL_BUILD_STOP" ]]
 then
   echo "[worker] container exit requested"
   exit # Exit cleanly
@@ -33,7 +34,7 @@ WORKER_QUANTITY=$1
 # Rebuild worker command as properly escaped parameters from shifted input args
 # @see http://stackoverflow.com/questions/7535677/bash-passing-paths-with-spaces-as-parameters
 shift
-WORKER_COMMAND="$@"
+WORKER_COMMAND="$*"
 
 if [ -z "$WORKER_COMMAND" ]
 then
@@ -58,4 +59,3 @@ done
 # Start process manager
 echo "[run] starting process manager"
 exec /init
-

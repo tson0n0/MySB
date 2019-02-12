@@ -22,7 +22,8 @@
 #	--> Licensed under the MIT license: http://www.opensource.org/licenses/mit-license.php
 #
 ######################################################################
-{ [ -z "${vars:-}" ] || [ "${vars}" -ne 1 ]; } && {
+declare vars
+{ [ -z "${vars}" ] || [ "${vars}" -ne 1 ]; } && {
 	echo "Please load 'vars' file before..."
 	return
 }
@@ -30,8 +31,8 @@ funcs_SourcesList=1
 export funcs_SourcesList
 ##################### FIRST LINE #####################################
 
-#### VARs
-binCURL="curl -skLS --retry 3"
+declare -r MySB_InstallDir binCURL gsDebianRelease
+declare gbIsInstalled_PeerGuardian gbToInstall_PeerGuardian gbToInstall_Webmin gbIsInstalled_Webmin
 
 #### Delete Bad Sources
 # gfnDeleteBadSources() {
@@ -79,7 +80,7 @@ gfnCreateLocalMirror() {
 	esac
 
 	#### mirror.list
-	install -v -o root -g root -m 0644 "${MySB_InstallDir:-}"/templates/apt/etc.apt.mirror.list.tmpl /etc/apt/mirror.list
+	install -v -o root -g root -m 0644 "${MySB_InstallDir}"/templates/apt/etc.apt.mirror.list.tmpl /etc/apt/mirror.list
 	perl -pi -e "s/<Arch>/$sArch/g" /etc/apt/mirror.list
 
 	#### postmirror.sh & clean.sh
@@ -100,7 +101,7 @@ gfnCreateLocalMirror() {
 	# Local mirrors
 	{
 		echo "# Git LFS"
-		echo "deb https://packagecloud.io/github/git-lfs/debian/ ${gsDebianRelease:-} main"
+		echo "deb https://packagecloud.io/github/git-lfs/debian/ ${gsDebianRelease} main"
 		echo "clean https://packagecloud.io/github/git-lfs/debian/"
 	} >>/etc/apt/mirror.list
 	# git-lfs.list (local)
@@ -124,7 +125,7 @@ gfnCreateLocalMirror() {
 	echo "deb file:///var/spool/apt-mirror/mirror/download.docker.com/linux/debian/ ${gsDebianRelease} stable" >>/etc/apt/sources.list.d/docker.list
 
 	#### Peerguardian
-	if [ "${gbToInstall_PeerGuardian:-}" == "YES" ] || [ "${gbIsInstalled_PeerGuardian:-}" == "YES" ]; then
+	if [ "${gbToInstall_PeerGuardian}" == "YES" ] || [ "${gbIsInstalled_PeerGuardian}" == "YES" ]; then
 		# GPG Key
 		until gpg --keyserver keyserver.ubuntu.com --recv-keys C0145138; do
 			sleep 1
@@ -144,7 +145,7 @@ gfnCreateLocalMirror() {
 	fi
 
 	#### Webmin
-	if [ "${gbToInstall_Webmin:-}" == "YES" ] || [ "${gbIsInstalled_Webmin:-}" == "YES" ]; then
+	if [ "${gbToInstall_Webmin}" == "YES" ] || [ "${gbIsInstalled_Webmin}" == "YES" ]; then
 		# GPG Key
 		$binCURL -o "/tmp/jcameron-key.asc" "http://www.webmin.com/jcameron-key.asc"
 		if [ -f /tmp/jcameron-key.asc ]; then
