@@ -22,7 +22,7 @@
 #	--> Licensed under the MIT license: http://www.opensource.org/licenses/mit-license.php
 #
 ######################################################################
-{ [ -z "${vars:-}" ] || [ "${vars}" -ne 1 ]; } && {
+{ [ -z "${vars}" ] || [ "${vars}" -ne 1 ]; } && {
 	echo "Please load 'vars' file before..."
 	return
 }
@@ -32,10 +32,10 @@ export funcs_Install
 
 #### Logrotate
 gfnLogRotate() {
-	if [ -n "$1" ] && [ -f "${MySB_InstallDir:-}/templates/logrotate/etc.logrotate.d.$1.tmpl" ]; then
+	if [ -n "$1" ] && [ -f "${MySB_InstallDir}/templates/logrotate/etc.logrotate.d.$1.tmpl" ]; then
 		rm -vf /etc/logrotate.d/"$1"*
 		install -v -o root -g root -m 0644 "$MySB_InstallDir/templates/logrotate/etc.logrotate.d.$1.tmpl" /etc/logrotate.d/"$1"
-		perl -pi -e "s/<MySB_InstallDir>/${gsInstallDirEscaped:-}/g" /etc/logrotate.d/"$1"
+		perl -pi -e "s/<MySB_InstallDir>/${gsInstallDirEscaped}/g" /etc/logrotate.d/"$1"
 		if [ -n "$2" ] && [ "$2" -eq 1 ]; then
 			logrotate -f /etc/logrotate.d/"$1"
 		fi
@@ -81,14 +81,14 @@ gfnPackagesManage() {
 
 	if [ -n "$sOption" ] && [ "$sOption" == "backports" ]; then
 		case "$sOption" in
-		'backports') sGlobalArgs=(-y --assume-yes -t "${gsDebianRelease:-}-$sOption") ;;
+		'backports') sGlobalArgs=(-y --assume-yes -t "${gsDebianRelease}-$sOption") ;;
 		'reinstall') sGlobalArgs=(-y --assume-yes --reinstall) ;;
 		esac
 	else
 		sGlobalArgs=(-y --assume-yes)
 	fi
 
-	if [ "${gbIsReady_MySB_Db:-}" == "YES" ]; then
+	if [ "${gbIsReady_MySB_Db}" == "YES" ]; then
 		sSystemValues="$(cmdMySQL 'MySB_db' "SELECT apt_update,apt_date FROM system WHERE id_system='1';" | sed 's/\t/|/g;')"
 		nAptUpdate="$(echo "$sSystemValues" | awk '{split($0,a,"|"); print a[1]}')"
 		dAptDate="$(echo "$sSystemValues" | awk '{split($0,a,"|"); print a[2]}')"

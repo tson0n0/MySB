@@ -22,7 +22,7 @@
 #	--> Licensed under the MIT license: http://www.opensource.org/licenses/mit-license.php
 #
 ######################################################################
-{ [ -z "${vars:-}" ] || [ "${vars}" -ne 1 ]; } && {
+{ [ -z "${vars}" ] || [ "${vars}" -ne 1 ]; } && {
 	echo "Please load 'vars' file before..."
 	return
 }
@@ -43,10 +43,10 @@ gfnNextCloudAccountManage() {
 
 	case "$sSwitch" in
 	'create')
-		su -s /bin/sh www-data -c "/usr/bin/php ${gsNextCloudDir:-}/occ user:add --password-from-env --display-name=\"$sUserAccount\" --group=\"MySB_users\" $sUserAccount" &>/dev/null
+		su -s /bin/sh www-data -c "/usr/bin/php ${gsNextCloudDir}/occ user:add --password-from-env --display-name=\"$sUserAccount\" --group=\"MySB_users\" $sUserAccount" &>/dev/null
 		IfExist="$(cmdMySQL 'NextCloud_db' "SELECT configvalue FROM nc_preferences WHERE userid='$sUserAccount' AND appid='core' AND configkey = 'lang';")"
 		if [ -z "$IfExist" ]; then
-			cmdMySQL 'NextCloud_db' "INSERT INTO nc_preferences (userid,appid,configkey,configvalue) VALUES ('$sUserAccount','core','lang','${EnvLang:-}');"
+			cmdMySQL 'NextCloud_db' "INSERT INTO nc_preferences (userid,appid,configkey,configvalue) VALUES ('$sUserAccount','core','lang','${EnvLang}');"
 		else
 			cmdMySQL 'NextCloud_db' "UPDATE nc_preferences SET configvalue = '$EnvLang' WHERE userid='$sUserAccount' AND appid= 'core' AND configkey = 'lang';"
 		fi
@@ -74,14 +74,14 @@ gfnPluginDiskspaceQuotaIncluded() {
 	local sUser nTotal nFree nLess nNumLine
 
 	gfnListCountUsers 'normal'
-	for sUser in ${gsUsersList:-}; do
+	for sUser in ${gsUsersList}; do
 		nTotal="$(cmdMySQL 'MySB_db' "SELECT quota FROM users WHERE users_ident='$sUser';")"
 		nFree="$(cmdMySQL 'MySB_db' "SELECT space_used FROM users WHERE users_ident='$sUser';")"
 		{
 			echo "total:$nTotal"
 			echo "free:$nFree"
 		} >/home/"$sUser"/rtorrent/.session/quota.txt
-		if [ -f "${gsRutorrentDir:-}/conf/users/$sUser/diskspace/conf.php" ]; then
+		if [ -f "${gsRutorrentDir}/conf/users/$sUser/diskspace/conf.php" ]; then
 			nLess=$((((nTotal - 10) / 100) / 1024)) # must remain 10%
 			if [ -n "$nLess" ]; then
 				nNumLine=$(grep 'notifySpaceLimit' -n -m 1 "$gsRutorrentDir/conf/users/$sUser/diskspace/conf.php" | cut -d ':' -f 1)
@@ -115,7 +115,7 @@ gfnManageQuota() {
 
 	# Update number of users
 	gfnListCountUsers 'active'
-	cmdMySQL 'MySB_db' "UPDATE system SET rt_nb_users='${gnTotalUsers:-}' WHERE id_system='1';" "$sVerbose"
+	cmdMySQL 'MySB_db' "UPDATE system SET rt_nb_users='${gnTotalUsers}' WHERE id_system='1';" "$sVerbose"
 
 	# Setting default quota (available space)
 	if [ -z "$nAvailableSpace" ] || [ "$nAvailableSpace" == 'NULL' ] || [ "$nAvailableSpace" -eq 0 ]; then
@@ -150,7 +150,7 @@ gfnManageQuota() {
 		setquota -u -F $sVFSV "$sUser" $nUserQuotaSystem $nUserQuotaSystem 0 0 -a
 
 		# NextCloud Quota
-		if [ "${gbIsInstalled_NextCloud:-}" == "YES" ]; then
+		if [ "${gbIsInstalled_NextCloud}" == "YES" ]; then
 			sIfExist="$(cmdMySQL 'NextCloud_db' "SELECT configvalue FROM nc_preferences WHERE userid='$sUser' AND configkey='quota';")"
 			if [ -z "$sIfExist" ]; then
 				cmdMySQL 'NextCloud_db' "INSERT INTO nc_preferences (userid,appid,configkey,configvalue) VALUES ('$sUser','files','quota','$nUserQuotaNextCloud KB');" "$sVerbose"
@@ -207,13 +207,13 @@ gfnManageQuota() {
 gfnCakeboxUsersConfigs() {
 	local sUser
 
-	if [ "${gbIsInstalled_Cakebox:-}" == "YES" ] && [ -d "${gsCakeboxDir:-}" ]; then
+	if [ "${gbIsInstalled_Cakebox}" == "YES" ] && [ -d "${gsCakeboxDir}" ]; then
 		sUser="$1"
 
 		if [ -f "$gsCakeboxDir"/config/default.php.dist ]; then
 			rm -f "$gsCakeboxDir"/config/default.php.dist
 		fi
-		install -o root -g www-data -m 0660 "${MySB_InstallDir:-}"/templates/cakebox/config.user.tmpl $"gsCakeboxDir/config/$sUser.php"
+		install -o root -g www-data -m 0660 "${MySB_InstallDir}"/templates/cakebox/config.user.tmpl $"gsCakeboxDir/config/$sUser.php"
 		perl -pi -e "s/<server_name>/$sUser/g" "$gsCakeboxDir/config/$sUser.php"
 		case "$EnvLang" in
 		"fr") perl -pi -e "s/<lang>/$EnvLang/g" "$gsCakeboxDir/config/$sUser.php" ;;
@@ -272,7 +272,7 @@ gfnManageUserHomeDir() {
 	fi
 
 	# /home/user/db
-	if [ ! -f "/home/$sUser/db/$sUser.sq3" ]; then cp "${gsSync_DB:-}" "/home/$sUser/db/$sUser.sq3"; fi
+	if [ ! -f "/home/$sUser/db/$sUser.sq3" ]; then cp "${gsSync_DB}" "/home/$sUser/db/$sUser.sq3"; fi
 	chmod -R 0770 /home/"$sUser"/db
 	chown -R "$sUser":www-data /home/"$sUser"/db
 	# /home/user/blocklist
@@ -303,20 +303,20 @@ gfnManageUserHomeDir() {
 gfnManagerUsersConfigs() {
 	local sUser sHomeDirEscaped sUserNameUpper
 
-	if [ "${gbIsInstalled_Manager:-}" == "YES" ]; then
+	if [ "${gbIsInstalled_Manager}" == "YES" ]; then
 		sUser="$1"
 		sHomeDirEscaped="$(echo /home/"$sUser" | sed s,/,\\\\\/,g)"
 		sUserNameUpper="$(echo "$sUser" | tr '[:lower:]' '[:upper:]')"
 
-		if [ ! -d "${gsManagerDir:-}/conf/users/$sUser" ]; then mkdir -p "${gsManagerDir}/conf/users/$sUser"; fi
+		if [ ! -d "${gsManagerDir}/conf/users/$sUser" ]; then mkdir -p "${gsManagerDir}/conf/users/$sUser"; fi
 		if [ ! -f "$gsManagerDir/conf/users/$sUser/config.ini" ]; then
 			install -o www-data -g www-data -m 0640 "$MySB_InstallDir"/templates/manager/config.ini.tmpl "$gsManagerDir/conf/users/$sUser/config.ini"
 			sed -i "s/<user_directory>/$sHomeDirEscaped/g;" "$gsManagerDir/conf/users/$sUser/config.ini"
 			sed -i "s/<scgi_folder>/\/$sUserNameUpper/g;" "$gsManagerDir/conf/users/$sUser/config.ini"
-			sed -i "s/port_ftp = 21/port_ftp = ${gsPort_FTP:-}/g;" "$gsManagerDir/conf/users/$sUser/config.ini"
-			sed -i "s/port_sftp = 22/port_sftp = ${gsPort_SSH:-}/g;" "$gsManagerDir/conf/users/$sUser/config.ini"
-			sed -i "s/<mail_address>/${gsMainUserEmail:-}/g;" "$gsManagerDir/conf/users/$sUser/config.ini"
-			if [ "${gsMainUserName:-}" == "$sUser" ]; then
+			sed -i "s/port_ftp = 21/port_ftp = ${gsPort_FTP}/g;" "$gsManagerDir/conf/users/$sUser/config.ini"
+			sed -i "s/port_sftp = 22/port_sftp = ${gsPort_SSH}/g;" "$gsManagerDir/conf/users/$sUser/config.ini"
+			sed -i "s/<mail_address>/${gsMainUserEmail}/g;" "$gsManagerDir/conf/users/$sUser/config.ini"
+			if [ "${gsMainUserName}" == "$sUser" ]; then
 				sed -i "s/admin = no/admin = yes/g;" "$gsManagerDir/conf/users/$sUser/config.ini"
 			fi
 			case "$EnvLang" in
@@ -331,8 +331,8 @@ gfnManagerUsersConfigs() {
 gfnRuTorrentUsersConfigs() {
 	local sPluginsList sUser sUserValues sPortSCGI sHomeDir sHomeDirEscaped sUserUpper sPlugin bIsActive bVerbose
 
-	[ "${gbDevMode:-}" -eq 1 ] && bVerbose=1 || bVerbose=0
-	[ -d "${gsRutorrentPluginsDir:-}" ] && sPluginsList=$(ls -1r "$gsRutorrentPluginsDir"/) || return 0
+	[ "${gbDevMode}" -eq 1 ] && bVerbose=1 || bVerbose=0
+	[ -d "${gsRutorrentPluginsDir}" ] && sPluginsList=$(ls -1r "$gsRutorrentPluginsDir"/) || return 0
 	sUser="$1"
 	sUserValues="$(cmdMySQL 'MySB_db' "SELECT scgi_port,home_dir FROM users WHERE users_ident='$sUser';" | sed 's/\t/|/g;')"
 	sPortSCGI="$(echo "$sUserValues" | awk '{split($0,a,"|"); print a[1]}')"
@@ -341,7 +341,7 @@ gfnRuTorrentUsersConfigs() {
 	sUserUpper="$(echo "$sUser" | tr '[:lower:]' '[:upper:]')"
 
 	# share
-	if [ ! -d "${gsRutorrentDir:-}/share/users/$sUser/settings/" ]; then mkdir -p "$gsRutorrentDir/share/users/$sUser/settings/"; fi
+	if [ ! -d "${gsRutorrentDir}/share/users/$sUser/settings/" ]; then mkdir -p "$gsRutorrentDir/share/users/$sUser/settings/"; fi
 	if [ ! -d "$gsRutorrentDir/share/users/$sUser/torrents/" ]; then mkdir -p "$gsRutorrentDir/share/users/$sUser/torrents/"; fi
 	if [ ! -f "$gsRutorrentDir/share/users/$sUser/settings/uisettings.json" ]; then
 		install -o www-data -g www-data -m 0666 "$MySB_InstallDir"/templates/rutorrent/uisettings.json.tmpl "$gsRutorrentDir/share/users/$sUser/settings/uisettings.json"
@@ -367,7 +367,7 @@ gfnRuTorrentUsersConfigs() {
 			if [ -f "$gsRutorrentPluginsDir/$sPlugin/conf.php" ] || [ -f "$gsRutorrentPluginsDir/$sPlugin/config.php" ]; then
 				case $sPlugin in
 				'linkseedboxmanager')
-					if [ $bIsActive -eq 0 ] && [ "$gbIsInstalled_Manager" == "NO" ] && [ "${gbToInstall_Manager:-}" == "NO" ]; then
+					if [ $bIsActive -eq 0 ] && [ "$gbIsInstalled_Manager" == "NO" ] && [ "${gbToInstall_Manager}" == "NO" ]; then
 						gfnDeleteDirectory $bVerbose "$gsRutorrentDir/conf/users/$sUser/plugins/$sPlugin"
 						gfnDeleteDirectory $bVerbose "$gsRutorrentPluginsDir/$sPlugin"
 					else
@@ -376,7 +376,7 @@ gfnRuTorrentUsersConfigs() {
 					fi
 					;;
 				'linkcakebox')
-					if [ $bIsActive -eq 0 ] && [ "$gbIsInstalled_Cakebox" == "NO" ] && [ "${gbToInstall_Cakebox:-}" == "NO" ]; then
+					if [ $bIsActive -eq 0 ] && [ "$gbIsInstalled_Cakebox" == "NO" ] && [ "${gbToInstall_Cakebox}" == "NO" ]; then
 						gfnDeleteDirectory $bVerbose "$gsRutorrentDir/conf/users/$sUser/plugins/$sPlugin"
 						gfnDeleteDirectory $bVerbose "$gsRutorrentPluginsDir/$sPlugin"
 					else
@@ -568,7 +568,7 @@ gfnCreateRtorrentConfigFile() {
 
 	# Example scripts
 	install -o root -g "$sUser" -m 0750 "$MySB_InstallDir"/templates/rtorrent/synchro.sh.tmpl "$sHomeDir"/scripts/synchro.sh
-	echo "${Global_Readme_AvailableVariables[@]:-}" >/home/"$sUser"/scripts/README
+	echo "${Global_Readme_AvailableVariables[@]}" >/home/"$sUser"/scripts/README
 	chown "$sUser":"$sUser" "$sHomeDir"/scripts/*
 	chmod 0770 "$sHomeDir"/scripts/*
 	dos2unix "$sHomeDir"/scripts/* &>/dev/null
@@ -580,13 +580,13 @@ gfnCreateRtorrentConfigFile() {
 		fi
 		if [ ! -f "$sHomeDir"/.rtorrent.rc ] && [ ! -s "$sHomeDir"/.rtorrent.rc ]; then
 			install -o root -g "$sUser" -m 0740 "$MySB_InstallDir"/templates/rtorrent/rtorrent.rc.tmpl "$sHomeDir"/.rtorrent.rc
-			perl -pi -e "s/<InstallDir>/${gsInstallDirEscaped:-}/g" "$sHomeDir"/.rtorrent.rc
-			perl -pi -e "s/<server_ip>/${gsSrvIpAddress:-}/g" "$sHomeDir"/.rtorrent.rc
+			perl -pi -e "s/<InstallDir>/${gsInstallDirEscaped}/g" "$sHomeDir"/.rtorrent.rc
+			perl -pi -e "s/<server_ip>/${gsSrvIpAddress}/g" "$sHomeDir"/.rtorrent.rc
 			perl -pi -e "s/<username>/$sUser/g" "$sHomeDir"/.rtorrent.rc
 			perl -pi -e "s/<homedir>/\/home\/$sUser/g" "$sHomeDir"/.rtorrent.rc
 			perl -pi -e "s/<scgi_port>/$nPortSCGI/g" "$sHomeDir"/.rtorrent.rc
 			perl -pi -e "s/<port_range>/$nPortRtorrent-$nPortRtorrent/g" "$sHomeDir"/.rtorrent.rc
-			if [ "${gsMySB_PeerBlock:-}" == "rTorrent" ]; then
+			if [ "${gsMySB_PeerBlock}" == "rTorrent" ]; then
 				perl -pi -e "s/#{1}ipv4_filter.load/ipv4_filter.load/g" "$sHomeDir"/.rtorrent.rc
 				perl -pi -e "s/#{1}print/print/g" "$sHomeDir"/.rtorrent.rc
 				perl -pi -e "s/#{1}schedule2=load_filter/schedule2=load_filter/g" "$sHomeDir"/.rtorrent.rc
@@ -647,10 +647,10 @@ gfnMonthlyPayment() {
 	local dFirstDate dFirstMonth dFirstYear dFirstDay dLastMonth dEndOfLastMonth nNbMonths dCurrentYear dCurrentMonth
 
 	if [ -n "$1" ] &&
-		[ -n "${gsRentingTVA:-}" ] &&
-		[ -n "${gsRentingModel:-}" ] &&
-		[ "${gsRentingGlobalCost:-}" != "0.00" ] &&
-		[ "${gsRentingCostTva:-}" != "0.00" ]; then
+		[ -n "${gsRentingTVA}" ] &&
+		[ -n "${gsRentingModel}" ] &&
+		[ "${gsRentingGlobalCost}" != "0.00" ] &&
+		[ "${gsRentingCostTva}" != "0.00" ]; then
 
 		# VARs
 		sUser="$1"
@@ -659,14 +659,14 @@ gfnMonthlyPayment() {
 		dToday="$(date +%d)"
 		gfnListCountUsers 'all'
 
-		for SeedboxUser in ${gsUsersList:-}; do
+		for SeedboxUser in ${gsUsersList}; do
 			nIdUser="$(cmdMySQL 'MySB_db' "SELECT id_users FROM users WHERE users_ident='$SeedboxUser';")"
 			nCreateNewPeriodPrice=0
 			nNewMonth=0
 			nUpdateCurrentPeriodPrice=0
 			nSendMail=0
 
-			case "${gsScriptName:-}" in
+			case "${gsScriptName}" in
 			PaymentReminder.bsh)
 				case "$dToday" in
 				'01')
@@ -697,7 +697,7 @@ gfnMonthlyPayment() {
 						nUpdateCurrentPeriodPrice=1
 						nCreateNewPeriodPrice=1
 						nNewMonth=1
-						sMailSubject="${Global_Subject_PaymentReminder:-} $SeedboxUser"
+						sMailSubject="${Global_Subject_PaymentReminder} $SeedboxUser"
 						sCase="renting"
 						sMessage="Payment Reminder"
 						nSendMail=1
@@ -713,9 +713,9 @@ gfnMonthlyPayment() {
 				if [ "$sUser" != "$SeedboxUser" ]; then
 					# DO NOT send email about new monthly for the new user.
 					# DO NOT create new entries for renting for the new user.
-					sMailSubject="${Global_Subject_MonthlyPayment:-} [$SeedboxUser]"
+					sMailSubject="${Global_Subject_MonthlyPayment} [$SeedboxUser]"
 					sCase="new_user"
-					sMessage="${CreateUser_MessageAccountChangeMonthly:-}"
+					sMessage="${CreateUser_MessageAccountChangeMonthly}"
 
 					StartEnd="$(cmdMySQL 'MySB_db' "SELECT start_of_use,end_of_use FROM tracking_rent_history WHERE id_users='$nIdUser' AND year='$dYear' AND month='$dMonth' ORDER BY id_tracking_rent_history DESC LIMIT 1;" | sed 's/\t/|/g;')"
 					dStartOfUse="$(echo "$StartEnd" | awk '{split($0,a,"|"); print a[1]}')"
@@ -738,9 +738,9 @@ gfnMonthlyPayment() {
 					nSendMail=1
 					dStartOfUse="$dToday"
 					dEndOfUse="$dToday"
-					sMailSubject="${CreateUser_SubjectAccountCreated:-} [$SeedboxUser]"
+					sMailSubject="${CreateUser_SubjectAccountCreated} [$SeedboxUser]"
 					sCase="account_created"
-					sMessage="${CreateUser_MessageAccountCreated:-}"
+					sMessage="${CreateUser_MessageAccountCreated}"
 					# ICI, traitement pour l'ajout d'un nouvel utilisateur.
 					# 1/	On ajoute une entrée dans 'tracking_rent_status'.
 					cmdMySQL 'MySB_db' "INSERT INTO tracking_rent_status (id_users) VALUES ('$nIdUser');"
@@ -764,9 +764,9 @@ gfnMonthlyPayment() {
 					nSendMail=1
 				else
 					nSendMail=1
-					sMailSubject="${DeleteUser_SubjectDelete:-} [$SeedboxUser]"
+					sMailSubject="${DeleteUser_SubjectDelete} [$SeedboxUser]"
 					sCase="delete_user"
-					sMessage="${DeleteUser_MessageDelete:-}"
+					sMessage="${DeleteUser_MessageDelete}"
 				fi
 				;;
 			BulkChanges.bsh)
@@ -810,7 +810,7 @@ gfnMonthlyPayment() {
 					dEndOfUse="$(date -d "$dFirstDay" '+%Y-%m')"
 					dEndOfUse="$(date -d "$dEndOfUse-01 +1 month -1 day" +%d)"
 				done
-				if [ "$nIdUser" == "${gnMainUserId:-}" ]; then
+				if [ "$nIdUser" == "${gnMainUserId}" ]; then
 					cmdMySQL 'MySB_db' "UPDATE tracking_rent_status SET already_payed='9999.99' WHERE id_users='$nIdUser';"
 				fi
 				;;

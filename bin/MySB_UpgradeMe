@@ -31,33 +31,33 @@ Continue=0
 Error=""
 
 #### Updating clock
-echo -e -n "${CBLUE}${UpgradeMe_Clock:-}$CEND..."
+echo -e -n "${CBLUE}${UpgradeMe_Clock}$CEND..."
 (ping -c3 0.fr.pool.ntp.org >/dev/null 2>&1) && gfnSwitchDNS "bind"
 
 if (/usr/sbin/ntpdate -u 0.fr.pool.ntp.org >/dev/null 2>&1); then
-	echo -e "${Global_Done:-}"
+	echo -e "${Global_Done}"
 else
-	echo -e "${Global_Failed:-}"
+	echo -e "${Global_Failed}"
 	Continue=1
-	Error="${UpgradeMe_Error_Clock:-}"
+	Error="${UpgradeMe_Error_Clock}"
 fi
 
 #### Check GitHub accessibility
 if [ $Continue -eq 0 ]; then
-	echo -e -n "${CBLUE}${UpgradeMe_GitHubAccess:-}$CEND..."
+	echo -e -n "${CBLUE}${UpgradeMe_GitHubAccess}$CEND..."
 	if (ping -c3 raw.githubusercontent.com >/dev/null 2>&1); then
 		echo -e "$Global_Done"
 	else
 		echo -e "$Global_Failed"
 		Continue=2
-		Error="${UpgradeMe_Error_GitHubAccess:-}"
+		Error="${UpgradeMe_Error_GitHubAccess}"
 	fi
 fi
 
 #### Update actual repo
 if [ $Continue -eq 0 ]; then
-	echo -e -n "${CBLUE}${UpgradeMe_UpdateGithub:-}$CEND..."
-	gfnScriptInvoke 'ScreenWAIT' "${MySB_InstallDir:-}/bin/MySB_GitHubRepoUpdate" 'REFRESH'
+	echo -e -n "${CBLUE}${UpgradeMe_UpdateGithub}$CEND..."
+	gfnScriptInvoke 'ScreenWAIT' "${MySB_InstallDir}/bin/MySB_GitHubRepoUpdate" 'REFRESH'
 	gfnStatusSTD
 fi
 
@@ -67,7 +67,7 @@ if [ $Continue -eq 0 ]; then
 		MySB_NewVersion="$(cat "$MySB_InstallDir"/dev)"
 	else
 		#### Check if new version
-		MySB_NewVersion="$(curl -skLS --retry 3 --silent https://raw.githubusercontent.com/toulousain79/MySB/rev/version | grep "${gsCurrentVersion:-}>" | cut -d ">" -f 2 2>/dev/null)"
+		MySB_NewVersion="$(curl -skLS --retry 3 --silent https://raw.githubusercontent.com/toulousain79/MySB/rev/version | grep "${gsCurrentVersion}>" | cut -d ">" -f 2 2>/dev/null)"
 		[ -z "$MySB_NewVersion" ] && MySB_NewVersion="$(cat "$MySB_InstallDir"/version)"
 	fi
 
@@ -78,8 +78,8 @@ if [ $Continue -eq 0 ]; then
 	if [ -n "$MySB_CurrVersionDiff" ] && [ -n "$MySB_NewVersionDiff" ] && [ "$MySB_NewVersionDiff" -gt "$MySB_CurrVersionDiff" ]; then
 		case "$Type" in
 		"CRON")
-			${binCURL:-} "https://raw.githubusercontent.com/toulousain79/MySB/$MySB_NewVersion/Changelog.md" -o /tmp/changelog
-			gfnSendMail "MySB - ${UpgradeMe_NewVersion:-} ($MySB_NewVersion)" "${gsMainUserName:-}" "new_version" "$UpgradeMe_NewVersion"
+			${binCURL} "https://raw.githubusercontent.com/toulousain79/MySB/$MySB_NewVersion/Changelog.md" -o /tmp/changelog
+			gfnSendMail "MySB - ${UpgradeMe_NewVersion} ($MySB_NewVersion)" "${gsMainUserName}" "new_version" "$UpgradeMe_NewVersion"
 			gfnEndingScript 0
 			;;
 		*)
@@ -87,7 +87,7 @@ if [ $Continue -eq 0 ]; then
 			echo
 			echo -e "$UpgradeMe_Msg_VersionAvailable"
 			echo
-			gfnQuestionGetString NO "${Global_WantToContinue[@]:-}" WantToContinue "${Global_NO:-}"
+			gfnQuestionGetString NO "${Global_WantToContinue[@]}" WantToContinue "${Global_NO}"
 			WantToContinue="$(echo "$WantToContinue" | tr '[:lower:]' '[:upper:]')"
 			[ "$WantToContinue" == "$Global_NO" ] && gfnEndingScript 0
 			;;
@@ -101,8 +101,8 @@ if [ $Continue -eq 0 ]; then
 	fi
 
 	#### Backup
-	echo -e "${CBLUE}${UpgradeMe_CreateBackup:-}$CEND"
-	echo -e -n "${CRED}${Global_PleaseWait:-} $CEND"
+	echo -e "${CBLUE}${UpgradeMe_CreateBackup}$CEND"
+	echo -e -n "${CRED}${Global_PleaseWait} $CEND"
 	gfnCountDown 3
 
 	# Cleaning MySB before compress
@@ -121,7 +121,7 @@ if [ $Continue -eq 0 ]; then
 			*)
 				if (! mysqldump --defaults-extra-file=/root/.config.cnf --single-transaction "$Database" >"$MySB_InstallDir/db/MySQL_$Database-$DateTime-$gsCurrentVersion.dump.sql"); then
 					Continue=3
-					Error="${UpgradeMe_Error_BackupDatabase:?//#database#/$Database}"
+					Error="${UpgradeMe_Error_BackupDatabase//#database#/$Database}"
 				fi
 				;;
 			esac
@@ -130,17 +130,17 @@ if [ $Continue -eq 0 ]; then
 
 	# Creating backup with Backup-Manager
 	[ ! -d "${MySB_InstallDir}_backup/temp" ] && mkdir -p "${MySB_InstallDir}_backup/temp"
-	[ "${gbDevMode:-}" -eq 1 ] && backup-manager-tools remove "$MySB_InstallDir"
-	if [ "${gbIsInstalled_Tautulli:-}" == "YES" ]; then
+	[ "${gbDevMode}" -eq 1 ] && backup-manager-tools remove "$MySB_InstallDir"
+	if [ "${gbIsInstalled_Tautulli}" == "YES" ]; then
 		gfnGetRepoValues 'Tautulli'
 		mkdir -p /tmp/Tautulli
-		rsync -a "${gsRepoDir:-}"/tautulli.db /tmp/Tautulli/tautulli.db
+		rsync -a "${gsRepoDir}"/tautulli.db /tmp/Tautulli/tautulli.db
 		rsync -a "$gsRepoDir"/config.ini /tmp/Tautulli/config.ini
 		rsync -a "$gsRepoDir"/backups /tmp/Tautulli/
 		rsync -a "$gsRepoDir"/logs /tmp/Tautulli/
 		backup-manager-tools add "/tmp/Tautulli"
 	fi
-	if [ "${gbIsInstalled_PlexMedia:-}" == "YES" ]; then
+	if [ "${gbIsInstalled_PlexMedia}" == "YES" ]; then
 		mkdir -p /tmp/PlexMedia
 		rsync -a /var/lib/plexmediaserver/Library/Application\ Support/Plex\ Media\ Server/Plug-in\ Support /tmp/PlexMedia/
 		rsync -a /var/lib/plexmediaserver/Library/Application\ Support/Plex\ Media\ Server/Logs /tmp/PlexMedia/
@@ -169,13 +169,13 @@ if [ $Continue -eq 0 ]; then
 
 	if (! git fetch --all); then
 		Continue=6
-		Error="${UpgradeMe_Error_GitFetch[@]:-}"
+		Error="${UpgradeMe_Error_GitFetch[@]}"
 	fi
 
 	if [ $Continue -eq 0 ]; then
 		if (! git stash); then
 			Continue=7
-			Error="${UpgradeMe_Error_GitStash[@]:-}"
+			Error="${UpgradeMe_Error_GitStash[@]}"
 		fi
 	fi
 
@@ -197,19 +197,19 @@ if [ $Continue -eq 0 ]; then
 	fi
 
 	# MySB_files
-	cd "${MySB_Files:-}"/ || exit
+	cd "${MySB_Files}"/ || exit
 	git reset --hard
 	git clean -fd
 
 	if (! git fetch --all); then
 		Continue=10
-		Error="${UpgradeMe_Error_GitFetch[@]:-}"
+		Error="${UpgradeMe_Error_GitFetch[@]}"
 	fi
 
 	if [ $Continue -eq 0 ]; then
 		if (! git stash); then
 			Continue=11
-			Error="${UpgradeMe_Error_GitStash[@]:-}"
+			Error="${UpgradeMe_Error_GitStash[@]}"
 		fi
 	fi
 
@@ -239,7 +239,7 @@ if [ $Continue -eq 0 ]; then
 	if [ "$MySB_NewVersion" == "$MySB_RepoVersion" ]; then
 		if [ -f "$MySB_InstallDir/upgrade/From_$gsCurrentVersion-to-$MySB_NewVersion.bsh" ]; then
 			echo
-			echo -e "${CBLUE}${UpgradeMe_StartScreen:-}$CEND"
+			echo -e "${CBLUE}${UpgradeMe_StartScreen}$CEND"
 			screen -wipe &>/dev/null
 			screen -dmS MySB_Upgrade /bin/bash "$MySB_InstallDir/upgrade/From_$gsCurrentVersion-to-$MySB_NewVersion.bsh"
 			echo -e -n "${CRED}$Global_PleaseWait $CEND"
@@ -248,7 +248,7 @@ if [ $Continue -eq 0 ]; then
 			screen -r MySB_Upgrade
 		else
 			Continue=14
-			Error="${UpgradeMe_Error_UpgradeSciptMissing:-} ($MySB_InstallDir/upgrade/From_$gsCurrentVersion-to-$MySB_NewVersion.bsh)"
+			Error="${UpgradeMe_Error_UpgradeSciptMissing} ($MySB_InstallDir/upgrade/From_$gsCurrentVersion-to-$MySB_NewVersion.bsh)"
 		fi
 	fi
 fi
@@ -262,7 +262,7 @@ gfnStatistics
 #### Upgrade finished
 clear
 if [ $Continue -ne 0 ]; then
-	echo -e "${CRED}${UpgradeMe_ErrorOccured:-}$CEND"
+	echo -e "${CRED}${UpgradeMe_ErrorOccured}$CEND"
 	echo -e "${CRED}$Error$CEND"
 	echo -e "${CRED}Code: $Continue$CEND"
 	echo

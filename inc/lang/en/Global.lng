@@ -52,7 +52,7 @@ Global_Subject_MonthlyPayment="MySB - Changing monthly payments"
 Global_Subject_PeerGuardianCheck="MySB - PeerGuardian is not started !"
 Global_Subject_rTorrentNotify="MySB - Available files !"
 
-Global_Error_StatusSTD=("${CRED}Looks like something is wrong, check the log '${MySB_InstallDir:-}/logs/${gsScriptName:-}.*', aborting.$CEND")
+Global_Error_StatusSTD=("${CRED}Looks like something is wrong, check the log '${MySB_InstallDir}/logs/${gsScriptName}.*', aborting.$CEND")
 
 Global_WaitingForTaskFinish="The $gsScriptName script is running, please wait..."
 
@@ -83,7 +83,7 @@ Quota_MailMessage="Hello %i,||You have reached your storage limit.|Thank you for
 
 IncAfter_Message_Last=("${CGREEN}Looks like everything is done.$CEND
 
-${CYELLOW}Remember that your SSH port is now ======>$CEND ${CBLUE}${gsPort_SSH:-}$CEND
+${CYELLOW}Remember that your SSH port is now ======>$CEND ${CBLUE}${gsPort_SSH}$CEND
 
 ${CRED}The system will restart in 30 seconds.$CEND
 

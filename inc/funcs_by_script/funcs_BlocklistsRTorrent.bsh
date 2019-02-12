@@ -22,7 +22,7 @@
 #	--> Licensed under the MIT license: http://www.opensource.org/licenses/mit-license.php
 #
 ######################################################################
-{ [ -z "${vars:-}" ] || [ "${vars}" -ne 1 ]; } && {
+{ [ -z "${vars}" ] || [ "${vars}" -ne 1 ]; } && {
 	echo "Please load 'vars' file before..."
 	return
 }
@@ -42,7 +42,7 @@ gfnCleanBlockList() {
 
 	case $sCommand in
 	'download')
-		if (curl -skLS --retry 3 -o "${MySB_InstallDir:-}/files/blocklists/$sFile.gz" "$sUrl"); then
+		if (curl -skLS --retry 3 -o "${MySB_InstallDir}/files/blocklists/$sFile.gz" "$sUrl"); then
 			gzip -dc "$MySB_InstallDir/files/blocklists/$sFile.gz" | cut -d: -f2 >"$MySB_InstallDir/files/blocklists/$sFile.txt"
 			sLastUpdate="$(date +%Y-%m-%d\ %H:%M:%S)"
 		else

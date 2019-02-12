@@ -24,7 +24,7 @@
 
 SecurityRules_NotInstalled="Not yet installed"
 
-SecurityRules_Usage="${CBLUE}Usage:$CEND	${CYELLOW}bash ${gsScriptName:-}$CEND ${CGREEN}{clean|create|refresh}$CEND"
+SecurityRules_Usage="${CBLUE}Usage:$CEND	${CYELLOW}bash ${gsScriptName}$CEND ${CGREEN}{clean|create|refresh}$CEND"
 SecurityRules_NginX_AllUsers="NginX	- Allowing IP addresses of all users"
 SecurityRules_NginX_OpenVPN="NginX	- Allowing the local IP addresses of OpenVPN"
 SecurityRules_NginX_Loopback="NginX	- Allowing the loopback interface"
@@ -41,7 +41,7 @@ SecurityRules_IPtables_ProhibitConn="IPtables - Prohibition of all incoming/outb
 SecurityRules_IPtables_UserChains="IPtables - Creating user chains"
 SecurityRules_IPtables_BadChains="IPtables - Populating BAD chain"
 SecurityRules_IPtables_ICMP_0="IPtables - Populating ICMP chain (allow seedbox users only)"
-SecurityRules_IPtables_ICMP_1="IPtables - Populating ICMP user chains (allow seedbox users and ${gsServerProvider:-})"
+SecurityRules_IPtables_ICMP_1="IPtables - Populating ICMP user chains (allow seedbox users and ${gsServerProvider})"
 SecurityRules_IPtables_UdpIn="IPtables - Populating UDP inbound chain"
 SecurityRules_IPtables_UdpOut="IPtables - Populating UDP outbound chain"
 SecurityRules_IPtables_TcpIn="IPtables - Populating TCP inbound chain"

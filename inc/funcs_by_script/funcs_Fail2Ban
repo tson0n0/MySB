@@ -22,7 +22,7 @@
 #	--> Licensed under the MIT license: http://www.opensource.org/licenses/mit-license.php
 #
 ######################################################################
-{ [ -z "${vars:-}" ] || [ "${vars}" -ne 1 ]; } && {
+{ [ -z "${vars}" ] || [ "${vars}" -ne 1 ]; } && {
 	echo "Please load 'vars' file before..."
 	return
 }
@@ -34,8 +34,8 @@ export funcs_Fail2Ban
 gfnFail2BanJailLocal() {
 	local NginX_Ports
 
-	install -g root -o root -m 0644 "${MySB_InstallDir:-}"/templates/fail2ban/etc.fail2ban.jail.local.tmpl /etc/fail2ban/jail.local
-	if [ "${gbIsInstalled_NextCloud:-}" == "YES" ] || [ "${gbToInstall_NextCloud:-}" == "YES" ]; then
+	install -g root -o root -m 0644 "${MySB_InstallDir}"/templates/fail2ban/etc.fail2ban.jail.local.tmpl /etc/fail2ban/jail.local
+	if [ "${gbIsInstalled_NextCloud}" == "YES" ] || [ "${gbToInstall_NextCloud}" == "YES" ]; then
 		(
 			cat <<'EOF'
 [nextcloud]
@@ -47,15 +47,15 @@ EOF
 		) >>/etc/fail2ban/jail.local
 	fi
 
-	sed -i "s/<Port_SSH>/${gsPort_SSH:-}/g;" /etc/fail2ban/jail.local
-	sed -i "s/<gsPort_FTP>/${gsPort_FTP:-}/g;" /etc/fail2ban/jail.local
-	sed -i "s/<Port_FTP_Data>/${Port_FTP_Data:-}/g;" /etc/fail2ban/jail.local
-	sed -i "s/<Port_MySB_HTTPS>/${Port_MySB_HTTPS:-}/g;" /etc/fail2ban/jail.local
+	sed -i "s/<Port_SSH>/${gsPort_SSH}/g;" /etc/fail2ban/jail.local
+	sed -i "s/<gsPort_FTP>/${gsPort_FTP}/g;" /etc/fail2ban/jail.local
+	sed -i "s/<Port_FTP_Data>/${Port_FTP_Data}/g;" /etc/fail2ban/jail.local
+	sed -i "s/<Port_MySB_HTTPS>/${Port_MySB_HTTPS}/g;" /etc/fail2ban/jail.local
 
-	NginX_Ports="${gsPort_MySB_HTTPS:-}"
-	[ -n "${gsPort_NginX_HTTP:-}" ] && NginX_Ports="$NginX_Ports,$gsPort_NginX_HTTP"
-	[ -n "${gsPort_NginX_HTTPS:-}" ] && NginX_Ports="$NginX_Ports,$gsPort_NginX_HTTPS"
-	sed -i "s/<NginX_Ports>/${NginX_Ports:-}/g;" /etc/fail2ban/jail.local
+	NginX_Ports="${gsPort_MySB_HTTPS}"
+	[ -n "${gsPort_NginX_HTTP}" ] && NginX_Ports="$NginX_Ports,$gsPort_NginX_HTTP"
+	[ -n "${gsPort_NginX_HTTPS}" ] && NginX_Ports="$NginX_Ports,$gsPort_NginX_HTTPS"
+	sed -i "s/<NginX_Ports>/${NginX_Ports}/g;" /etc/fail2ban/jail.local
 }
 
 #### White List
@@ -64,11 +64,11 @@ gfnFail2BanWhitheList() {
 
 	if [ -f /etc/fail2ban/jail.local ]; then
 		sFail2banWhiteList="127.0.0.1/32"
-		sAllUsersIPs="${gsSeedboxUsersIPs:-} ${gsMainUserIPs:-}"
+		sAllUsersIPs="${gsSeedboxUsersIPs} ${gsMainUserIPs}"
 		sAllUsersIPs="${sAllUsersIPs//^ /}"
 
-		if [ "$1" -eq 1 ]; then log_daemon_msg "${SecurityRules_Fail2Ban_IgnoreList:-}"; fi
-		if [ "${gsIpRestriction:-}" == "YES" ]; then
+		if [ "$1" -eq 1 ]; then log_daemon_msg "${SecurityRules_Fail2Ban_IgnoreList}"; fi
+		if [ "${gsIpRestriction}" == "YES" ]; then
 			# All users IPs
 			for IPv4 in $sAllUsersIPs; do
 				sIfExist="$(echo "$sFail2banWhiteList" | grep "$IPv4")"
@@ -79,8 +79,8 @@ gfnFail2BanWhitheList() {
 		fi
 
 		# VPN local IPs
-		if [ "${gbIsInstalled_OpenVPN:-}" == "YES" ]; then
-			for IPv4 in ${gsVpnLocalIps:-}; do
+		if [ "${gbIsInstalled_OpenVPN}" == "YES" ]; then
+			for IPv4 in ${gsVpnLocalIps}; do
 				sIfExist="$(echo "$sFail2banWhiteList" | grep "$IPv4")"
 				if [ -z "$sIfExist" ]; then
 					sFail2banWhiteList="${sFail2banWhiteList} ${IPv4}"

@@ -22,7 +22,7 @@
 #	--> Licensed under the MIT license: http://www.opensource.org/licenses/mit-license.php
 #
 ######################################################################
-{ [ -z "${vars:-}" ] || [ "${vars}" -ne 1 ]; } && {
+{ [ -z "${vars}" ] || [ "${vars}" -ne 1 ]; } && {
 	echo "Please load 'vars' file before..."
 	return
 }
@@ -33,7 +33,7 @@ export funcs_GetTrackersCert
 #### Get ruTorrent Trackers
 gfnGetRutorrentTrackers() {
 	local sAllEngines
-	sAllEngines="$(ls -1r "${gsRutorrentPluginsDir:-}"/extsearch/engines/)"
+	sAllEngines="$(ls -1r "${gsRutorrentPluginsDir}"/extsearch/engines/)"
 
 	for FnEngine in $sAllEngines; do
 		Tracker="$(grep "\$url" "$gsRutorrentPluginsDir/extsearch/engines/$FnEngine" | grep "\=" | grep "http" | head -1 | sed 's/public//g;' | awk '{ print $3 }' | cut -d "/" -f 3 | cut -d "'" -f 1)"
@@ -116,13 +116,13 @@ gfnAddTracker() {
 			if [ -n "$sDomainIPv4" ] && [ "$sDomainIPv4" != "" ] && [ "$sDomainIPv4" != "0.0.0.0" ] && [ "$sDomainIPv4" != "127.0.0.1" ]; then
 				sIfExist="$(cmdMySQL 'MySB_db' "SELECT id_trackers_list FROM trackers_list WHERE tracker_domain='$sTrackerDomain';")"
 				if [ -z "$sIfExist" ]; then
-					log_daemon_msg "${AddTrackerDomain:-} $sTrackerDomain"
+					log_daemon_msg "${AddTrackerDomain} $sTrackerDomain"
 					case "$sOrigin" in
 					'rutorrent') cmdMySQL 'MySB_db' "INSERT INTO trackers_list (tracker,tracker_domain,origin,is_active,to_check) VALUES ('$sTrackerAddress','$sTrackerDomain','$sOrigin','0','0');" ;;
 					*)
 						cmdMySQL 'MySB_db' "INSERT INTO trackers_list (tracker,tracker_domain,origin,is_active) VALUES ('$sTrackerAddress','$sTrackerDomain','$sOrigin','$bActive');"
 						if [ $bTrackerFound -eq 1 ] && [ $bActive -eq 1 ]; then
-							gfnSendMail "MySB - New trackers founded !" "${gsMainUserName:-}" 'tracker_found'
+							gfnSendMail "MySB - New trackers founded !" "${gsMainUserName}" 'tracker_found'
 						fi
 						;;
 					esac
@@ -133,7 +133,7 @@ gfnAddTracker() {
 			else
 				sIfExist="$(cmdMySQL 'MySB_db' "SELECT id_trackers_list FROM trackers_list WHERE tracker_domain='$sTrackerDomain';")"
 				if [ -n "$sIfExist" ]; then
-					log_daemon_msg "${DeleteTrackerDomain:-} $sTrackerDomain"
+					log_daemon_msg "${DeleteTrackerDomain} $sTrackerDomain"
 					sTrackersListId="$(cmdMySQL 'MySB_db' "SELECT id_trackers_list FROM trackers_list WHERE tracker_domain='$sTrackerDomain';")"
 					cmdMySQL 'MySB_db' "DELETE FROM trackers_list WHERE tracker_domain='$sTrackerDomain';"
 					gfnStatusLSB
@@ -144,7 +144,7 @@ gfnAddTracker() {
 				sTrackerIPv4="$(echo "$sTrackerIPv4" | sed -e 's/^ //g;' | sed 's/\s+$//')"
 				sTrackersListId="$(cmdMySQL 'MySB_db' "SELECT id_trackers_list FROM trackers_list WHERE tracker_domain='$sTrackerDomain';")"
 				if [ -n "$sTrackersListId" ] && [ "$sTrackersListId" -gt 0 ]; then
-					log_daemon_msg "${UpdateTrackersIPv4:-} '$sTrackerAddress' --> '$sTrackerIPv4'"
+					log_daemon_msg "${UpdateTrackersIPv4} '$sTrackerAddress' --> '$sTrackerIPv4'"
 					# Cleaning
 					ListIPv4="$(cmdMySQL 'MySB_db' "SELECT ipv4 FROM trackers_list_ipv4 WHERE id_trackers_list='$sTrackersListId';")"
 					for IPv4 in $ListIPv4; do

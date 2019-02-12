@@ -51,7 +51,7 @@ echo
 
 echo -e "${MySB_AllIsOk}"
 echo
-gfnQuestionGetString NO "${Global_WantToContinue[@]:-}" CONTINUE "${Global_YES}"
+gfnQuestionGetString NO "${Global_WantToContinue[@]}" CONTINUE "${Global_YES}"
 CONTINUE="$(echo "$CONTINUE" | tr '[:lower:]' '[:upper:]')"
 if [ "$CONTINUE" == "${Global_NO}" ]; then
 	echo -e "${Global_SeeYouLater}"

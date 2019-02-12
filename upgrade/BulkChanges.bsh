@@ -118,7 +118,7 @@ case "$1" in
 
 		#### OpenVPN - Create again clients configurations if needed
 		if [ "$(find /etc/openvpn/clients/ -maxdepth 1 -type f -name "${seedUser}*" 2>/dev/null | wc -l)" -eq 0 ]; then
-			gfnScriptInvoke 'ScreenSTD' "${MySB_InstallDir:-}/install/OpenVPN" 'client' "$seedUser" 'UPGRADE'
+			gfnScriptInvoke 'ScreenSTD' "${MySB_InstallDir}/install/OpenVPN" 'client' "$seedUser" 'UPGRADE'
 		fi
 	done
 

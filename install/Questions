@@ -489,7 +489,7 @@ DisplaySurvey() {
 			gfnQuestionGetString NO "$Questions_PortOpenvpnTUNwithoutGW" gsPort_OpenVPN_WithoutGW "$gsPort_OpenVPN_WithoutGW"
 			gfnQuestionGetString NO "$Questions_PortOpenvpnTAPwithoutGW" gsPort_OpenVPN_TAP_WithoutGW "$gsPort_OpenVPN_TAP_WithoutGW"
 			while [ ! "$gsOpenVPN_Proto" = "udp" ] && [ ! "$gsOpenVPN_Proto" = "tcp" ]; do
-				gfnQuestionGetString NO "${Questions_ProtoOpenVPN[@]:-}" gsOpenVPN_Proto "$sValueProto"
+				gfnQuestionGetString NO "${Questions_ProtoOpenVPN[@]}" gsOpenVPN_Proto "$sValueProto"
 				gsOpenVPN_Proto="$(echo $gsOpenVPN_Proto | tr '[:upper:]' '[:lower:]')"
 			done
 
@@ -708,7 +708,7 @@ DisplaySurvey() {
 		if [ "$gsMySB_PeerBlock" == "$Global_None" ] || [ -z "$gsMySB_PeerBlock" ]; then
 			echo
 			echo -e "$Questions_Message_Blocklists"
-			sQuestion="${Questions_InstallBlockList_0[*]:-}"
+			sQuestion="${Questions_InstallBlockList_0[*]}"
 
 			if [ $gsMemory -lt 2048 ]; then
 				echo -e "$Questions_Message_Blocklists_0"

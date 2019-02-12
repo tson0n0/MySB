@@ -27,7 +27,7 @@ source "$(dirname "$0")"/../inc/includes_before
 
 #### Includes
 # shellcheck source=inc/funcs_by_script/funcs_Install
-source "${MySB_InstallDir:-}"/inc/funcs_by_script/funcs_Install
+source "${MySB_InstallDir}"/inc/funcs_by_script/funcs_Install
 
 #### System upgrade
 gfnPackagesManage 'upgrade'
@@ -49,7 +49,7 @@ GoDaddyUrl="https://certs.godaddy.com/repository"
 
 # GeoTrust Primary Certification Authority - G4
 if [ ! -f "$GeoTrustDir"/GeoTrust_Primary_CA_G4_DSA.pem ]; then
-	${binCURL:-} -o "$GeoTrustDir/GeoTrust_Primary_CA_G4_DSA.pem" "$GeoTrustUrl/GeoTrust_Primary_CA_G4_DSA.pem"
+	${binCURL} -o "$GeoTrustDir/GeoTrust_Primary_CA_G4_DSA.pem" "$GeoTrustUrl/GeoTrust_Primary_CA_G4_DSA.pem"
 fi
 if [ -f "$GeoTrustDir"/GeoTrust_Primary_CA_G4_DSA.pem ] && [ ! -h $CertsDir/GeoTrust_Primary_CA_G4_DSA.pem ]; then
 	ln -sv "$GeoTrustDir"/GeoTrust_Primary_CA_G4_DSA.pem $CertsDir/GeoTrust_Primary_CA_G4_DSA.pem
