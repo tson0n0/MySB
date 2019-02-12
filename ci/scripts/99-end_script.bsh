@@ -22,7 +22,7 @@
 #
 ##################### FIRST LINE #####################################
 
-declare -i nReturn
+declare nReturn
 
 echo
 case "${nReturn}" in

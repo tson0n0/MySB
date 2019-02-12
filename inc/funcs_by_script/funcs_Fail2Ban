@@ -33,7 +33,7 @@ export funcs_Fail2Ban
 
 declare -r MySB_InstallDir SecurityRules_Fail2Ban_IgnoreList
 declare gbIsInstalled_NextCloud gbToInstall_NextCloud
-declare -i gsPort_SSH gsPort_FTP gsPort_FTP_Data gsPort_MySB_HTTPS gsPort_NginX_HTTP gsPort_NginX_HTTPS
+declare gsPort_SSH gsPort_FTP gsPort_FTP_Data gsPort_MySB_HTTPS gsPort_NginX_HTTP gsPort_NginX_HTTPS
 declare gsSeedboxUsersIPs gsMainUserIPs gsIpRestriction gbIsInstalled_OpenVPN gsVpnLocalIps
 
 #### Jail.local
