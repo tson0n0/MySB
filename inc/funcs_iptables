@@ -22,6 +22,7 @@
 #	--> Licensed under the MIT license: http://www.opensource.org/licenses/mit-license.php
 #
 ######################################################################
+declare vars
 { [ -z "${vars}" ] || [ "${vars}" -ne 1 ]; } && {
 	echo "Please load 'vars' file before..."
 	return
@@ -30,8 +31,11 @@ funcs_iptables=1
 export funcs_iptables
 ##################### FIRST LINE #####################################
 
-declare AllUsersIPs gsPort_NginX_HTTP gsPort_NginX_HTTPS gsPorts_TCP_PlexMedia gsPorts_UDP_PlexMedia gsPorts_PlexMedia gsPorts_Webmin
-declare gsOpenVPN_Proto gsPort_OpenVPN_WithGW gsPort_OpenVPN_TAP_WithoutGW gsPort_OpenVPN_WithoutGW
+declare -i gsPort_MySB_HTTPS gsPort_SSH gsPort_FTP gsPort_FTP_Data
+declare AllUsersIPs gsPort_NginX_HTTP gsPort_NginX_HTTPS gsPorts_TCP_PlexMedia gsPorts_UDP_PlexMedia gsPorts_PlexMedia gsPorts_Webmin gsServerProvider
+declare gsOpenVPN_Proto gsPort_OpenVPN_WithGW gsPort_OpenVPN_TAP_WithoutGW gsPort_OpenVPN_WithoutGW gbIsInstalled_OpenVPN gsVpnLocalIps gsPrimaryInet
+declare gsSrvIpAddress gbIsInstalled_PlexMedia gsPort_FTP_Passive gbIsInstalled_Webmin gsMainUserIPs gsUsersList
+declare -r MySB_InstallDir
 
 # http://easyfwgen.morizot.net/gen/
 

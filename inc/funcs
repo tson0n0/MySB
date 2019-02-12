@@ -22,6 +22,7 @@
 #	--> Licensed under the MIT license: http://www.opensource.org/licenses/mit-license.php
 #
 ######################################################################
+declare vars
 { [ -z "${vars}" ] || [ "${vars}" -ne 1 ]; } && {
 	echo "Please load 'vars' file before..."
 	return
@@ -29,6 +30,11 @@
 funcs=1
 export funcs
 ##################### FIRST LINE #####################################
+
+declare -r Header_CurrentFile Funcs_SendMail_GenerateHTML Funcs_SendMail_SendingEmail Funcs_Stopping Funcs_Killing Funcs_AlreadyStopped gsLoadAvgDir gbIsReady_MySB_Db
+declare -r Funcs_Restarting Funcs_ForceStarting Funcs_Starting Funcs_Reloading Global_Again gsProcessors
+declare gsMySB_User gsMySB_Password gsHostNameFqdn
+declare -i gsPort_System_HTTP
 
 #### Include tools functions
 if [ -z "$funcs_sql" ] || [ "$funcs_sql" -eq 0 ]; then
@@ -64,7 +70,7 @@ gfnBannerGenerator() {
 		sed -i "s/,/ /g;" "$MySB_InstallDir/files/banner_$gsCurrentVersion" &>/dev/null
 		sed -i "s/\`/ /g;" "$MySB_InstallDir/files/banner_$gsCurrentVersion" &>/dev/null
 		clear
-		# shellcheck disable=SC1090
+		# shellcheck source=/dev/null
 		source "$MySB_InstallDir/files/banner_$gsCurrentVersion"
 	fi
 	echo

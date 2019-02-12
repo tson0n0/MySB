@@ -30,6 +30,11 @@ funcs_Upgrade=1
 export funcs_Upgrade
 ##################### FIRST LINE #####################################
 
+declare -r binMySQL Global_Questions_Message_Hostname_New Global_Questions_Hostname_New Global_Questions_Message_Hostname Global_Questions_Hostname
+declare -r Global_Questions_Message_Hostname_NoFqdn Global_Questions_Message_Hostname_Fqdn_NotPublicIp gsCakeboxDir gsNextCloudDir gsInstallDirEscaped
+declare Global_NO Global_YES gbIsInstalled_Manager gsRepoDir gbIsInstalled_Tautulli
+declare -i gsPort_System_HTTP
+
 #### Change FQDN of Seedbox
 # Use cases:
 # 1/ Manual with command line: gfnChangeFQDN "new_fqdn"

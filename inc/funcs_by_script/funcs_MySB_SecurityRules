@@ -30,6 +30,10 @@ funcs_MySB_SecurityRules=1
 export funcs_MySB_SecurityRules
 ##################### FIRST LINE #####################################
 
+declare -r binCURL SecurityRules_NginX_AllUsers SecurityRules_NginX_OpenVPN
+declare ModeSwitch InitSwitch RefreshSwitch gbIsInstalled_PeerGuardian gbIsInstalled_LetsEncrypt gbIsInstalled_Fail2Ban gbDnsCryptSwitch gsUsersList
+declare SecurityRules_NginX_Loopback SecurityRules_NginX_SatisfyAll SecurityRules_Bind_BlockOut SecurityRules_Bind_TrackersHosts gsSrvIpAddress gsSrvIpAddressExt gsHostNameFqdn
+
 #### Loading vars
 gfnLoadingVars() {
 	gfnListCountUsers 'normal' #($gsUsersList)
@@ -207,7 +211,6 @@ gfnCreateServicesRules() {
 	#### Fail2Ban
 	if [ "$ApplyConfigFail2Ban" == "YES" ]; then
 		# shellcheck source=inc/funcs_by_script/funcs_Fail2Ban
-		# shellcheck disable=SC1094
 		source "${MySB_InstallDir}"/inc/funcs_by_script/funcs_Fail2Ban
 		gfnFail2BanJailLocal
 		gfnFail2BanWhitheList 1
@@ -217,7 +220,6 @@ gfnCreateServicesRules() {
 	#### PeerGuardian
 	if [ "$ApplyConfigPeerGuardian" == "YES" ]; then
 		# shellcheck source=inc/funcs_by_script/funcs_PeerGuardian
-		# shellcheck disable=SC1094
 		[ -z "${funcs_PeerGuardian}" ] && source "$MySB_InstallDir"/inc/funcs_by_script/funcs_PeerGuardian
 
 		# Create '/etc/pgl/pglcmd.conf'

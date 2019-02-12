@@ -52,7 +52,7 @@ start() {
 	log_daemon_msg "Starting RPC port mapper daemon" "rpcbind"
 	start-stop-daemon --start --quiet --oknodo --exec /sbin/rpcbind -- "$@"
 	pid=$(pidofproc /sbin/rpcbind)
-	echo -n "$pid" >"$PIDFILE"
+	echo "$pid" >"$PIDFILE"
 	# /run/sendsigs.omit.d is created by /etc/init.d/mountkernfs.sh
 	ln -sf "$PIDFILE" /run/sendsigs.omit.d/rpcbind
 	log_end_msg $?

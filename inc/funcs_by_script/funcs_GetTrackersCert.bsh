@@ -22,6 +22,7 @@
 #	--> Licensed under the MIT license: http://www.opensource.org/licenses/mit-license.php
 #
 ######################################################################
+declare vars
 { [ -z "${vars}" ] || [ "${vars}" -ne 1 ]; } && {
 	echo "Please load 'vars' file before..."
 	return
@@ -29,6 +30,9 @@
 funcs_GetTrackersCert=1
 export funcs_GetTrackersCert
 ##################### FIRST LINE #####################################
+
+declare -r gsRutorrentPluginsDir AddTrackerDomain DeleteTrackerDomain UpdateTrackersIPv4
+declare gsMainUserName
 
 #### Get ruTorrent Trackers
 gfnGetRutorrentTrackers() {
@@ -168,7 +172,7 @@ gfnAddTracker() {
 				fi
 			else
 				if [ -n "$sDomainIPv4" ] && [ "$sDomainIPv4" != "0.0.0.0" ] && [ "$sDomainIPv4" != "127.0.0.1" ]; then
-					sDomainIPv4="$(echo "$sDomainIPv4"| sed -e 's/^ //g;' | sed 's/\s+$//')"
+					sDomainIPv4="$(echo "$sDomainIPv4" | sed -e 's/^ //g;' | sed 's/\s+$//')"
 					sTrackersListId="$(cmdMySQL 'MySB_db' "SELECT id_trackers_list FROM trackers_list WHERE tracker_domain='$sTrackerDomain';")"
 					if [ -n "$sTrackersListId" ] && [ "$sTrackersListId" -gt 0 ]; then
 						log_daemon_msg "$UpdateTrackersIPv4 '$sTrackerDomain' --> '$sDomainIPv4'"

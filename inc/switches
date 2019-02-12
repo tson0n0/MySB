@@ -23,6 +23,9 @@
 #
 ##################### FIRST LINE #####################################
 
+declare gsScriptName
+declare -r MySB_InstallDir
+
 #### SWITCHES
 BANNER=ON     # Banner for all script (ON/OFF)
 LOGSTD=NO     # Standard Outpout redirected to 'scriptname.log' (STDOUT/NO)

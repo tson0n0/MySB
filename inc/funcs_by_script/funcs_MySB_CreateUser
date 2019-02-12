@@ -22,6 +22,7 @@
 #	--> Licensed under the MIT license: http://www.opensource.org/licenses/mit-license.php
 #
 ######################################################################
+declare vars
 { [ -z "${vars}" ] || [ "${vars}" -ne 1 ]; } && {
 	echo "Please load 'vars' file before..."
 	return
@@ -29,6 +30,13 @@
 funcs_MySB_CreateUser=1
 export funcs_MySB_CreateUser
 ##################### FIRST LINE #####################################
+
+declare -r gsNextCloudDir EnvLang gsRutorrentDir gsCakeboxDir MySB_InstallDir gsSync_DB gsManagerDir gsRutorrentPluginsDir Global_Readme_AvailableVariables
+declare -r gsInstallDirEscaped Global_Subject_PaymentReminder Global_Subject_MonthlyPayment CreateUser_SubjectAccountCreated CreateUser_MessageAccountChangeMonthly
+declare -r CreateUser_MessageAccountCreated DeleteUser_MessageDelete DeleteUser_SubjectDelete
+declare gsUsersList gnTotalUsers gbIsInstalled_NextCloud gbIsInstalled_Cakebox gbIsInstalled_Manager gsMainUserEmail gsMainUserName gbDevMode
+declare gbToInstall_Manager gbToInstall_Cakebox gsSrvIpAddress gsMySB_PeerBlock gsRentingTVA gsRentingModel gsRentingGlobalCost gsRentingCostTva gsScriptName
+declare -i gsPort_SSH gsPort_FTP gnMainUserId
 
 #### NextCloud account manage
 gfnNextCloudAccountManage() {

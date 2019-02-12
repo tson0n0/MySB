@@ -22,6 +22,7 @@
 #	--> Licensed under the MIT license: http://www.opensource.org/licenses/mit-license.php
 #
 ######################################################################
+declare vars
 { [ -z "${vars}" ] || [ "${vars}" -ne 1 ]; } && {
 	echo "Please load 'vars' file before..."
 	return
@@ -29,6 +30,8 @@
 funcs_Install=1
 export funcs_Install
 ##################### FIRST LINE #####################################
+
+declare -r MySB_InstallDir gsInstallDirEscaped gbIsReady_MySB_Db
 
 #### Logrotate
 gfnLogRotate() {
