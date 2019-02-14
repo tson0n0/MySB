@@ -22,7 +22,6 @@
 #	--> Licensed under the MIT license: http://www.opensource.org/licenses/mit-license.php
 #
 ######################################################################
-declare vars
 { [ -z "${vars}" ] || [ "${vars}" -ne 1 ]; } && {
 	echo "Please load 'vars' file before..."
 	return
@@ -30,10 +29,6 @@ declare vars
 funcs_MySB_SecurityRules=1
 export funcs_MySB_SecurityRules
 ##################### FIRST LINE #####################################
-
-declare binCURL SecurityRules_NginX_AllUsers SecurityRules_NginX_OpenVPN
-declare ModeSwitch InitSwitch RefreshSwitch gbIsInstalled_PeerGuardian gbIsInstalled_LetsEncrypt gbIsInstalled_Fail2Ban gbDnsCryptSwitch gsUsersList
-declare SecurityRules_NginX_Loopback SecurityRules_NginX_SatisfyAll SecurityRules_Bind_BlockOut SecurityRules_Bind_TrackersHosts gsSrvIpAddress gsSrvIpAddressExt gsHostNameFqdn
 
 #### Loading vars
 gfnLoadingVars() {

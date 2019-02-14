@@ -22,7 +22,6 @@
 #	--> Licensed under the MIT license: http://www.opensource.org/licenses/mit-license.php
 #
 ######################################################################
-declare vars
 { [ -z "${vars}" ] || [ "${vars}" -ne 1 ]; } && {
 	echo "Please load 'vars' file before..."
 	return
@@ -30,8 +29,6 @@ declare vars
 funcs_BlocklistsRTorrent=1
 export funcs_BlocklistsRTorrent
 ##################### FIRST LINE #####################################
-
-declare MySB_InstallDir
 
 #### Clean the rTorrent blocklist
 gfnCleanBlockList() {

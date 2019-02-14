@@ -22,7 +22,6 @@
 #	--> Licensed under the MIT license: http://www.opensource.org/licenses/mit-license.php
 #
 ######################################################################
-declare vars
 { [ -z "${vars}" ] || [ "${vars}" -ne 1 ]; } && {
 	echo "Please load 'vars' file before..."
 	return
@@ -30,11 +29,6 @@ declare vars
 funcs_Upgrade=1
 export funcs_Upgrade
 ##################### FIRST LINE #####################################
-
-declare binMySQL Global_Questions_Message_Hostname_New Global_Questions_Hostname_New Global_Questions_Message_Hostname Global_Questions_Hostname
-declare Global_Questions_Message_Hostname_NoFqdn Global_Questions_Message_Hostname_Fqdn_NotPublicIp gsCakeboxDir gsNextCloudDir gsInstallDirEscaped
-declare Global_NO Global_YES gbIsInstalled_Manager gsRepoDir gbIsInstalled_Tautulli
-declare gsPort_System_HTTP
 
 #### Change FQDN of Seedbox
 # Use cases:

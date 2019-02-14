@@ -25,10 +25,6 @@ source "$(dirname "$0")"/../inc/includes_before
 #
 ##################### FIRST LINE #####################################
 
-declare UpgradeMe_Clock UpgradeMe_Error_Clock UpgradeMe_GitHubAccess UpgradeMe_Error_GitHubAccess UpgradeMe_UpdateGithub UpgradeMe_NewVersion UpgradeMe_CreateBackup
-declare UpgradeMe_Error_BackupDatabase UpgradeMe_Error_GitPull UpgradeMe_Error_GitFetch UpgradeMe_Error_GitStash
-declare UpgradeMe_StartScreen UpgradeMe_Error_UpgradeSciptMissing UpgradeMe_ErrorOccured UpgradeMe_Error_UpgradeSciptMissing
-
 #### VARs
 Type="$1"
 Continue=0

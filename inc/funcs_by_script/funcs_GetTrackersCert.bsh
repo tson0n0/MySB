@@ -22,7 +22,6 @@
 #	--> Licensed under the MIT license: http://www.opensource.org/licenses/mit-license.php
 #
 ######################################################################
-declare vars
 { [ -z "${vars}" ] || [ "${vars}" -ne 1 ]; } && {
 	echo "Please load 'vars' file before..."
 	return
@@ -30,9 +29,6 @@ declare vars
 funcs_GetTrackersCert=1
 export funcs_GetTrackersCert
 ##################### FIRST LINE #####################################
-
-declare gsRutorrentPluginsDir AddTrackerDomain DeleteTrackerDomain UpdateTrackersIPv4
-declare gsMainUserName
 
 #### Get ruTorrent Trackers
 gfnGetRutorrentTrackers() {

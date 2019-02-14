@@ -26,8 +26,6 @@
 #
 ##################### FIRST LINE #####################################
 
-declare UpdateTools_Plex
-
 #### PlexMedia & Tautulli update
 if [[ "${gbIsInstalled_PlexMedia}" == "YES" ]]; then
 	log_daemon_msg "${UpdateTools_Plex}"

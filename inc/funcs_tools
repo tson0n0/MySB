@@ -22,7 +22,6 @@
 #	--> Licensed under the MIT license: http://www.opensource.org/licenses/mit-license.php
 #
 ######################################################################
-declare vars
 { [ -z "${vars}" ] || [ "${vars}" -ne 1 ]; } && {
 	echo "Please load 'vars' file before..."
 	return
@@ -30,10 +29,6 @@ declare vars
 funcs_tools=1
 export funcs_tools
 ##################### FIRST LINE #####################################
-
-declare MySB_InstallDir binPhpService Global_Failed Global_Error_StatusSTD Global_Done MySB_Files UpgradeMe_DeleteTempFiles Global_PleaseWait binCURL
-declare UpgradeMe_CleanGit gsInstallDirEscaped
-declare sVerbose gsSrvIpAddressExt gsCurrentVersion gsSrvIpAddress gsSwitch
 
 #### Get filename to download from URI
 gfnGetUriFilename() {

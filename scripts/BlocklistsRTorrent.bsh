@@ -26,8 +26,6 @@ source "$(dirname "$0")/../inc/includes_before"
 #
 ##################### FIRST LINE #####################################
 
-declare DeleteGlobalBlocklist sIblocklistIdent sUsername sPin
-
 # shellcheck source=inc/funcs_by_script/funcs_MySB_CreateUser
 . "${MySB_InstallDir}/inc/funcs_by_script/funcs_MySB_CreateUser"
 

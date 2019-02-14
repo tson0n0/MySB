@@ -23,7 +23,6 @@
 #	--> Licensed under the MIT license: http://www.opensource.org/licenses/mit-license.php
 #
 ######################################################################
-declare vars
 { [ -z "${vars}" ] || [ "${vars}" -ne 1 ]; } && {
 	echo "Please load 'vars' file before..."
 	return
@@ -31,12 +30,6 @@ declare vars
 funcs_PeerGuardian=1
 export funcs_PeerGuardian
 ##################### FIRST LINE #####################################
-
-declare binCURL Funcs_PeerGuardianFailed_Switching MySB_InstallDir Peerguardian_AddingSelectedBlocklist gsIblocklists_DB Peerguardian_PermissionSelectedTrackers
-declare DNScrypt_ResolversRules Peerguardian_SupervisionRules Peerguardian_LoggingAndVerbosity Peerguardian_AddingAllowedAddresses
-declare gsUsersList gsScriptName gsIpRestriction gbIsInstalled_DNScrypt gsServerProvider Global_NO gbDevMode gbIsInstalled_OpenVPN gbIsInstalled_Cakebox gbToInstall_Cakebox
-declare gsPort_MySB_HTTPS gsPort_FTP gsPort_SSH gsPort_FTP_Data gsPort_SMTP
-declare gsPort_FTP_Passive gbIsInstalled_Webmin gbIsInstalled_PlexMedia gbToInstall_LetsEncrypt gbIsInstalled_LetsEncrypt
 
 gfnIblocklistXmlGenerate() {
 	local sLine sListId sUrlInfo sUrlList sListName sNewLine nComment sListNameLower sValues
@@ -507,9 +500,6 @@ gfnPeerGuardianPglcmdConf() {
 #### Network ports generator
 gfnPeerGuardianNetworkPortsGenerator() {
 	local bLetsEncryptOpenPort sResolversAddresses sAddress nPort sPortList
-	declare gsPort_NginX_HTTP gsPort_NginX_HTTPS
-	declare gsPorts_Webmin gsPorts_PlexMedia gsPorts_TCP_PlexMedia gsPorts_UDP_PlexMedia
-	declare gsOpenVPN_Proto gsPort_OpenVPN_WithGW gsPort_OpenVPN_WithoutGW gsPort_OpenVPN_TAP_WithoutGW
 
 	WHITE_TCP_IN=''
 	WHITE_UDP_IN=''

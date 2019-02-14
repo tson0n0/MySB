@@ -23,8 +23,6 @@
 #
 ##################### FIRST LINE #####################################
 
-declare END
-
 #### 1 - Includes
 if [ -f /etc/MySB/config ]; then
 	# shellcheck source=.etc/MySB/config
