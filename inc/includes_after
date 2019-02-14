@@ -50,6 +50,7 @@ else
 fi
 
 #### 2 - End Script
+# shellcheck disable=SC2153
 if [ "${END}" == "ON" ]; then
 	echo "--------------------"
 	case "${gsScriptName}" in
