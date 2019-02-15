@@ -13,6 +13,7 @@
   * add quota modules to /etc/modules
 - MySQL templates conversion to MariaDB
 - NextCloud restore export OC_PASS for --password-from-env parameter
+- Remove Python packages update from MySB_UpgradeSystem
 
 ## v5.4 - 2019/01/14 _(start at: 2018/09/07)_
 - Tautulli latest _(auto)_

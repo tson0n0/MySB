@@ -242,7 +242,7 @@ KernelReplace() {
 			;;
 		esac
 	else
-		echo -e "$LatestKernel${CRED}??$CEND"
+		echo -e "$LatestKernel${CRED}$CEND"
 		echo -e "$KernelManualInstall"
 		nContinue=1
 	fi
