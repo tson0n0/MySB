@@ -48,8 +48,8 @@ gfnBannerGenerator() {
 	echo "echo -e \"${CGREEN}############################################################$CEND" >"$MySB_InstallDir/files/banner_$gsCurrentVersion"
 
 	nCountLine=$(wc -l "$MySB_InstallDir"/files/banner.tmp | awk '{ print $1 }')
-	for ((lign = 1; lign <= nCountLine; lign++)); do
-		sLine=$(head -n $lign "$MySB_InstallDir"/files/banner.tmp | tail -n 1)
+	for ((line = 1; line <= nCountLine; line++)); do
+		sLine=$(head -n $line "$MySB_InstallDir"/files/banner.tmp | tail -n 1)
 		echo "${CGREEN}#$CEND	${CBLUE}$sLine$CEND" >>"$MySB_InstallDir/files/banner_$gsCurrentVersion"
 	done
 	rm -f "${MySB_InstallDir}"/files/banner.tmp
@@ -515,7 +515,7 @@ gfnScriptInvoke() {
 		fi
 		# copy it
 		cat "$sScriptWished" >>"$MySB_InstallDir/temp/${gsScriptName}_${sScript}.invoked"
-		# delete lign start with comments
+		# delete line start with comments
 		sed -i '/^#/d' "$MySB_InstallDir/temp/${gsScriptName}_${sScript}.invoked"
 		#delete includes before and after (on top and bottom of every script)
 		sed -i '/includes_before/d' "$MySB_InstallDir/temp/${gsScriptName}_${sScript}.invoked"

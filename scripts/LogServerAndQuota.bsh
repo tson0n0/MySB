@@ -27,12 +27,12 @@ source "$(dirname "$0")"/../inc/includes_before
 
 #### Functions
 CCZE_Treatment() {
-	local sLogFile sVarLogDir sWebLogDir sTwoLogFile sLignToDelete sOptions
+	local sLogFile sVarLogDir sWebLogDir sTwoLogFile sLinesToDelete sOptions
 	sLogFile="$1"
 	sVarLogDir="$2"
 	sWebLogDir="$3"
 	sTwoLogFile="$4"
-	sLignToDelete="$5"
+	sLinesToDelete="$5"
 
 	if [ ! -z "$(echo $sLogFile | grep '.log')" ]; then
 		# Log files with '.log' extension
@@ -58,13 +58,15 @@ CCZE_Treatment() {
 		fi
 	fi
 	if [ -e /tmp/$sLogFile ]; then
-		if [ ! -z "$sLignToDelete" ]; then
+		if [ ! -z "$sLinesToDelete" ]; then
+			OIFS=$IFS
 			IFS=$';'
-			for Lign in $sLignToDelete; do
-				sed -i '/$Lign/d' /tmp/$sLogFile
+			for line in $sLinesToDelete; do
+				sed -i '/$line/d' /tmp/$sLogFile
 			done
+			IFS=$OIFS
 		fi
-		unset sLignToDelete IFS
+		unset sLinesToDelete IFS OIFS
 
 		case "$sLogFile" in
 		'syslog') sOptions="-h -r -p syslog" ;;

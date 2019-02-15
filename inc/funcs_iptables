@@ -974,7 +974,7 @@ gfnProcessNatDockerChain() {
 		for sContainerId in $(docker ps --quiet); do
 			sIpAddress=$(docker inspect --format='{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' "$sContainerId")
 			#sPortsMap=$(docker port "$sContainerId")
-
+			OIFS=$IFS
 			IFS=$'\n'
 			for sMap in $(docker port "$sContainerId"); do
 				sPortExt=$(echo "$sMap" | awk '{ print $1 }' | cut -d '/' -f 1)
@@ -985,7 +985,8 @@ gfnProcessNatDockerChain() {
 				# Nat - DOCKER
 				iptables -t nat -A DOCKER ! -i docker0 -p "$sProtoExt" -m "$sProtoExt" --dport "$sPortContainer" -j DNAT --to-destination "$sIpAddress":"$sPortExt" -m comment --comment "Docker"
 			done
-			unset IFS
+			IFS=$OIFS
+			unset IFS OIFS
 		done
 	fi
 }

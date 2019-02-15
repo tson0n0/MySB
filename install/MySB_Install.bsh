@@ -524,7 +524,8 @@ fi
 source "$MySB_InstallDir"/inc/vars
 
 # Some questions
-/bin/bash "$MySB_InstallDir"/install/Questions $$ 'INSTALL'
+# /bin/bash "$MySB_InstallDir"/install/Questions $$ 'INSTALL'
+/bin/bash "$MySB_InstallDir"/install/Questions 'INSTALL'
 echo
 echo
 
