@@ -25,8 +25,6 @@ source "$(dirname "$0")"/../inc/includes_before
 #
 ##################### FIRST LINE #####################################
 
-declare gsHostNameFqdn gsMainUserEmail gsInstallDirEscaped gsSwitch
-
 #### VARs
 SmtpValues="$(cmdMySQL 'MySB_db' "SELECT smtp_provider,smtp_username,smtp_passwd,smtp_host,smtp_port FROM smtp WHERE id_smtp='1';" | sed 's/\t/|/g;')"
 SMTP_Provider="$(echo "$SmtpValues" | awk '{split($0,a,"|"); print a[1]}')"

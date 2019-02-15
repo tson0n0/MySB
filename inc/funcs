@@ -22,7 +22,6 @@
 #	--> Licensed under the MIT license: http://www.opensource.org/licenses/mit-license.php
 #
 ######################################################################
-declare vars
 { [ -z "${vars}" ] || [ "${vars}" -ne 1 ]; } && {
 	echo "Please load 'vars' file before..."
 	return
@@ -30,11 +29,6 @@ declare vars
 funcs=1
 export funcs
 ##################### FIRST LINE #####################################
-
-declare Header_CurrentFile Funcs_SendMail_GenerateHTML Funcs_SendMail_SendingEmail Funcs_Stopping Funcs_Killing Funcs_AlreadyStopped gsLoadAvgDir gbIsReady_MySB_Db
-declare Funcs_Restarting Funcs_ForceStarting Funcs_Starting Funcs_Reloading Global_Again gsProcessors
-declare gsMySB_User gsMySB_Password gsHostNameFqdn
-declare gsPort_System_HTTP
 
 #### Include tools functions
 if [ -z "$funcs_sql" ] || [ "$funcs_sql" -eq 0 ]; then
@@ -54,8 +48,8 @@ gfnBannerGenerator() {
 	echo "echo -e \"${CGREEN}############################################################$CEND" >"$MySB_InstallDir/files/banner_$gsCurrentVersion"
 
 	nCountLine=$(wc -l "$MySB_InstallDir"/files/banner.tmp | awk '{ print $1 }')
-	for ((lign = 1; lign <= nCountLine; lign++)); do
-		sLine=$(head -n $lign "$MySB_InstallDir"/files/banner.tmp | tail -n 1)
+	for ((line = 1; line <= nCountLine; line++)); do
+		sLine=$(head -n $line "$MySB_InstallDir"/files/banner.tmp | tail -n 1)
 		echo "${CGREEN}#$CEND	${CBLUE}$sLine$CEND" >>"$MySB_InstallDir/files/banner_$gsCurrentVersion"
 	done
 	rm -f "${MySB_InstallDir}"/files/banner.tmp
@@ -521,7 +515,7 @@ gfnScriptInvoke() {
 		fi
 		# copy it
 		cat "$sScriptWished" >>"$MySB_InstallDir/temp/${gsScriptName}_${sScript}.invoked"
-		# delete lign start with comments
+		# delete line start with comments
 		sed -i '/^#/d' "$MySB_InstallDir/temp/${gsScriptName}_${sScript}.invoked"
 		#delete includes before and after (on top and bottom of every script)
 		sed -i '/includes_before/d' "$MySB_InstallDir/temp/${gsScriptName}_${sScript}.invoked"

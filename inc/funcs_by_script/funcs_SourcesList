@@ -22,7 +22,6 @@
 #	--> Licensed under the MIT license: http://www.opensource.org/licenses/mit-license.php
 #
 ######################################################################
-declare vars
 { [ -z "${vars}" ] || [ "${vars}" -ne 1 ]; } && {
 	echo "Please load 'vars' file before..."
 	return
@@ -30,9 +29,6 @@ declare vars
 funcs_SourcesList=1
 export funcs_SourcesList
 ##################### FIRST LINE #####################################
-
-declare MySB_InstallDir binCURL gsDebianRelease
-declare gbIsInstalled_PeerGuardian gbToInstall_PeerGuardian gbToInstall_Webmin gbIsInstalled_Webmin
 
 #### Delete Bad Sources
 # gfnDeleteBadSources() {

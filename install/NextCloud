@@ -1,6 +1,7 @@
 #!/bin/bash
 # ----------------------------------
-source $(dirname $0)/../inc/includes_before
+# shellcheck source=inc/includes_before
+source "$(dirname "$0")"/../inc/includes_before
 # ----------------------------------
 #  __/\\\\____________/\\\\___________________/\\\\\\\\\\\____/\\\\\\\\\\\\\___
 #   _\/\\\\\\________/\\\\\\_________________/\\\/////////\\\_\/\\\/////////\\\_
@@ -37,8 +38,8 @@ if [ "$gbToInstall_NextCloud" == "YES" ] && [ "$gsSwitch" != "INIT" ]; then
 
 	#### VARs
 	source /etc/MySB/config_db
-	MailFrom="`echo $gsMainUserEmail | cut -d "@" -f 1`"
-	MailDomain="`echo $gsMainUserEmail | cut -d "@" -f 2`"
+	MailFrom="$(echo $gsMainUserEmail | cut -d "@" -f 1)"
+	MailDomain="$(echo $gsMainUserEmail | cut -d "@" -f 2)"
 	TimeStamp=$(date +%s)
 	NextCloudDataDirectory="/home/nextcloud"
 	gfnGetRepoValues 'NextCloud'
@@ -113,7 +114,7 @@ if [ "$gbToInstall_NextCloud" == "YES" ] && [ "$gsSwitch" != "INIT" ]; then
 	fi
 
 	#### CRON
-	crontab -u www-data -l > /tmp/crontab.tmp
+	crontab -u www-data -l >/tmp/crontab.tmp
 	sed -i '/NextCloud/d' /tmp/crontab.tmp
 	echo "*/15  *  *  *  * php -f $gsNextCloudDir/cron.php > /dev/null 2>&1 # NextCloud" | tee -a /tmp/crontab.tmp
 	crontab -u www-data /tmp/crontab.tmp
@@ -126,7 +127,7 @@ if [ "$gbToInstall_NextCloud" == "YES" ] && [ "$gsSwitch" != "INIT" ]; then
 	gfnManageServices start "$binPhpService nginx"
 
 	#### Database directory does not exist ? So we do the first install !
-	if [[ (! -f $gsNextCloudDir/config/config.php) || (! -s $gsNextCloudDir/config/config.php) ]] && [ "`ls -la /var/lib/mysql/NextCloud_db/*.* | wc -l`" -le 1 ]; then
+	if [[ (! -f $gsNextCloudDir/config/config.php) || (! -s $gsNextCloudDir/config/config.php) ]] && [ "$(ls -la /var/lib/mysql/NextCloud_db/*.* | wc -l)" -le 1 ]; then
 		chown -R www-data:www-data $gsNextCloudDir/
 		su -s /bin/sh www-data -c "/usr/bin/php $gsNextCloudDir/occ maintenance:install --database \"mysql\" --database-host \"localhost\" --database-name \"NextCloud_db\" --database-user \"MySB_user\" --database-pass \"$MySQL_MysbPassword\" --admin-user \"admin\" --admin-pass \"$MySQL_MysbPassword\" --database-table-prefix \"nc_\" --data-dir \"$NextCloudDataDirectory\" --no-interaction"
 		# Maybe need to launch a script on next reboot ?
@@ -135,61 +136,61 @@ if [ "$gbToInstall_NextCloud" == "YES" ] && [ "$gsSwitch" != "INIT" ]; then
 
 	#### Update database with new values
 	## nc_appconfig
-	IfExist="`cmdMySQL 'NextCloud_db' "SELECT configvalue FROM nc_appconfig WHERE configvalue='yes' AND configkey='shareapi_allow_mail_notification';" 2> /dev/null`"
+	IfExist="$(cmdMySQL 'NextCloud_db' "SELECT configvalue FROM nc_appconfig WHERE configvalue='yes' AND configkey='shareapi_allow_mail_notification';" 2>/dev/null)"
 	if [ -z "$IfExist" ]; then
 		cmdMySQL 'NextCloud_db' "INSERT INTO nc_appconfig (appid,configkey,configvalue) VALUES ('core','shareapi_allow_mail_notification','yes');" -v
 	else
 		cmdMySQL 'NextCloud_db' "UPDATE nc_appconfig SET configvalue='yes' WHERE appid='core' AND configkey='shareapi_allow_mail_notification';" -v
 	fi
-	IfExist="`cmdMySQL 'NextCloud_db' "SELECT configvalue FROM nc_appconfig WHERE configvalue='yes' AND configkey='shareapi_allow_public_notification';" 2> /dev/null`"
+	IfExist="$(cmdMySQL 'NextCloud_db' "SELECT configvalue FROM nc_appconfig WHERE configvalue='yes' AND configkey='shareapi_allow_public_notification';" 2>/dev/null)"
 	if [ -z "$IfExist" ]; then
 		cmdMySQL 'NextCloud_db' "INSERT INTO nc_appconfig (appid,configkey,configvalue) VALUES ('core','shareapi_allow_public_notification','yes');" -v
 	else
 		cmdMySQL 'NextCloud_db' "UPDATE nc_appconfig SET configvalue='yes' WHERE appid='core' AND configkey='shareapi_allow_public_notification';" -v
 	fi
-	IfExist="`cmdMySQL 'NextCloud_db' "SELECT configvalue FROM nc_appconfig WHERE configvalue='yes' AND configkey='shareapi_default_expire_date';" 2> /dev/null`"
+	IfExist="$(cmdMySQL 'NextCloud_db' "SELECT configvalue FROM nc_appconfig WHERE configvalue='yes' AND configkey='shareapi_default_expire_date';" 2>/dev/null)"
 	if [ -z "$IfExist" ]; then
 		cmdMySQL 'NextCloud_db' "INSERT INTO nc_appconfig (appid,configkey,configvalue) VALUES ('core','shareapi_default_expire_date','yes');" -v
 	else
 		cmdMySQL 'NextCloud_db' "UPDATE nc_appconfig SET configvalue='yes' WHERE appid='core' AND configkey='shareapi_default_expire_date';" -v
 	fi
-	IfExist="`cmdMySQL 'NextCloud_db' "SELECT configvalue FROM nc_appconfig WHERE configkey='shareapi_enforce_links_password';" 2> /dev/null`"
+	IfExist="$(cmdMySQL 'NextCloud_db' "SELECT configvalue FROM nc_appconfig WHERE configkey='shareapi_enforce_links_password';" 2>/dev/null)"
 	if [ -z "$IfExist" ]; then
 		cmdMySQL 'NextCloud_db' "INSERT INTO nc_appconfig (appid,configkey,configvalue) VALUES ('core','shareapi_enforce_links_password','yes');" -v
 	else
 		cmdMySQL 'NextCloud_db' "UPDATE nc_appconfig SET configvalue='yes' WHERE appid='core' AND configkey='shareapi_enforce_links_password';" -v
 	fi
-	IfExist="`cmdMySQL 'NextCloud_db' "SELECT configvalue FROM nc_appconfig WHERE configkey='shareapi_enforce_expire_date';" 2> /dev/null`"
+	IfExist="$(cmdMySQL 'NextCloud_db' "SELECT configvalue FROM nc_appconfig WHERE configkey='shareapi_enforce_expire_date';" 2>/dev/null)"
 	if [ -z "$IfExist" ]; then
 		cmdMySQL 'NextCloud_db' "INSERT INTO nc_appconfig (appid,configkey,configvalue) VALUES ('core','shareapi_enforce_expire_date','no');" -v
 	else
 		cmdMySQL 'NextCloud_db' "UPDATE nc_appconfig SET configvalue='no' WHERE appid='core' AND configkey='shareapi_enforce_expire_date';" -v
 	fi
 	# Password policy
-	IfExist="`cmdMySQL 'NextCloud_db' "SELECT configvalue FROM nc_appconfig WHERE appid='password_policy' AND configkey='enforceNonCommonPassword';" 2> /dev/null`"
+	IfExist="$(cmdMySQL 'NextCloud_db' "SELECT configvalue FROM nc_appconfig WHERE appid='password_policy' AND configkey='enforceNonCommonPassword';" 2>/dev/null)"
 	if [ -z "$IfExist" ]; then
 		cmdMySQL 'NextCloud_db' "INSERT INTO nc_appconfig (appid,configkey,configvalue) VALUES ('password_policy','enforceNonCommonPassword','0');" -v
 	else
 		cmdMySQL 'NextCloud_db' "UPDATE nc_appconfig SET configvalue='0' WHERE appid='password_policy' AND configkey='enforceNonCommonPassword';" -v
 	fi
-	IfExist="`cmdMySQL 'NextCloud_db' "SELECT configvalue FROM nc_appconfig WHERE appid='password_policy' AND configkey='enabled';" 2> /dev/null`"
+	IfExist="$(cmdMySQL 'NextCloud_db' "SELECT configvalue FROM nc_appconfig WHERE appid='password_policy' AND configkey='enabled';" 2>/dev/null)"
 	if [ -z "$IfExist" ]; then
 		cmdMySQL 'NextCloud_db' "INSERT INTO nc_appconfig (appid,configkey,configvalue) VALUES ('password_policy','enabled','no');" -v
 	else
 		cmdMySQL 'NextCloud_db' "UPDATE nc_appconfig SET configvalue='no' WHERE appid='password_policy' AND configkey='enabled';" -v
 	fi
 	## nc_preferences
-	IfExist="`cmdMySQL 'NextCloud_db' "SELECT configvalue FROM nc_preferences WHERE configvalue='$EnvLang' AND userid='admin';" 2> /dev/null`"
+	IfExist="$(cmdMySQL 'NextCloud_db' "SELECT configvalue FROM nc_preferences WHERE configvalue='$EnvLang' AND userid='admin';" 2>/dev/null)"
 	if [ -z "$IfExist" ]; then
 		cmdMySQL 'NextCloud_db' "INSERT INTO nc_preferences (userid,appid,configkey,configvalue) VALUES ('admin','core','lang','$EnvLang');" -v
 	fi
-	IfExist="`cmdMySQL 'NextCloud_db' "SELECT configvalue FROM nc_preferences WHERE configvalue='$gsMainUserEmail' AND userid='admin';" 2> /dev/null`"
+	IfExist="$(cmdMySQL 'NextCloud_db' "SELECT configvalue FROM nc_preferences WHERE configvalue='$gsMainUserEmail' AND userid='admin';" 2>/dev/null)"
 	if [ -z "$IfExist" ]; then
 		cmdMySQL 'NextCloud_db' "INSERT INTO nc_preferences (userid,appid,configkey,configvalue) VALUES ('admin','settings','email','$gsMainUserEmail');" -v
 	fi
 	cmdMySQL 'NextCloud_db' "UPDATE nc_preferences SET configvalue='$gsTimeZone' WHERE configkey='timezone';" -v
 	## nc_groups
-	IfExist="`cmdMySQL 'NextCloud_db' "SELECT gid FROM nc_groups WHERE gid='MySB_users';" 2> /dev/null`"
+	IfExist="$(cmdMySQL 'NextCloud_db' "SELECT gid FROM nc_groups WHERE gid='MySB_users';" 2>/dev/null)"
 	if [ -z "$IfExist" ]; then
 		cmdMySQL 'NextCloud_db' "INSERT INTO nc_groups (gid) VALUES ('MySB_users');" -v
 	fi
@@ -199,7 +200,7 @@ if [ "$gbToInstall_NextCloud" == "YES" ] && [ "$gsSwitch" != "INIT" ]; then
 		cmdMySQL 'MySB_db' "UPDATE services SET to_install = '0', is_installed = '1' WHERE serv_name='NextCloud';" -v
 
 		# Force upgrade script on next boot if needed
-		ScriptOnBoot="`cmdMySQL 'MySB_db' "SELECT script FROM repositories WHERE on_boot = '1' AND name = 'NextCloud';"`"
+		ScriptOnBoot="$(cmdMySQL 'MySB_db' "SELECT script FROM repositories WHERE on_boot = '1' AND name = 'NextCloud';")"
 		if [ ! -z "$ScriptOnBoot" ]; then
 			cmdMySQL 'MySB_db' "UPDATE repositories SET script = '$0' WHERE name='NextCloud';" -v
 		else
@@ -213,9 +214,9 @@ if [ "$gbToInstall_NextCloud" == "YES" ] && [ "$gsSwitch" != "INIT" ]; then
 	#### Fail2Ban
 	if [ "$gbToInstall_Fail2Ban" == "YES" ] || [ "$gbIsInstalled_Fail2Ban" == "YES" ] && [ -d /etc/fail2ban/filter.d ]; then
 		install -v -g root -o root -m 0700 $MySB_InstallDir/templates/fail2ban/etc.fail2ban.filter.d.nextcloud.tmpl /etc/fail2ban/filter.d/nextcloud.conf
-		if [ -z "`grep '\[nextcloud\]' /etc/fail2ban/jail.local`" ]; then
+		if [ -z "$(grep '\[nextcloud\]' /etc/fail2ban/jail.local)" ]; then
 			(
-cat <<'EOF'
+				cat <<'EOF'
 
 [nextcloud]
 enabled  	= true
@@ -223,7 +224,7 @@ port	 	= <Port_MySB_HTTPS>
 filter   	= nextcloud
 logpath  	= /home/nextcloud/nextcloud.log
 EOF
-			) >> /etc/fail2ban/jail.local
+			) >>/etc/fail2ban/jail.local
 			sed -i 's/<Port_MySB_HTTPS>/'$gsPort_MySB_HTTPS'/g;' /etc/fail2ban/jail.local
 		fi
 	fi
@@ -231,16 +232,16 @@ fi
 
 #### Upgrade on boot
 if [ "$gbIsInstalled_NextCloud" == "YES" ] && [ "$gsSwitch" == "INIT" ]; then
-	OnBoot="`cmdMySQL 'MySB_db' "SELECT on_boot FROM repositories WHERE name = 'NextCloud';"`"
+	OnBoot="$(cmdMySQL 'MySB_db' "SELECT on_boot FROM repositories WHERE name = 'NextCloud';")"
 	NextCloudDataDirectory="/home/nextcloud"
 
 	#### Fail2Ban
 	if [ "$gbToInstall_Fail2Ban" == "YES" ] || [ "$gbIsInstalled_Fail2Ban" == "YES" ]; then
 		if [ -d /etc/fail2ban ]; then
 			install -v -g root -o root -m 0700 $MySB_InstallDir/templates/fail2ban/etc.fail2ban.filter.d.nextcloud.tmpl /etc/fail2ban/filter.d/nextcloud.conf
-			if [ -z "`grep '\[nextcloud\]' /etc/fail2ban/jail.local`" ]; then
+			if [ -z "$(grep '\[nextcloud\]' /etc/fail2ban/jail.local)" ]; then
 				(
-			cat <<'EOF'
+					cat <<'EOF'
 
 [nextcloud]
 enabled  	= true
@@ -248,7 +249,7 @@ port	 	= <Port_MySB_HTTPS>
 filter   	= nextcloud
 logpath  	= /home/nextcloud/nextcloud.log
 EOF
-				) >> /etc/fail2ban/jail.local
+				) >>/etc/fail2ban/jail.local
 				sed -i 's/<Port_MySB_HTTPS>/'$gsPort_MySB_HTTPS'/g;' /etc/fail2ban/jail.local
 			fi
 		fi
@@ -256,8 +257,8 @@ EOF
 
 	if [ "$OnBoot" -eq 1 ]; then
 		#### VARs
-		MailFrom="`echo $gsMainUserEmail | cut -d "@" -f 1`"
-		MailDomain="`echo $gsMainUserEmail | cut -d "@" -f 2`"
+		MailFrom="$(echo $gsMainUserEmail | cut -d "@" -f 1)"
+		MailDomain="$(echo $gsMainUserEmail | cut -d "@" -f 2)"
 
 		#### NextCloud upgrade
 		su -s /bin/sh www-data -c "/usr/bin/php $gsNextCloudDir/occ upgrade -v"
@@ -274,14 +275,14 @@ EOF
 		#### Generatinf a new config file
 		if [ -d $gsNextCloudDir ] && [ -f $gsNextCloudDir/config/config.php ]; then
 			#### Check old config file
-			PasswordSalt="`su -s /bin/sh www-data -c "/usr/bin/php $gsNextCloudDir/occ config:system:get passwordsalt"`"
+			PasswordSalt="$(su -s /bin/sh www-data -c "/usr/bin/php $gsNextCloudDir/occ config:system:get passwordsalt")"
 			echo "PasswordSalt: "$PasswordSalt
-			Secret="`su -s /bin/sh www-data -c "/usr/bin/php $gsNextCloudDir/occ config:system:get secret"`"
+			Secret="$(su -s /bin/sh www-data -c "/usr/bin/php $gsNextCloudDir/occ config:system:get secret")"
 			echo "Secret: "$Secret
 
 			#### New config file
 			# Get the new version
-			Version="`su -s /bin/sh www-data -c "/usr/bin/php $gsNextCloudDir/occ config:system:get version"`"
+			Version="$(su -s /bin/sh www-data -c "/usr/bin/php $gsNextCloudDir/occ config:system:get version")"
 			cmdMySQL 'MySB_db' "UPDATE repositories SET version = '$Version' WHERE name='NextCloud';" -v
 			install -g www-data -o www-data -m 0640 $MySB_InstallDir/templates/nextcloud/nextcloud.config.php.tmpl $gsNextCloudDir/config/config.php
 			perl -pi -e "s/<version>/$Version/g" $gsNextCloudDir/config/config.php
@@ -334,13 +335,13 @@ EOF
 		su -s /bin/sh www-data -c "/usr/bin/php $gsNextCloudDir/occ files_external:verify $IdStorage"
 		su -s /bin/sh www-data -c "/usr/bin/php $gsNextCloudDir/occ files_external:option $IdStorage encoding_compatibility 'false'"
 
-		IfExist="`cmdMySQL 'NextCloud_db' "SELECT configvalue FROM nc_appconfig WHERE configkey='allow_user_mounting';"`"
+		IfExist="$(cmdMySQL 'NextCloud_db' "SELECT configvalue FROM nc_appconfig WHERE configkey='allow_user_mounting';")"
 		if [ -z "$IfExist" ]; then
 			cmdMySQL 'NextCloud_db' "INSERT INTO nc_appconfig (appid,configkey,configvalue) VALUES ('files_external','allow_user_mounting','yes');" -v
 		else
 			cmdMySQL 'NextCloud_db' "UPDATE nc_appconfig SET configvalue='yes' WHERE appid='files_external' AND configkey='allow_user_mounting';" -v
 		fi
-		IfExist="`cmdMySQL 'NextCloud_db' "SELECT configvalue FROM nc_appconfig WHERE configkey='user_mounting_backends';"`"
+		IfExist="$(cmdMySQL 'NextCloud_db' "SELECT configvalue FROM nc_appconfig WHERE configkey='user_mounting_backends';")"
 		if [ ! -z "$IfExist" ]; then
 			cmdMySQL 'NextCloud_db' "DELETE FROM nc_appconfig WHERE appid='files_external' AND configkey='user_mounting_backends';" -v
 		fi
@@ -363,10 +364,10 @@ EOF
 				chmod -v 0755 $NextCloudDataDirectory/$seedUser
 			fi
 
-			UserExist="`cmdMySQL 'NextCloud_db' "SELECT uid FROM nc_users WHERE uid='$seedUser';"`"
+			UserExist="$(cmdMySQL 'NextCloud_db' "SELECT uid FROM nc_users WHERE uid='$seedUser';")"
 			if [ -z "$UserExist" ]; then
-				FnUserMail="`cmdMySQL 'MySB_db' "SELECT users_email FROM users WHERE users_ident='$seedUser';"`"
-				OC_PASS="`gfnGenPassword 8`"
+				FnUserMail="$(cmdMySQL 'MySB_db' "SELECT users_email FROM users WHERE users_ident='$seedUser';")"
+				OC_PASS="$(gfnGenPassword 8)"
 				export OC_PASS
 				TimeStamp=$(date +%s)
 				su -s /bin/sh www-data -c "/usr/bin/php $gsNextCloudDir/occ user:add --password-from-env --display-name=\"$seedUser\" --group=\"MySB_users\" $seedUser"
@@ -381,7 +382,7 @@ EOF
 			unset UserExist
 		done
 
-		su -s /bin/sh www-data -c "/usr/bin/php $gsNextCloudDir/occ integrity:check-core" > /tmp/nextcloud_check_integrity.log
+		su -s /bin/sh www-data -c "/usr/bin/php $gsNextCloudDir/occ integrity:check-core" >/tmp/nextcloud_check_integrity.log
 		if [ -f /tmp/nextcloud_check_integrity.log ]; then
 			cat /tmp/nextcloud_check_integrity.log
 			sed -i '/INVALID_HASH/d' /tmp/nextcloud_check_integrity.log
@@ -390,12 +391,12 @@ EOF
 			while read sLine; do
 				sFile="${gsNextCloudDir}/$(echo $sLine | awk '{ print $2 }' | sed 's/://g;')"
 				if [ -f "$sFile" ]; then
-					sCharset="$(file -i "$sFile" | awk '{ print $3 }' | cut -d "=" -f 2 | tr [:lower:] [:upper:])"
+					# sCharset="$(file -i "$sFile" | awk '{ print $3 }' | cut -d "=" -f 2 | tr [:lower:] [:upper:])"
 					iconv -f us-ascii -t utf-16 "$sFile" -o "${sFile}.tmp"
 					iconv -f utf-16le -t utf-8 "$sFile" -o "${sFile}.tmp"
 					[ -f "${sFile}.tmp" ] && rm -v "${sFile}.tmp"
 				fi
-			done < /tmp/nextcloud_check_integrity.log
+			done </tmp/nextcloud_check_integrity.log
 		fi
 		su -s /bin/sh www-data -c "/usr/bin/php $gsNextCloudDir/occ integrity:check-core"
 
@@ -404,11 +405,12 @@ EOF
 		cmdMySQL 'MySB_db' "UPDATE repositories SET upgrade='0' WHERE name='NextCloud';" -v
 
 		# Scann all files
-		screen -dmS NextCloud_ScanAll su -s /bin/sh www-data -c "/usr/bin/php $gsNextCloudDir/occ files:scan --all";
+		screen -dmS NextCloud_ScanAll su -s /bin/sh www-data -c "/usr/bin/php $gsNextCloudDir/occ files:scan --all"
 	fi
 fi
 
 # -----------------------------------------
-source $(dirname $0)/../inc/includes_after
+# shellcheck source=inc/includes_after
+source "$(dirname "$0")"/../inc/includes_after
 # -----------------------------------------
 ##################### LAST LINE ######################################

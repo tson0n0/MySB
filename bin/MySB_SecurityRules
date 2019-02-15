@@ -275,6 +275,7 @@ create)
 	if [ "${LoadOnBoot}" == "YES" ]; then
 		ScriptOnBoot="$(cmdMySQL 'MySB_db' "SELECT name,script FROM repositories WHERE on_boot='1' AND active='1';" | sed 's/\t/|/g;')"
 		if [ -n "$ScriptOnBoot" ]; then
+			OIFS=$IFS
 			IFS=$'\n'
 			for Script in $ScriptOnBoot; do
 				Name="$(echo "$Script" | awk '{split($0,a,"|"); print a[1]}')"
@@ -284,7 +285,8 @@ create)
 				gfnScriptInvoke 'ScreenSTD' "$File" 'INIT'
 				gfnStatusLSB
 			done
-			unset IFS
+			IFS=$OIFS
+			unset IFS OIFS
 		fi
 	fi
 

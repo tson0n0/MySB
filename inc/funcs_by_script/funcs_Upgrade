@@ -30,11 +30,6 @@ funcs_Upgrade=1
 export funcs_Upgrade
 ##################### FIRST LINE #####################################
 
-declare binMySQL Global_Questions_Message_Hostname_New Global_Questions_Hostname_New Global_Questions_Message_Hostname Global_Questions_Hostname
-declare Global_Questions_Message_Hostname_NoFqdn Global_Questions_Message_Hostname_Fqdn_NotPublicIp gsCakeboxDir gsNextCloudDir gsInstallDirEscaped
-declare Global_NO Global_YES gbIsInstalled_Manager gsRepoDir gbIsInstalled_Tautulli
-declare gsPort_System_HTTP
-
 #### Change FQDN of Seedbox
 # Use cases:
 # 1/ Manual with command line: gfnChangeFQDN "new_fqdn"
@@ -69,8 +64,8 @@ gfnChangeFQDN() {
 	while [ -z "${sNewFQDN}" ] || [ "$(gfnCheckFQDN "$sNewFQDN")" -ne 0 ]; do
 		nCheckFqdnResult="$(gfnCheckFQDN "${sNewFQDN}")"
 		case "${nCheckFqdnResult}" in
-			1)	echo -e "${Global_Questions_Message_Hostname_NoFqdn}";;
-			2)	echo -e "${Global_Questions_Message_Hostname_Fqdn_NotPublicIp}";;
+		1) echo -e "${Global_Questions_Message_Hostname_NoFqdn}" ;;
+		2) echo -e "${Global_Questions_Message_Hostname_Fqdn_NotPublicIp}" ;;
 		esac
 		gfnQuestionGetString NO "${Global_Questions_Hostname}" sNewFQDN "${sNewFQDN}"
 		if [ "${sNewFQDN}" == "$gsHostNameFqdn" ]; then
@@ -190,7 +185,7 @@ gfnChangeFQDN() {
 		# NginX (alias with proxy)
 		# shellcheck disable=SC2001
 		sCakeboxDirEscaped="$(echo "${gsCakeboxDir}" | sed s,/,\\\\\\\\\\/,g)"
-		[[ -h /etc/nginx/sites-enabled/cakebox ]] && rm -f /etc/nginx/sites-enabled/cakebox
+		[[ -L /etc/nginx/sites-enabled/cakebox ]] && rm -f /etc/nginx/sites-enabled/cakebox
 		install -g root -o root -m 0644 "${MySB_InstallDir}"/templates/nginx/etc.nginx.site-enabled.cakebox.tmpl /etc/nginx/sites-available/cakebox
 		perl -pi -e "s/<server_name>/$sNewFQDN/g" /etc/nginx/sites-available/cakebox
 		perl -pi -e "s/<cakebox_rootdir>/$sCakeboxDirEscaped/g" /etc/nginx/sites-available/cakebox
@@ -218,11 +213,11 @@ gfnChangeFQDN() {
 	#### NextCloud
 	if [ -d "${gsNextCloudDir}" ] && [ -f "${gsNextCloudDir}"/config/config.php ]; then
 		log_daemon_msg "Reconfigure NextCloud"
-		su -s /bin/sh www-data -c "/usr/bin/php ${gsNextCloudDir}/occ maintenance:mode --on" &> /dev/null
-		su -s /bin/sh www-data -c "/usr/bin/php ${gsNextCloudDir}/occ config:system:set trusted_domains 1 --value=$sNewFQDN:$gsPort_MySB_HTTPS" &> /dev/null
-		su -s /bin/sh www-data -c "/usr/bin/php ${gsNextCloudDir}/occ config:system:set lost_password_link --value=https://$sNewFQDN:$gsPort_MySB_HTTPS/?user/change-password.html" &> /dev/null
-		su -s /bin/sh www-data -c "/usr/bin/php ${gsNextCloudDir}/occ config:system:set overwritehost --value=$sNewFQDN:$gsPort_MySB_HTTPS" &> /dev/null
-		su -s /bin/sh www-data -c "/usr/bin/php ${gsNextCloudDir}/occ maintenance:mode --off" &> /dev/null
+		su -s /bin/sh www-data -c "/usr/bin/php ${gsNextCloudDir}/occ maintenance:mode --on" &>/dev/null
+		su -s /bin/sh www-data -c "/usr/bin/php ${gsNextCloudDir}/occ config:system:set trusted_domains 1 --value=$sNewFQDN:$gsPort_MySB_HTTPS" &>/dev/null
+		su -s /bin/sh www-data -c "/usr/bin/php ${gsNextCloudDir}/occ config:system:set lost_password_link --value=https://$sNewFQDN:$gsPort_MySB_HTTPS/?user/change-password.html" &>/dev/null
+		su -s /bin/sh www-data -c "/usr/bin/php ${gsNextCloudDir}/occ config:system:set overwritehost --value=$sNewFQDN:$gsPort_MySB_HTTPS" &>/dev/null
+		su -s /bin/sh www-data -c "/usr/bin/php ${gsNextCloudDir}/occ maintenance:mode --off" &>/dev/null
 		gfnStatusLSB
 	fi
 
@@ -236,33 +231,33 @@ gfnUpgradeInProgress() {
 	sServicesToStop="nginx cron"
 
 	case "${1}" in
-		"on")
-			# Nextcloud
-			[[ "${gbIsInstalled_NextCloud}" == "YES" ]] && su -s /bin/sh www-data -c "/usr/bin/php ${gsNextCloudDir}/occ maintenance:mode --on" &> /dev/null
-			# rTorrent sessions
-			sRtorrentSessions=$(find /etc/init.d/ -type f -name 'rtorrent-*' | cut -d '/' -f 4)
-			for sSession in ${sRtorrentSessions}; do
-				[[ -z "${sAllSessions}" ]] && sAllSessions="${sSession}" || sAllSessions="${sAllSessions} ${sSession}"
-			done
-			sServicesToStop="${sServicesToStop} ${sAllSessions}"
-			# Stopping some services like Plex or OpenVPN
-			[[ "${gbIsInstalled_OpenVPN}" == "YES" ]] && sServicesToStop="${sServicesToStop} openvpn"
-			[[ "${gbIsInstalled_PlexMedia}" == "YES" ]] && sServicesToStop="${sServicesToStop} plexmediaserver"
-			[[ "${gbIsInstalled_Tautulli}" == "YES" ]] && sServicesToStop="${sServicesToStop} tautulli"
-			# Stop services
-			gfnManageServices 'stop' "${sServicesToStop}"
-			# NginX
-			rm -f /etc/nginx/sites-enabled/WiP
-			rm -f /etc/nginx/sites-enabled/default
-			rm -f /etc/nginx/sites-enabled/cakebox
-			install -o root -g root -m 0600 "${MySB_InstallDir}"/templates/nginx/etc.nginx.site-enabled.WiP.tmpl /etc/nginx/sites-available/WiP
-			perl -pi -e "s/<InstallDir>/${gsInstallDirEscaped}/g" /etc/nginx/sites-available/WiP
-			perl -pi -e "s/<gsPort_MySB_HTTPS>/${gsPort_MySB_HTTPS}/g" /etc/nginx/sites-available/WiP
-			perl -pi -e "s/<gsPort_System_HTTP>/${gsPort_System_HTTP}/g" /etc/nginx/sites-available/WiP
-			perl -pi -e "s/<server_name>/${gsHostNameFqdn}/g" /etc/nginx/sites-available/WiP
-			[[ ! -h /etc/nginx/sites-enabled/WiP ]] && ln -s /etc/nginx/sites-available/WiP /etc/nginx/sites-enabled/WiP
-			# Start services
-			gfnManageServices 'start' "nginx"
+	"on")
+		# Nextcloud
+		[[ "${gbIsInstalled_NextCloud}" == "YES" ]] && su -s /bin/sh www-data -c "/usr/bin/php ${gsNextCloudDir}/occ maintenance:mode --on" &>/dev/null
+		# rTorrent sessions
+		sRtorrentSessions=$(find /etc/init.d/ -type f -name 'rtorrent-*' | cut -d '/' -f 4)
+		for sSession in ${sRtorrentSessions}; do
+			[[ -z "${sAllSessions}" ]] && sAllSessions="${sSession}" || sAllSessions="${sAllSessions} ${sSession}"
+		done
+		sServicesToStop="${sServicesToStop} ${sAllSessions}"
+		# Stopping some services like Plex or OpenVPN
+		[[ "${gbIsInstalled_OpenVPN}" == "YES" ]] && sServicesToStop="${sServicesToStop} openvpn"
+		[[ "${gbIsInstalled_PlexMedia}" == "YES" ]] && sServicesToStop="${sServicesToStop} plexmediaserver"
+		[[ "${gbIsInstalled_Tautulli}" == "YES" ]] && sServicesToStop="${sServicesToStop} tautulli"
+		# Stop services
+		gfnManageServices 'stop' "${sServicesToStop}"
+		# NginX
+		rm -f /etc/nginx/sites-enabled/WiP
+		rm -f /etc/nginx/sites-enabled/default
+		rm -f /etc/nginx/sites-enabled/cakebox
+		install -o root -g root -m 0600 "${MySB_InstallDir}"/templates/nginx/etc.nginx.site-enabled.WiP.tmpl /etc/nginx/sites-available/WiP
+		perl -pi -e "s/<InstallDir>/${gsInstallDirEscaped}/g" /etc/nginx/sites-available/WiP
+		perl -pi -e "s/<gsPort_MySB_HTTPS>/${gsPort_MySB_HTTPS}/g" /etc/nginx/sites-available/WiP
+		perl -pi -e "s/<gsPort_System_HTTP>/${gsPort_System_HTTP}/g" /etc/nginx/sites-available/WiP
+		perl -pi -e "s/<server_name>/${gsHostNameFqdn}/g" /etc/nginx/sites-available/WiP
+		[[ ! -L /etc/nginx/sites-enabled/WiP ]] && ln -s /etc/nginx/sites-available/WiP /etc/nginx/sites-enabled/WiP
+		# Start services
+		gfnManageServices 'start' "nginx"
 		;;
 	"off")
 		gfnManageServices 'stop' "nginx"

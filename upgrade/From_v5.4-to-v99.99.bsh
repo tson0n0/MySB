@@ -25,16 +25,6 @@ source "$(dirname "$0")"/../inc/includes_before
 #
 ##################### FIRST LINE #####################################
 
-declare MySB_InstallDir Upgrade_ReadingDatabaseInfos Upgrade_PreUpgrade Upgrade_MySQL Upgrade_UpdateDebianSources Upgrade_UpgradeDebianRelease
-declare Upgrade_AllNeededPackages Upgrade_CPAN Upgrade_SSH Upgrade_ProviderInfos Upgrade_Optimiszation Global_NothingToDo Upgrade_Quota
-declare Upgrade_Certificate Upgrade_NginX Upgrade_PHP Upgrade_DownloadAll Upgrade_Tools Upgrade_LetsEncrypt Upgrade_VSFTPd Upgrade_Postfix
-declare Upgrade_BackupManager Upgrade_ShellInABox Upgrade_Bind Upgrade_Docker Upgrade_Fail2Ban Upgrade_PeerGuardian Upgrade_DNScrypt Upgrade_RKhunter
-declare Upgrade_rTorrent Upgrade_ruTorrent Upgrade_Manager Upgrade_Cakebox Upgrade_LoadAvg Upgrade_OpenVPN Upgrade_Samba Upgrade_NFS Upgrade_LogWatch
-declare Upgrade_PlexMedia Upgrade_NextCloud Upgrade_Webmin Upgrade_Cron Upgrade_PostUpgrade Upgrade_UpgradeFinished Global_FinalSecurityRules
-declare gsServerProvider gbToInstall_Fail2Ban gbIsInstalled_Fail2Ban gsMySB_PeerBlock gbToInstall_DNScrypt gbIsInstalled_DNScrypt gbToInstall_OpenVPN
-declare gbToInstall_Manager gbIsInstalled_Manager gbToInstall_Cakebox gbIsInstalled_Cakebox gbToInstall_LogWatch gbIsInstalled_LogWatch gbToInstall_PlexMedia
-declare gbIsInstalled_PlexMedia gbToInstall_NextCloud gbIsInstalled_NextCloud gbToInstall_Webmin gbIsInstalled_Webmin
-
 #### Count steps
 echo
 CurrentSTEP=0

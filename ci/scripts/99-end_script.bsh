@@ -22,8 +22,6 @@
 #
 ##################### FIRST LINE #####################################
 
-declare nReturn
-
 echo
 case "${nReturn}" in
 0) return "$nReturn" ;;

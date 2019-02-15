@@ -23,8 +23,6 @@
 #
 ##################### FIRST LINE #####################################
 
-declare END
-
 #### 1 - Includes
 if [ -f /etc/MySB/config ]; then
 	# shellcheck source=.etc/MySB/config
@@ -52,6 +50,7 @@ else
 fi
 
 #### 2 - End Script
+# shellcheck disable=SC2153
 if [ "${END}" == "ON" ]; then
 	echo "--------------------"
 	case "${gsScriptName}" in

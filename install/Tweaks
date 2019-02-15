@@ -1,6 +1,7 @@
 #!/bin/bash
 # ----------------------------------
-source $(dirname $0)/../inc/includes_before
+# shellcheck source=inc/includes_before
+source "$(dirname "$0")"/../inc/includes_before
 # ----------------------------------
 #  __/\\\\____________/\\\\___________________/\\\\\\\\\\\____/\\\\\\\\\\\\\___
 #   _\/\\\\\\________/\\\\\\_________________/\\\/////////\\\_\/\\\/////////\\\_
@@ -31,9 +32,9 @@ install -v -o root -g root -m 0644 $MySB_InstallDir/templates/tweaks/bashrc.tmpl
 install -v -o root -g root -m 0644 $MySB_InstallDir/templates/tweaks/profile.tmpl /root/.profile
 install -v -o root -g root -m 0644 $MySB_InstallDir/templates/tweaks/bash_aliases.tmpl /root/.bash_aliases
 install -v -o root -g root -m 0644 /etc/skel/.bash_logout /root/.bash_logout
-if [ ! -f /root/.bash_profile ] || [ -z "`grep 'bash_completion' /root/.bash_profile`" ] || [ -z "`grep '.bashrc' /root/.bash_profile`" ]; then
+if [ ! -f /root/.bash_profile ] || [ -z "$(grep 'bash_completion' /root/.bash_profile)" ] || [ -z "$(grep '.bashrc' /root/.bash_profile)" ]; then
 	(
-	cat <<'EOF'
+		cat <<'EOF'
 if [ -f /etc/bash_completion ]; then
 	. /etc/bash_completion
 fi
@@ -46,11 +47,11 @@ EOF
 fi
 
 #### permanently adding scripts to PATH to all users and root
-if [ -z "`grep "$MySB_InstallDir/bin" /etc/profile`" ]; then
+if [ -z "$(grep "$MySB_InstallDir/bin" /etc/profile)" ]; then
 	echo
 	echo "########## /etc/profile"
-	echo "" >> /etc/profile
-	echo "# MySB" >> /etc/profile
+	echo "" >>/etc/profile
+	echo "# MySB" >>/etc/profile
 	echo "PATH=$PATH:$MySB_InstallDir/bin:/sbin" | tee -a /etc/profile
 fi
 
@@ -79,7 +80,7 @@ if [ ! -z "$gsTimeZone" ]; then
 fi
 
 #### Swappiness
-if ([ "$gsMemory" -lt 2048 ] && [ $(free -m | grep 'Swap' | awk '{ print $2 }') -ne 0 ]); then
+if ([ "$gsMemory" -lt 2048 ] && [ "$(free -m | grep 'Swap' | awk '{ print $2 }')" -ne 0 ]); then
 	echo
 	echo "########## Swappiness"
 	echo 80 | tee -a /proc/sys/vm/swappiness
@@ -94,7 +95,7 @@ fi
 #### locale
 echo
 echo "########## Locale"
-locale > $MySB_InstallDir/files/locale
+locale >$MySB_InstallDir/files/locale
 cat /opt/MySB/files/locale
 
 #### /etc/hostname
@@ -107,6 +108,7 @@ hostnamectl status
 echo
 echo "########## /etc/hosts"
 if [ -z $funcs_MySB_SecurityRules ]; then
+	# shellcheck source=inc/funcs_by_script/funcs_MySB_SecurityRules
 	source $MySB_InstallDir/inc/funcs_by_script/funcs_MySB_SecurityRules
 fi
 gfnCreateHostsFile
@@ -123,7 +125,7 @@ echo "########## Remove IPv6"
 sysctl -p
 if [ -f /etc/default/grub ]; then
 	source /etc/default/grub
-	if [ ! -z "$GRUB_CMDLINE_LINUX" ] && [ -z "`echo $GRUB_CMDLINE_LINUX | grep 'ipv6.disable=1'`" ]; then
+	if [ ! -z "$GRUB_CMDLINE_LINUX" ] && [ -z "$(echo $GRUB_CMDLINE_LINUX | grep 'ipv6.disable=1')" ]; then
 		sed -i "s/$GRUB_CMDLINE_LINUX/$GRUB_CMDLINE_LINUX ipv6.disable=1/g;" /etc/default/grub
 	else
 		perl -pi -e "s/GRUB_CMDLINE_LINUX=\"\"/GRUB_CMDLINE_LINUX=\"ipv6.disable=1\"/g" /etc/default/grub
@@ -139,13 +141,13 @@ gfnPackageBundleInstall "iptables-persistent"
 systemctl enable netfilter-persistent
 install -d /etc/iptables
 # if [ -f /etc/network/interfaces ]; then
-	# cp -v /etc/network/interfaces /etc/network/interfaces.bckp
-	# if [ -z "`grep 'post-up iptables-restore < ${gsIptablesRules}' /etc/network/interfaces`" ]; then
-		# echo >> /etc/network/interfaces
-		# nNumLine=$(grep -n "[[:space:]]*iface[[:space:]]*$gsPrimaryInet[[:space:]]*inet [[:space:]]*" /etc/network/interfaces | grep -v "#" | cut -d ':' -f 1)
-		# (( nNumLine++ ))
-		# sed -i "${nNumLine}i\		post-up iptables-restore < ${gsIptablesRules}" /etc/network/interfaces
-	# fi
+# cp -v /etc/network/interfaces /etc/network/interfaces.bckp
+# if [ -z "`grep 'post-up iptables-restore < ${gsIptablesRules}' /etc/network/interfaces`" ]; then
+# echo >> /etc/network/interfaces
+# nNumLine=$(grep -n "[[:space:]]*iface[[:space:]]*$gsPrimaryInet[[:space:]]*inet [[:space:]]*" /etc/network/interfaces | grep -v "#" | cut -d ':' -f 1)
+# (( nNumLine++ ))
+# sed -i "${nNumLine}i\		post-up iptables-restore < ${gsIptablesRules}" /etc/network/interfaces
+# fi
 # fi
 
 #### NTP (disable IPv6)
@@ -175,14 +177,14 @@ cat /root/.ssh/id_rsa
 #### AES-NI Crypto Acceleration
 echo
 echo "########## AES-NI Crypto Acceleration"
-if [ ! -z "`grep 'aes' /proc/cpuinfo`" ]; then
+if [ ! -z "$(grep 'aes' /proc/cpuinfo)" ]; then
 	## load
 	modprobe aesni_intel
 
-	if [ ! -z "`lsmod | grep 'aes'`" ]; then
+	if [ ! -z "$(lsmod | grep 'aes')" ]; then
 		## make permanent
-		[ -z "`grep 'aesni_intel' /etc/modules`" ] && echo aesni_intel | tee -a /etc/modules
-		[ -z "`grep 'OPENSSL_ia32cap=~0x200000200000000' /etc/environment`" ] && echo "OPENSSL_ia32cap=~0x200000200000000" | tee -a /etc/environment
+		[ -z "$(grep 'aesni_intel' /etc/modules)" ] && echo aesni_intel | tee -a /etc/modules
+		[ -z "$(grep 'OPENSSL_ia32cap=~0x200000200000000' /etc/environment)" ] && echo "OPENSSL_ia32cap=~0x200000200000000" | tee -a /etc/environment
 	fi
 fi
 
@@ -202,7 +204,7 @@ if [ -f /etc/default/grub ]; then
 	echo
 	echo "########## Tweaks for Redis"
 	source /etc/default/grub
-	if [ ! -z "$GRUB_CMDLINE_LINUX" ] && [ -z "`echo $GRUB_CMDLINE_LINUX | grep 'transparent_hugepage=never'`" ]; then
+	if [ ! -z "$GRUB_CMDLINE_LINUX" ] && [ -z "$(echo $GRUB_CMDLINE_LINUX | grep 'transparent_hugepage=never')" ]; then
 		sed -i "s/$GRUB_CMDLINE_LINUX/$GRUB_CMDLINE_LINUX transparent_hugepage=never/g;" /etc/default/grub
 	else
 		perl -pi -e "s/GRUB_CMDLINE_LINUX=\"\"/GRUB_CMDLINE_LINUX=\"transparent_hugepage=never\"/g" /etc/default/grub
@@ -222,8 +224,9 @@ echo
 echo "########## Cleaning"
 rm -rvf /var/log/exim4
 rm -rvf /var/log/news
-OldKernelList=$(dpkg --list | grep linux-image | awk '{ print $2 }' | sort -V |sed -n '/'$(uname -r)'/q;p')
-[ ! -z "$OldKernelList" ] && apt-get -y --assume-yes purge $OldKernelList; update-grub
+OldKernelList=$(dpkg --list | grep linux-image | awk '{ print $2 }' | sort -V | sed -n "/$(uname -r)/q;p")
+[ ! -z "$OldKernelList" ] && apt-get -y --assume-yes purge $OldKernelList
+update-grub
 
 #### Logrotate
 echo
@@ -248,6 +251,7 @@ systemctl daemon-reload
 systemctl enable MySB_SecurityRules_Init
 
 # -----------------------------------------
-source $(dirname $0)/../inc/includes_after
+# shellcheck source=inc/includes_after
+source "$(dirname "$0")"/../inc/includes_after
 # -----------------------------------------
 ##################### LAST LINE ######################################

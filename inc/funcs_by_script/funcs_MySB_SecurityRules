@@ -30,10 +30,6 @@ funcs_MySB_SecurityRules=1
 export funcs_MySB_SecurityRules
 ##################### FIRST LINE #####################################
 
-declare binCURL SecurityRules_NginX_AllUsers SecurityRules_NginX_OpenVPN
-declare ModeSwitch InitSwitch RefreshSwitch gbIsInstalled_PeerGuardian gbIsInstalled_LetsEncrypt gbIsInstalled_Fail2Ban gbDnsCryptSwitch gsUsersList
-declare SecurityRules_NginX_Loopback SecurityRules_NginX_SatisfyAll SecurityRules_Bind_BlockOut SecurityRules_Bind_TrackersHosts gsSrvIpAddress gsSrvIpAddressExt gsHostNameFqdn
-
 #### Loading vars
 gfnLoadingVars() {
 	gfnListCountUsers 'normal' #($gsUsersList)
@@ -272,7 +268,7 @@ gfnRestartRtorrentSessions() {
 
 #### Crete '/etc/hosts' file
 gfnCreateHostsFile() {
-	local nIdTracker sTracker sTrackerDomain sTrackerIPv4 sIPv4 sLign sROW
+	local nIdTracker sTracker sTrackerDomain sTrackerIPv4 sIPv4 sLine sROW
 
 	echo "127.0.0.1	 localhost.localdomain localhost" >/etc/hosts
 	echo "${gsSrvIpAddress}   ${gsHostNameFqdn} $(hostname -s)" >>/etc/hosts
@@ -290,12 +286,12 @@ gfnCreateHostsFile() {
 				echo "#### MySB - Force trackers resolution (ex: DNS liar)" >>/etc/hosts
 			fi
 			if [ "$sTracker" == "$sTrackerDomain" ]; then
-				sLign="$sTrackerDomain"
+				sLine="$sTrackerDomain"
 			else
-				sLign="$sTracker, $sTrackerDomain"
+				sLine="$sTracker, $sTrackerDomain"
 			fi
 			for sIPv4 in $sTrackerIPv4; do
-				echo "$sIPv4	   $sLign" >>/etc/hosts
+				echo "$sIPv4	   $sLine" >>/etc/hosts
 			done
 		fi
 	done

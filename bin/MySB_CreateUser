@@ -267,7 +267,6 @@ if [ -z "$sCheckDuplicate" ]; then
 		gfnManageQuota "${CreateUser_Quota}"
 
 		#### rtorrent max memory / rTorrent Blocklist
-		declare gsMemory gnTotalUsers
 		for seedUser in $gsUsersList; do
 			# rTorrent config 'pieces.memory.max.set'
 			log_daemon_msg "${CreateUser_PiecesMemory[*]} [$seedUser]"

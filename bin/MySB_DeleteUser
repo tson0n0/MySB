@@ -26,11 +26,6 @@ source "$(dirname "$0")/../inc/includes_before"
 #
 ##################### FIRST LINE #####################################
 
-declare DeleteUser_NoUser DeleteUser_TypeUser DeleteUser_DeleteCron DeleteUser_DeleteFTP DeleteUser_DeleteNFS DeleteUser_DeleteSamba DeleteUser_DeleteNextCloudAccount
-declare DeleteUser_SecurituRules DeleteUser_Quota DeleteUser_PiecesMemory DeleteUser_RevokeOpenVPN DeleteUser_SystemAccount DeleteUser_RemoveFiles
-declare DeleteUser_RemoveFromDB DeleteUser_SystemAccount DeleteUser_DeleteWebAccount
-declare UserAccountType
-
 #### Includes
 # shellcheck source=inc/funcs_by_script/funcs_MySB_CreateUser
 source "$MySB_InstallDir/inc/funcs_by_script/funcs_MySB_CreateUser"
@@ -166,7 +161,6 @@ if [ -n "$UserToDelete" ]; then
 	fi
 
 	#### rtorrent max memory
-	declare gsMemory
 	gfnListCountUsers 'normal'
 	for User in $gsUsersList; do
 		if [ "$User" != "$UserToDelete" ]; then

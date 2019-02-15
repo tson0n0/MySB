@@ -22,7 +22,6 @@
 #	--> Licensed under the MIT license: http://www.opensource.org/licenses/mit-license.php
 #
 ######################################################################
-declare vars
 { [ -z "${vars}" ] || [ "${vars}" -ne 1 ]; } && {
 	echo "Please load 'vars' file before..."
 	return
@@ -30,9 +29,6 @@ declare vars
 funcs_GetTrackersCert=1
 export funcs_GetTrackersCert
 ##################### FIRST LINE #####################################
-
-declare gsRutorrentPluginsDir AddTrackerDomain DeleteTrackerDomain UpdateTrackersIPv4
-declare gsMainUserName
 
 #### Get ruTorrent Trackers
 gfnGetRutorrentTrackers() {
@@ -65,6 +61,7 @@ gfnGetActiveTrackers() {
 	sTrackerList=()
 
 	if gfnCheckCommand 0 aria2c; then
+		OIFS=$IFS
 		IFS=$'\n'
 		for file in $(find /home/*/rtorrent/ -name '*.torrent' -type f | grep -v 'torrents/' | grep -v 'watch/'); do
 			for sUrl in $(aria2c -S "${file}" | grep 'announce' | grep -v 'Magnet URI' | grep -v 'udp' | sed -e 's/ //g;'); do
@@ -72,7 +69,8 @@ gfnGetActiveTrackers() {
 				sTrackerList+=("$sTracker")
 			done
 		done
-		unset IFS
+		IFS=$OIFS
+		unset IFS OIFS
 
 		# Uniq
 		# sTrackerList=($(echo "${sTrackerList[*]}" | tr ' ' '\n' | sort | uniq))

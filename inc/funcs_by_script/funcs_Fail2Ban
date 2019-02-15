@@ -22,7 +22,6 @@
 #	--> Licensed under the MIT license: http://www.opensource.org/licenses/mit-license.php
 #
 ######################################################################
-declare vars
 { [ -z "${vars}" ] || [ "${vars}" -ne 1 ]; } && {
 	echo "Please load 'vars' file before..."
 	return
@@ -30,11 +29,6 @@ declare vars
 funcs_Fail2Ban=1
 export funcs_Fail2Ban
 ##################### FIRST LINE #####################################
-
-declare MySB_InstallDir SecurityRules_Fail2Ban_IgnoreList
-declare gbIsInstalled_NextCloud gbToInstall_NextCloud
-declare gsPort_SSH gsPort_FTP gsPort_FTP_Data gsPort_MySB_HTTPS gsPort_NginX_HTTP gsPort_NginX_HTTPS
-declare gsSeedboxUsersIPs gsMainUserIPs gsIpRestriction gbIsInstalled_OpenVPN gsVpnLocalIps
 
 #### Jail.local
 gfnFail2BanJailLocal() {
