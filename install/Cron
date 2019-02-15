@@ -60,7 +60,7 @@ UPGEOIP=$((MINIMUM + RANDOM * (1 + MAXIMUM - MINIMUM) / 32767))
 echo "$UPGEOIP 2 9 * * /usr/local/bin/geoipupdate > /dev/null 2>&1" | tee -a /tmp/crontab.tmp
 # rTorrent Blocklists
 sed -i '/BlocklistsRTorrent/d' /tmp/crontab.tmp
-echo "10 11,23 * * * /bin/bash $MySB_InstallDir/scripts/BlocklistsRTorrent.bsh CRON > /dev/null 2>&1" | tee -a /tmp/crontab.tmp
+echo "0 */6 * * * /bin/bash $MySB_InstallDir/scripts/BlocklistsRTorrent.bsh CRON > /dev/null 2>&1" | tee -a /tmp/crontab.tmp
 # PaymentReminder.bsh
 sed -i '/PaymentReminder/d' /tmp/crontab.tmp
 echo "5 0 */1 * * /bin/bash $MySB_InstallDir/scripts/PaymentReminder.bsh CRON > /dev/null 2>&1" | tee -a /tmp/crontab.tmp
@@ -90,7 +90,7 @@ fi
 # PeerGuardian
 sed -i '/PeerGuardian/d' /tmp/crontab.tmp
 if [ "$gbIsInstalled_PeerGuardian" == "YES" ]; then
-	echo "30 23 * * * /bin/bash $MySB_InstallDir/scripts/PeerGuardian.bsh update CRON > /dev/null 2>&1" | tee -a /tmp/crontab.tmp
+	echo "0 */6 * * * /bin/bash $MySB_InstallDir/scripts/PeerGuardian.bsh update CRON > /dev/null 2>&1" | tee -a /tmp/crontab.tmp
 	echo "*/5 * * * * /bin/bash $MySB_InstallDir/scripts/PeerGuardian.bsh check CRON > /dev/null 2>&1" | tee -a /tmp/crontab.tmp
 fi
 # DNScrypt-proxy
