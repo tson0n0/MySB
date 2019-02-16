@@ -32,7 +32,7 @@ if ! gfnCheckCommand 0 sshpass; then
 	PackagesToInstall="$PackagesToInstall"
 fi
 if [ ! -z "$PackagesToInstall" ]; then
-	gfnPackagesManage install "$PackagesToInstall" 'backports'
+	gfnPackagesManage 'install' 'backports' "$PackagesToInstall"
 fi
 
 install -v -o root -g root -m 0644 $MySB_InstallDir/templates/other/etc.ssh.sshd_config.tmpl /etc/ssh/sshd_config

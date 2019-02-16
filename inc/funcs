@@ -488,21 +488,17 @@ gfnQuestionGetString() {
 
 #### Script Invocation
 gfnScriptInvoke() {
-	local sMethod sScriptWished sScript sArguments sAllArgs
+	local sMethod sScriptWished sScript aAllArgs
+	aAllArgs=("$@")
 
-	#### Use 'source' OR 'bash' OR 'screen' ?
-	sMethod="$1"
+	#### Use 'source' OR 'bash' OR 'ScreenSTD' OR 'ScreenWAIT' OR 'InQueue' ?
+	sMethod="${aAllArgs[0]}"
+	aAllArgs=("${aAllArgs[@]/$sMethod/}")
 
 	#### Script to invoke
-	sScriptWished="$2"
+	sScriptWished="${aAllArgs[1]}"
+	aAllArgs=("${aAllArgs[@]/$sScriptWished/}")
 	sScript="$(basename "$sScriptWished")"
-
-	#### Arguments
-	sArguments=()
-	sAllArgs=("$@")
-	for ((i = 2; i < $#; i++)); do
-		sArguments=("${sAllArgs[$i]}")
-	done
 
 	#### Start invovation
 	case "${sMethod}" in
@@ -523,11 +519,11 @@ gfnScriptInvoke() {
 		# Language
 		gfnLoadLanguage "$sScript"
 
-		${sMethod} "$MySB_InstallDir/temp/${gsScriptName}_${sScript}.invoked" "${sArguments[@]}"
+		${sMethod} "$MySB_InstallDir/temp/${gsScriptName}_${sScript}.invoked" "${aAllArgs[@]}"
 		[ "$gbDevMode" -eq 0 ] && rm -f "$MySB_InstallDir/temp/${gsScriptName}_${sScript}.invoked"
 		;;
 	"ScreenSTD" | "ScreenWAIT" | "InQueue")
-		screen -dmS "${gsScriptName}_${sScript}" /bin/bash "$sScriptWished" "${sArguments[@]}"
+		screen -dmS "${gsScriptName}_${sScript}" /bin/bash "$sScriptWished" "${aAllArgs[@]}"
 		# Possibilities:
 		# 	ScreenSTD:	Waiting silently
 		# 	ScreenWAIT:	Waiting point to point
