@@ -505,7 +505,7 @@ gfnLoadLanguage() {
             ;;
     esac
 }
-gfnLoadLanguage "$@"
+gfnLoadLanguage ""
 
 # Dev mode, Save all variables
 if [ -f ./dev ] || [ -f "${MySB_InstallDir}/dev" ]; then
