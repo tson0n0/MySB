@@ -26,8 +26,6 @@
 	echo "Please load 'vars' file before..."
 	return
 }
-funcs_Upgrade=1
-export funcs_Upgrade
 ##################### FIRST LINE #####################################
 
 #### Change FQDN of Seedbox

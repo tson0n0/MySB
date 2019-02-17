@@ -26,8 +26,6 @@
 	echo "Please load 'vars' file before..."
 	return
 }
-funcs_SourcesList=1
-export funcs_SourcesList
 ##################### FIRST LINE #####################################
 
 #### Delete Bad Sources

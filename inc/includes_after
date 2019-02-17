@@ -27,21 +27,6 @@
 if [ -f /etc/MySB/config ]; then
 	# shellcheck source=.etc/MySB/config
 	source /etc/MySB/config
-	funcs=0
-	funcs_sql=0
-	funcs_iptables=0
-	funcs_tools=0
-	funcs_BlocklistsRTorrent=0
-	funcs_Fail2Ban=0
-	funcs_GetTrackersCert=0
-	funcs_Install=0
-	funcs_MySB_CreateUser=0
-	funcs_MySB_SecurityRules=0
-	funcs_PeerGuardian=0
-	funcs_SourcesList=0
-	funcs_Upgrade=0
-	export funcs funcs_sql funcs_tools funcs_iptables funcs_BlocklistsRTorrent funcs_Fail2Ban funcs_PeerGuardian
-	export funcs_GetTrackersCert funcs_Install funcs_MySB_CreateUser funcs_MySB_SecurityRules funcs_SourcesList funcs_Upgrade
 	# shellcheck source=inc/vars
 	source $MySB_InstallDir/inc/vars
 else

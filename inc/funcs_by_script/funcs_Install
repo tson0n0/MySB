@@ -26,15 +26,13 @@
 	echo "Please load 'vars' file before..."
 	return
 }
-funcs_Install=1
-export funcs_Install
 ##################### FIRST LINE #####################################
 
 #### Logrotate
 gfnLogRotate() {
 	if [ -n "$1" ] && [ -f "${MySB_InstallDir}/templates/logrotate/etc.logrotate.d.$1.tmpl" ]; then
 		rm -vf /etc/logrotate.d/"$1"*
-		install -v -o root -g root -m 0644 "$MySB_InstallDir/templates/logrotate/etc.logrotate.d.$1.tmpl" /etc/logrotate.d/"$1"
+		install -v -o root -g root -m 0644 "${MySB_InstallDir}/templates/logrotate/etc.logrotate.d.$1.tmpl" /etc/logrotate.d/"$1"
 		perl -pi -e "s/<MySB_InstallDir>/${gsInstallDirEscaped}/g" /etc/logrotate.d/"$1"
 		if [ -n "$2" ] && [ "$2" -eq 1 ]; then
 			logrotate -f /etc/logrotate.d/"$1"
@@ -44,17 +42,20 @@ gfnLogRotate() {
 
 #### Installation of a package bundle
 gfnPackageBundleInstall() {
-	local aArgs aPackagesRequired aPackagesToInstall sOption
+	local aAllArgs aPackagesRequired aPackagesToInstall sOption
 	aPackagesToInstall=()
 	aPackagesRequired=()
 	sOption=""
-	aArgs=("$@")
+	aAllArgs=("$@")
 
 	# backports
-	(grep -q 'backports\|reinstall' <<<"${aArgs[@]}") && {
-		sOption="${aArgs[0]}"
-		aArgs=("${aArgs[@]/$sOption/}")
+	(grep -q 'backports\|reinstall' <<<"${aAllArgs[@]}") && {
+		sOption="${aAllArgs[0]}"
+		aArgs=("${aAllArgs[@]/$sOption/}")
 	}
+	for arg in "${aAllArgs[@]}"; do
+		[ -n "${arg}" ] && aArgs+=("${arg}")
+	done
 
 	# sort & uniq packages list
 	mapfile -t aPackagesRequired < <(echo "${aArgs[*]}" | tr ' ' '\n' | sort | uniq)
@@ -76,26 +77,29 @@ gfnPackageBundleInstall() {
 
 #### apt-get
 gfnPackagesManage() {
-	local sQuery aPackageList sFinalList sOption sAptCmd aGlobalArgs sSystemValues
+	local aAllArgs sQuery aPackageList sFinalList sOption sAptCmd aGlobalArgs sSystemValues
 	local nAptUpdate tDiff nLocalMirror tNow tVarX tVarY dAptDate
+	aAllArgs=("$@")
 
-	sQuery="$1"
-	aPackageList="$(echo "$2" | xargs -n1 | sort -u | xargs | sed -e 's/^ //g;' | sed 's/\s+$//')"
-	aPackageList=("${aPackageList}")
-	sOption="$3"
+	# install, update, upgrade...
+	sQuery="${aAllArgs[0]}"
+	aAllArgs=("${aAllArgs[@]/$sQuery/}")
+	# backports, reinstall
+	sOption="${aAllArgs[1]}"
+	aAllArgs=("${aAllArgs[@]/$sOption/}")
+	# sort & uniq packages list
+	mapfile -t aPackageList < <(echo "${aAllArgs[*]}" | tr ' ' '\n' | sort | uniq)
+
 	nAptUpdate=0
 	tDiff=0
 	nLocalMirror=0
 	sAptCmd="apt-get"
 
-	if [ -n "$sOption" ] && [ "$sOption" == "backports" ]; then
-		case "$sOption" in
-		'backports') aGlobalArgs=(-y --assume-yes -t "${gsDebianRelease}-$sOption") ;;
-		'reinstall') aGlobalArgs=(-y --assume-yes --reinstall) ;;
-		esac
-	else
-		aGlobalArgs=(-y --assume-yes)
-	fi
+	case "$sOption" in
+	'backports') aGlobalArgs=(-y --assume-yes -t "${gsDebianRelease}-$sOption") ;;
+	'reinstall') aGlobalArgs=(-y --assume-yes --reinstall) ;;
+	*) aGlobalArgs=(-y --assume-yes) ;;
+	esac
 
 	if [ "${gbIsReady_MySB_Db}" == "YES" ]; then
 		sSystemValues="$(cmdMySQL 'MySB_db' "SELECT apt_update,apt_date FROM system WHERE id_system='1';" | sed 's/\t/|/g;')"

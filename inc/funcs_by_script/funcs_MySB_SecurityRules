@@ -26,8 +26,6 @@
 	echo "Please load 'vars' file before..."
 	return
 }
-funcs_MySB_SecurityRules=1
-export funcs_MySB_SecurityRules
 ##################### FIRST LINE #####################################
 
 #### Loading vars
@@ -216,7 +214,7 @@ gfnCreateServicesRules() {
 	#### PeerGuardian
 	if [ "$ApplyConfigPeerGuardian" == "YES" ]; then
 		# shellcheck source=inc/funcs_by_script/funcs_PeerGuardian
-		[ -z "${funcs_PeerGuardian}" ] && source "$MySB_InstallDir"/inc/funcs_by_script/funcs_PeerGuardian
+		[ -z "${funcs_PeerGuardian}" ] && source "${MySB_InstallDir}"/inc/funcs_by_script/funcs_PeerGuardian
 
 		# Create '/etc/pgl/pglcmd.conf'
 		gfnPeerGuardianPglcmdConf 0

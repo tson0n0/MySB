@@ -26,8 +26,6 @@
 	echo "Please load 'vars' file before..."
 	return
 }
-funcs_GetTrackersCert=1
-export funcs_GetTrackersCert
 ##################### FIRST LINE #####################################
 
 #### Get ruTorrent Trackers
