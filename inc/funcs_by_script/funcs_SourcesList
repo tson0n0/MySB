@@ -54,16 +54,6 @@
 # sed -i '/ftp.heikorichter.name/d' $sSourcesFile
 # }
 
-#### Apt-Key Manage
-gfnAptKeyManage() {
-	local sKey="$1"
-
-	# DotDeb Renew key
-	if (apt-key list | grep -q "$sKey"); then
-		apt-key adv --keyserver keys.gnupg.net --recv-keys "$sKey"
-	fi
-}
-
 #### APT-mirror (local mirror for PeerGuardian, Webmin, Plexmedia Server)
 gfnCreateLocalMirror() {
 	local sArch

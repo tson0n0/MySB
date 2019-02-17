@@ -83,7 +83,7 @@ if [ -n "${sFuncsList}" ]; then
 		case "$nCount" in
 		1)
 			echo -e "${CYELLOW}${func}:${CEND} ${CRED}Failed${CEND}"
-			nReturn=$((nReturn + 1))
+			# nReturn=$((nReturn + 1))
 			;;
 		2)
 			echo -e "${CYELLOW}${func}:${CEND} ${CGREEN}Use twice, can be optimized${CEND}"
