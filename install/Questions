@@ -101,7 +101,7 @@ DisplaySurvey() {
 			fi
 			while [ ! "$CHECK_SrvIpAddress" = "$gsSrvIpAddress" ] || [ -z "$gsSrvIpAddress" ]; do
 				gfnQuestionGetString NO "$Questions_BoxIpAddress" gsSrvIpAddress "$sValue"
-				CHECK_SrvIpAddress=$(gfnValidateIP ${gsSrvIpAddress})
+				CHECK_SrvIpAddress=$(gfnValidateIP "${gsSrvIpAddress}")
 			done
 			unset sValue
 
