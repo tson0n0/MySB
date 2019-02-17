@@ -52,7 +52,7 @@ fnDoApplyConfig() {
 			sCommandsPriorities="$(cmdMySQL 'MySB_db' "SELECT min(priority), max(priority) FROM commands WHERE user='$User' AND commands='$sCommandUser';" | sed 's/\t/|/g;')"
 			nMinPriority="$(echo $sCommandsPriorities | awk '{split($0,a,"|"); print a[1]}')"
 			nMaxPriority="$(echo $sCommandsPriorities | awk '{split($0,a,"|"); print a[2]}')"
-			if [ $nMinPriority -ne $nMaxPriority ] && [ ! -z $nMinPriority ] && [ ! -z $nMaxPriority ]; then
+			if [ $nMinPriority -ne $nMaxPriority ] && [ -n "$nMinPriority" ] && [ -n "$nMaxPriority" ]; then
 				while [ $nMinPriority -lt $nMaxPriority ]; do
 					# On supprime les premières commandes
 					echo -n "	--> " && echo "DELETE FROM commands WHERE user='$User' AND commands='$sCommandUser' AND priority='$nMinPriority';"
@@ -70,7 +70,7 @@ fnDoApplyConfig() {
 	sCommandsPriorities="$(cmdMySQL 'MySB_db' "SELECT min(priority), max(priority) FROM commands WHERE commands='MySB_SecurityRules' AND user='$User';" | sed 's/NULL/0/g;' | sed 's/\t/|/g;')"
 	nMinPriority="$(echo $sCommandsPriorities | awk '{split($0,a,"|"); print a[1]}')"
 	nMaxPriority="$(echo $sCommandsPriorities | awk '{split($0,a,"|"); print a[2]}')"
-	if [ $nMinPriority -ne $nMaxPriority ] && [ ! -z $nMinPriority ] && [ ! -z $nMaxPriority ]; then
+	if [ $nMinPriority -ne $nMaxPriority ] && [ -n "$nMinPriority" ] && [ -n "$nMaxPriority" ]; then
 		while [ $nMinPriority -lt $nMaxPriority ]; do
 			# On supprime les premières commandes
 			echo -n "	--> " && echo "DELETE FROM commands WHERE commands='MySB_SecurityRules' AND priority='$nMinPriority' AND user='$User';"
@@ -245,7 +245,7 @@ fnDoApplyConfig() {
 				;;
 			esac
 
-			if [ ! -z "$SecurityRules" ]; then
+			if [ -n "$SecurityRules" ]; then
 				gfnWaitingSTD MySB_SecurityRules
 				screen -dmS MySB_SecurityRules /bin/bash $MySB_InstallDir/bin/MySB_SecurityRules 'refresh' '--pglcmd' 'APPLYCONFIG'
 				gfnWaitingSTD MySB_SecurityRules
@@ -300,11 +300,11 @@ case "$LocSwitch" in
 	;;
 "SCREEN")
 	echo "$(/bin/date '+%H:%M:%S') - Waiting authorization"
-	while [ ! -z "$(ps ax | grep 'ApplyConfig.bsh' | grep 'SCREEN' | grep -v "$UserApplying" | grep -v 'grep')" ]; do
+	while [ -n "$(ps ax | grep 'ApplyConfig.bsh' | grep 'SCREEN' | grep -v "$UserApplying" | grep -v 'grep')" ]; do
 		sleep 1
 	done
 
-	if [ ! -z "$UserApplying" ]; then
+	if [ -n "$UserApplying" ]; then
 		echo "$(/bin/date '+%H:%M:%S') - Executing commands"
 		fnDoApplyConfig $UserApplying
 	fi

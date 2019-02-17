@@ -31,7 +31,7 @@ PackagesToInstall="ssh openssh-server sshpass"
 if ! gfnCheckCommand 0 sshpass; then
 	PackagesToInstall="$PackagesToInstall"
 fi
-if [ ! -z "$PackagesToInstall" ]; then
+if [ -n "$PackagesToInstall" ]; then
 	gfnPackagesManage 'install' 'backports' "$PackagesToInstall"
 fi
 

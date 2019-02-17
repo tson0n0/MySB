@@ -118,7 +118,7 @@ case "$COMMAND" in
 	fi
 	;;
 "CreateServiceCertificate")
-	if [ ! -z "$SERVICENAME" ]; then
+	if [ -n "$SERVICENAME" ]; then
 		CreateServiceCertificate '$SERVICENAME'
 	else
 		echo -e "${CBLUE}Usage:$CEND	${CYELLOW}bash $0$CEND ${CGREEN}{CreateCACertificate|CreateServiceCertificate <service_name>}$CEND"

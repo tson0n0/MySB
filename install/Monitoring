@@ -46,7 +46,7 @@ case "$gsServerProvider" in
 
 	for Hostname in $OvhHostnames; do
 		IPv4="$(nslookup $Hostname | grep 'Add' | grep -v '#' | awk -F: '{ print $2 }' | sed -e 's/^ //g;')"
-		if [ ! -z "$IPv4" ]; then
+		if [ -n "$IPv4" ]; then
 			cmdMySQL 'MySB_db' "INSERT INTO providers_monitoring (provider,ipv4,hostname) VALUES ('OVH','$IPv4/32','$HostName');" -v
 		fi
 	done
@@ -54,7 +54,7 @@ case "$gsServerProvider" in
 	OvhHostnames="$(cmdMySQL 'MySB_db' "SELECT hostname FROM providers_monitoring WHERE provider = 'OVH' and hostname != '';")"
 	for Hostname in $OvhHostnames; do
 		IPv4="$(nslookup $Hostname | grep 'Add' | grep -v '#' | awk -F: '{ print $2 }' | sed -e 's/^ //g;')"
-		if [ ! -z "$IPv4" ]; then
+		if [ -n "$IPv4" ]; then
 			cmdMySQL 'MySB_db' "UPDATE providers_monitoring SET ipv4 = '$IPv4/32' WHERE provider = 'OVH' AND hostname = '$Hostname';" -v
 		fi
 	done
@@ -116,7 +116,7 @@ case "$gsServerProvider" in
 	# Get all IPs of Hetzner Server Monitoring
 	sHetznerIPv4="$(dig +short pool.sysmon.hetzner.com)"
 	# Add IPs listing
-	if [ ! -z "$sHetznerIPv4" ]; then
+	if [ -n "$sHetznerIPv4" ]; then
 		for sIPv4 in $sHetznerIPv4; do
 			# Get IP's hostname
 			HostName="$(nslookup $sIPv4 | grep 'name =' | awk '{ print $4 }' | sed 's/.\{1\}$//g')"

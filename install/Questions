@@ -106,7 +106,7 @@ DisplaySurvey() {
 			unset sValue
 
 			# Box' local IP (more than one local IP ?)
-			if [ ! -z "$gsSrvAdditionnalIpAddresses" ]; then
+			if [ -n "$gsSrvAdditionnalIpAddresses" ]; then
 				echo
 				if [ "$RepeatSurvey" == "YES" ]; then
 					sValue="$gsSrvAdditionnalIpAddresses"
@@ -186,7 +186,7 @@ DisplaySurvey() {
 			sValue=""
 		fi
 		gsMainUserName=""
-		while [ ! -z "$(echo $gsMainUserName | grep '@')" ] || [ -z "$gsMainUserName" ]; do
+		while [ -n "$(echo $gsMainUserName | grep '@')" ] || [ -z "$gsMainUserName" ]; do
 			gfnQuestionGetString NO "$Questions_MainUserUsername" gsMainUserName "$sValue"
 		done
 		unset sValue
@@ -600,7 +600,7 @@ DisplaySurvey() {
 			for sIp in $sValue; do
 				sIp="$(echo $sIp | sed -e 's/^ //g;' | sed 's/\s+$//' | sed 's/\/32//g;')"
 				sTmp="$(gfnValidateIP "$sIp")"
-				if [ ! -z "$sTmp" ]; then
+				if [ -n "$sTmp" ]; then
 					if [ -z "$sCheckIp" ]; then
 						sCheckIp="$sTmp"
 					else
@@ -610,7 +610,7 @@ DisplaySurvey() {
 			done
 			IFS=$OIFS
 			sCheckIp="$(echo $sCheckIp | sed -e "s/\ /\,/g;" | sed -e "s/^$//g;")"
-			[ ! -z "$sCheckIp" ] && sValue="$sCheckIp"
+			[ -n "$sCheckIp" ] && sValue="$sCheckIp"
 			unset IFS sIp sTmp OIFS
 		done
 		unset sValue sTempIPs sCheckIp

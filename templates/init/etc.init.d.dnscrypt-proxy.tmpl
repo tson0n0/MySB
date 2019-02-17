@@ -270,7 +270,7 @@ gfnCheckCertificateValidity() {
 	sListToRead="$gsResolversList"
 	nCount=1
 
-	if [ ! -z "$sResolverGiven" ] && [ ! -z "`echo $gsResolversList | grep "$sResolverGiven"`" ]; then
+	if [ -n "$sResolverGiven" ] && [ -n "`echo $gsResolversList | grep "$sResolverGiven"`" ]; then
 		sListToRead="$sResolverGiven"
 	fi
 
@@ -393,14 +393,14 @@ gfnCheckDnsSpeed() {
 		sMode='log'
 	fi
 
-	if [ ! -z "$sPidList" ]; then
+	if [ -n "$sPidList" ]; then
 		gsMess="\n"
 
 		for sPidFile in $sPidList; do
 			(( nCount++ ))
 			sResolver="`echo $sPidFile | sed 's/.pid//g;'`"
 			sPids="`pidof $gsProxyName`"
-			if [ ! -z "$sPids" ]; then
+			if [ -n "$sPids" ]; then
 				sProcess=$(ps -p "$sPids" -o args= | grep "$sResolver")
 				sProxyIP=$(echo $sProcess | awk '{print $5 = substr($5, 1, 100)}')
 				sIp="`echo $sProxyIP | cut -d ":" -f 1`"
@@ -472,7 +472,7 @@ gfnCheckResolversWished() {
 	}
 	fnGetResolvers
 
-	if [ ! -z "$gsResolversList" ]; then
+	if [ -n "$gsResolversList" ]; then
 		for sResolver in $gsResolversList; do
 			gfnMessage 'info' 'log' "Added to whish list: $sResolver"
 		done
@@ -540,16 +540,16 @@ gfnGetStatusDetails() {
 
 	declare -A tabDnsInfo
 	sPidFiles="`ls -1tr $gsPidDir/`"
-	if [ ! -z "$sPidFiles" ]; then
+	if [ -n "$sPidFiles" ]; then
 		for sFile in $sPidFiles; do
 			sResolver="`echo $sFile | sed 's/.pid//g;'`"
-			if [ ! -z "$sResolver" ]; then
+			if [ -n "$sResolver" ]; then
 				sPids="`pidof $gsProxyName`"
-				if [ ! -z "$sPids" ]; then
+				if [ -n "$sPids" ]; then
 					sProcess=$(ps -p "$sPids" -o pid= -o user= -o stime= -o etime= -o args= | grep "$sResolver")
 					nSpeed="`cmdMySQL 'MySB_db' "SELECT speed FROM dnscrypt_resolvers WHERE name='$sResolver';"`"
 
-					if [ ! -z "$sProcess" ]; then
+					if [ -n "$sProcess" ]; then
 						# PID
 						nPid=$(		  echo $sProcess | awk '{print $1 = substr($1, 1, 100)}')
 						# Date start
@@ -835,7 +835,7 @@ gfnUpdateDatabase() {
 		nCount=0
 		gnCountResolver="`cmdMySQL 'MySB_db' "SELECT count(name) FROM dnscrypt_resolvers;"`"
 		sListName="`cmdMySQL 'MySB_db' "SELECT name FROM dnscrypt_resolvers;"`"
-		if [ ! -z "$sListName" ]; then
+		if [ -n "$sListName" ]; then
 			for sName in $sListName; do
 				(( nCount++ ))
 				[ "$gbShowMessages" == yes ] && gfnProgressBar -s $nCount -e $gnCountResolver -t 'Cleaning the database			:' -m "($nCount/$gnCountResolver	- $sName)"
@@ -900,7 +900,7 @@ gfnUpdateDatabase() {
 			# nPingResult="$?"
 
 			if [[ "$nHostResult" -eq 0 ]] || [[ "$nPingResult" -eq 0 ]]; then
-				if [ ! -z "$sIfExist" ]; then
+				if [ -n "$sIfExist" ]; then
 					if 	[ "$sFullNameOld" != "$sFullName" ] \
 						|| [ "$sDescriptionOld" != "$sDescription" ] \
 						|| [ "$sLocationOld" != "$sLocation" ] \
@@ -1166,7 +1166,7 @@ gfnStart() {
 	else
 		# Stop others processes
 		sPids="`pidof $gsProxyName`"
-		if [ ! -z "$sPids" ]; then
+		if [ -n "$sPids" ]; then
 			nRunning="`echo $sPids | wc -w`"
 			gfnMessage 'info' 'log' "$gsProxyDesc is already running, processes: $nRunning"
 		else
@@ -1230,10 +1230,10 @@ gfnStart() {
 						sleep 0.2
 
 						sPids="`pidof $gsProxyName`"
-						if [ ! -z "$sPids" ]; then
+						if [ -n "$sPids" ]; then
 							nPid=$(ps -p "$sPids" -o pid= -o user= -o args= | grep "127.0.0.$nCountProcess:52" | awk '{print $1 = substr($1, 1, 100)}')
 						fi
-						if [ ! -z "$nPid" ]; then
+						if [ -n "$nPid" ]; then
 							# Start OK
 							sType='info'
 							gsMess="'$sResolver' is started completly"
@@ -1292,7 +1292,7 @@ gfnStop() {
 
 	# Ghost processes ?
 	sPids="`pidof $gsProxyName`"
-	if [ ! -z "$sPids" ]; then
+	if [ -n "$sPids" ]; then
 		pkill -f $gsProxyName >> $gsLogFile
 		sType='notice'
 		gsMess="\nForce kill for ghost processes !"
@@ -1478,7 +1478,7 @@ gfnProgressBar() {
 	nLeft=$(printf "%${nLeft}s")
 
 	# To clean end line if a dynamic message is given
-	if [ ! -z "$sMessage" ]; then
+	if [ -n "$sMessage" ]; then
 		nPrevious=${gnLenght}
 		[ -z $nPrevious ] && nPrevious=$(echo "$sMessage" | wc -m)
 		gnLenght=$(echo "$sMessage" | wc -m)
@@ -1944,7 +1944,7 @@ if [ $# -ge 1 ]; then
 				case "$Arg" in
 					status)
 						sPidFiles="`ls -1r $gsPidDir/`"
-						if [ ! -z "$sPidFiles" ]; then
+						if [ -n "$sPidFiles" ]; then
 							for sFile in $sPidFiles; do
 								status_of_proc -p "$gsPidDir/$sFile" "$gsProxyName" "`echo $sFile | sed 's/.pid//g;'`" && log_end_msg
 							done

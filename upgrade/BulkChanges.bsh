@@ -107,7 +107,7 @@ case "$1" in
 		# rTorrent Config File
 		gfnCreateRtorrentConfigFile "$seedUser" 'force'
 
-		if [ "$UserId" == "$gnMainUserId" ] && [ ! -z "$UserPassword" ]; then
+		if [ "$UserId" == "$gnMainUserId" ] && [ -n "$UserPassword" ]; then
 			# Remove main user password from database
 			cmdMySQL 'MySB_db' "UPDATE users SET users_passwd = '' WHERE admin = '1';" -v
 			gfnScriptInvoke 'ScreenSTD' "$MySB_InstallDir/bin/MySB_ChangeUserPassword" "$seedUser" "$UserPassword" 'UPGRADE'
@@ -138,7 +138,7 @@ case "$1" in
 	#### Cleaning
 	# updatedb
 	# for file in $(locate *.dpkg-old *.dpkg-new *.dpkg-dist *.dpkg-bak *.ucf-dist); do
-	# if [ ! -z "$gbDevMode" ] && [ $gbDevMode -eq 1 ]; then
+	# if [ -n "$gbDevMode" ] && [ $gbDevMode -eq 1 ]; then
 	# mv -vf $file $MySB_InstallDir/logs/TODEL/
 	# else
 	# rm -vf $file

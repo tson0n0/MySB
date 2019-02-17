@@ -177,7 +177,7 @@ done
 sNewDomains=$(echo ${sNewDomains} | sed '/^ /d')
 
 #### Generate new certificates
-if [[ ! -z ${sNewDomains} ]]; then
+if [[ -n ${sNewDomains} ]]; then
 	# Update certificates for python
 	update-ca-certificates --fresh &>/dev/null
 
@@ -226,7 +226,7 @@ if [[ "renew" =~ ^($*)$ ]] || [[ "${gsSwitch}" == "UPGRADE" ]]; then
 	# Debug
 	echo "dEndDate: ${dEndDate}"
 	echo "bContinue: ${bContinue}"
-	if [[ ! -z "${dEndDate}" ]] && [[ ${bContinue} -eq 1 ]]; then
+	if [[ -n "${dEndDate}" ]] && [[ ${bContinue} -eq 1 ]]; then
 		dEndDate=$(date -d "${dEndDate}" +%Y%m%d)
 		dNow=$(date +%Y%m%d)
 		tDiff=$((($(date --date="${dEndDate}" +%s) - $(date --date="${dNow}" +%s)) / (60 * 60 * 24)))
@@ -267,7 +267,7 @@ fi
 [[ -d /opt/eff.org ]] && rm -rf /opt/eff.org
 
 #### Restart services
-[[ ! -z "${sServicesToRestart}" ]] && gfnManageServices start "${sServicesToRestart}"
+[[ -n "${sServicesToRestart}" ]] && gfnManageServices start "${sServicesToRestart}"
 
 # -----------------------------------------
 # shellcheck source=inc/includes_after

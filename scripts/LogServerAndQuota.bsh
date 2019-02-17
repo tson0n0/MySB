@@ -34,7 +34,7 @@ CCZE_Treatment() {
 	sTwoLogFile="$4"
 	sLinesToDelete="$5"
 
-	if [ ! -z "$(echo $sLogFile | grep '.log')" ]; then
+	if [ -n "$(echo $sLogFile | grep '.log')" ]; then
 		# Log files with '.log' extension
 		HtmlFile="$(echo $sLogFile | sed -e 's/.log/.html/g;')"
 	else
@@ -58,11 +58,11 @@ CCZE_Treatment() {
 		fi
 	fi
 	if [ -e /tmp/$sLogFile ]; then
-		if [ ! -z "$sLinesToDelete" ]; then
+		if [ -n "$sLinesToDelete" ]; then
 			OIFS=$IFS
 			IFS=$';'
 			for line in $sLinesToDelete; do
-				sed -i '/$line/d' /tmp/$sLogFile
+				sed -i "/${line}/d" /tmp/$sLogFile
 			done
 			IFS=$OIFS
 		fi

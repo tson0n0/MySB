@@ -124,7 +124,7 @@ gfnMountShareDir() {
 		fi
 		;;
 	'umount')
-		if [ ! -z "$sMountList" ]; then
+		if [ -n "$sMountList" ]; then
 			umount $gsHomeDir/rtorrent/share 2>>$gsLogFile
 		fi
 		;;
@@ -144,7 +144,7 @@ gfnMountTorrentsDir() {
 		fi
 		;;
 	'umount')
-		if [ ! -z "$sMountList" ]; then
+		if [ -n "$sMountList" ]; then
 			umount $gsHomeDir/rtorrent/torrents 2>>$gsLogFile
 		fi
 		;;
@@ -156,9 +156,9 @@ gfnDoCrontab() {
 	local sService
 	sService="rtorrent-$gsUsername"
 
-	if [ ! -z "$1" ]; then
+	if [ -n "$1" ]; then
 		crontab -l >/tmp/crontab.tmp
-		sed -i '/'$sService'/d' /tmp/crontab.tmp
+		sed -i "/${sService}/d" /tmp/crontab.tmp
 		case "$1" in
 		'add') echo "*/5 * * * * systemctl status rtorrent-$gsUsername >/dev/null || systemctl restart rtorrent-$gsUsername" >>/tmp/crontab.tmp ;;
 		esac
@@ -224,7 +224,7 @@ gfnDoStop() {
 	nReturn="$?"
 
 	sGhostProcess="$(ps ax | grep "rtorrent-$gsUsername $binRtorrent" | grep -v 'grep' | awk '{ print $1 }')"
-	[ ! -z "$sGhostProcess" ] && kill -9 $sGhostProcess
+	[ -n "$sGhostProcess" ] && kill -9 $sGhostProcess
 	gfnDeletePidLockFile
 
 	return "$nReturn"

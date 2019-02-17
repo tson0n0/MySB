@@ -75,7 +75,7 @@ pear upgrade --force
 for Ext in $sPeclModules; do
 	[ -f $gsPhpDir/mods-available/$Ext.ini ] && phpdismod $Ext
 	rm -fv $gsPhpDir/mods-available/$Ext.ini
-	[ ! -z "$(pecl list | grep "$Ext")" ] && pecl uninstall $Ext
+	[ -n "$(pecl list | grep "$Ext")" ] && pecl uninstall $Ext
 done
 if [ -d "${sExtDir}-zts" ]; then
 	sExtListZts="$(ls -A1 ${sExtDir}-zts | cut -d "." -f 1)"

@@ -42,11 +42,11 @@ ResolveAddresses() {
 		sHostname="$(echo $sLine | awk '{split($0,a,"|"); print a[3]}')"
 		sUserName="$(cmdMySQL 'MySB_db' "SELECT users_ident FROM users WHERE id_users='$nIdUsers';")"
 
-		if [ ! -z "$sHostname" ] && [ ! -z "$nIdUsers" ] && [ ! -z "$nIdUsersAddresses" ]; then
+		if [ -n "$sHostname" ] && [ -n "$nIdUsers" ] && [ -n "$nIdUsersAddresses" ]; then
 			sListIPv4="$(cmdMySQL 'MySB_db' "SELECT ipv4 FROM users_addresses WHERE is_active='1' AND check_by='hostname' AND hostname='$sHostname';")"
 			sIPv4="$(nslookup $sHostname | grep 'Add' | grep -v '#' | awk -F: '{ print $2 }' | sed -e 's/^ //g;')"
 
-			if [ ! -z "$sIPv4" ] && [ -z "$(echo $sListIPv4 | grep $sIPv4)" ]; then
+			if [ -n "$sIPv4" ] && [ -z "$(echo $sListIPv4 | grep $sIPv4)" ]; then
 				if [ "$LOGSTD" == "NO" ]; then log_daemon_msg "$UpdatingHostname $sHostname"; fi
 				cmdMySQL 'MySB_db' "UPDATE users_addresses SET ipv4='$sIPv4', last_update='$(date +%Y-%m-%d\ %H:%M:%S)' WHERE hostname='$sHostname' AND id_users_addresses='$nIdUsersAddresses';"
 				nErrorCode=$?
@@ -79,8 +79,8 @@ ResolveAddresses() {
 }
 
 IfRunning="$(ps ax | grep 'DynamicAddressResolver.bsh' | grep -v 'grep' | awk '{ print $1 }')"
-if [ ! -z "$IfRunning" ]; then
-	while [ ! -z "$(ps ax | grep 'DynamicAddressResolver.bsh $IfRunning CRON' | grep -v 'grep')" ]; do
+if [ -n "$IfRunning" ]; then
+	while [ -n "$(ps ax | grep 'DynamicAddressResolver.bsh $IfRunning CRON' | grep -v 'grep')" ]; do
 		sleep 1
 	done
 fi
