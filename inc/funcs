@@ -1009,7 +1009,7 @@ gfnValidateMail() {
 	nRegex=${?}
 
 	# Domain Check
-	echo "${1}" | awk 'BEGIN { FS = "@" } ; { print $2 }' | xargs dig +noauthority +noadditional +nostats | grep "ANSWER: 1" 1>/dev/null
+	echo "${1}" | awk 'BEGIN { FS = "@" } ; { print $2 }' | xargs dig +noauthority +noadditional +nostats | grep -E "ANSWER: +[1-9]" 1>/dev/null
 	nDig=${?}
 
 	# Results
