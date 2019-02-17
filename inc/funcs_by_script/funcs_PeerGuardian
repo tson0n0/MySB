@@ -27,8 +27,6 @@
 	echo "Please load 'vars' file before..."
 	return
 }
-funcs_PeerGuardian=1
-export funcs_PeerGuardian
 ##################### FIRST LINE #####################################
 
 gfnIblocklistXmlGenerate() {

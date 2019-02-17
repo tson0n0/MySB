@@ -26,8 +26,6 @@
 	echo "Please load 'vars' file before..."
 	return
 }
-funcs_iptables=1
-export funcs_iptables
 ##################### FIRST LINE #####################################
 
 # http://easyfwgen.morizot.net/gen/

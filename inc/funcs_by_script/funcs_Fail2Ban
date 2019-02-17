@@ -26,8 +26,6 @@
 	echo "Please load 'vars' file before..."
 	return
 }
-funcs_Fail2Ban=1
-export funcs_Fail2Ban
 ##################### FIRST LINE #####################################
 
 #### Jail.local

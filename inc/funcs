@@ -26,31 +26,25 @@
 	echo "Please load 'vars' file before..."
 	return
 }
-funcs=1
-export funcs
 ##################### FIRST LINE #####################################
 
 #### Include tools functions
-if [ -z "$funcs_sql" ] || [ "$funcs_sql" -eq 0 ]; then
-	# shellcheck source=inc/funcs_sql
-	source "${MySB_InstallDir}"/inc/funcs_sql
-fi
-if [ -z "$funcs_tools" ] || [ "$funcs_tools" -eq 0 ]; then
-	# shellcheck source=inc/funcs_tools
-	source "$MySB_InstallDir"/inc/funcs_tools
-fi
+# shellcheck source=inc/funcs_sql
+source "${MySB_InstallDir}"/inc/funcs_sql
+# shellcheck source=inc/funcs_tools
+source "${MySB_InstallDir}"/inc/funcs_tools
 
 #### Banner
 gfnBannerGenerator() {
 	local nCountLine sLine
 
-	figlet MySB "$gsCurrentVersion" >"$MySB_InstallDir"/files/banner.tmp
-	echo "echo -e \"${CGREEN}############################################################$CEND" >"$MySB_InstallDir/files/banner_$gsCurrentVersion"
+	figlet MySB "${gsCurrentVersion}" >"${MySB_InstallDir}"/files/banner.tmp
+	echo "echo -e \"${CGREEN}############################################################$CEND" >"${MySB_InstallDir}/files/banner_${gsCurrentVersion}"
 
-	nCountLine=$(wc -l "$MySB_InstallDir"/files/banner.tmp | awk '{ print $1 }')
+	nCountLine=$(wc -l "${MySB_InstallDir}"/files/banner.tmp | awk '{ print $1 }')
 	for ((line = 1; line <= nCountLine; line++)); do
-		sLine=$(head -n $line "$MySB_InstallDir"/files/banner.tmp | tail -n 1)
-		echo "${CGREEN}#$CEND	${CBLUE}$sLine$CEND" >>"$MySB_InstallDir/files/banner_$gsCurrentVersion"
+		sLine=$(head -n $line "${MySB_InstallDir}"/files/banner.tmp | tail -n 1)
+		echo "${CGREEN}#$CEND	${CBLUE}$sLine$CEND" >>"${MySB_InstallDir}/files/banner_${gsCurrentVersion}"
 	done
 	rm -f "${MySB_InstallDir}"/files/banner.tmp
 	{
@@ -58,14 +52,14 @@ gfnBannerGenerator() {
 		echo "${CGREEN}#$CEND"
 		echo "${CGREEN}#$CEND	${Header_CurrentFile} ${CRED}$0$CEND"
 		echo "${CGREEN}############################################################$CEND\""
-	} >>"$MySB_InstallDir/files/banner_$gsCurrentVersion"
+	} >>"${MySB_InstallDir}/files/banner_${gsCurrentVersion}"
 
-	if [ -f "$MySB_InstallDir/files/banner_$gsCurrentVersion" ]; then
-		sed -i "s/,/ /g;" "$MySB_InstallDir/files/banner_$gsCurrentVersion" &>/dev/null
-		sed -i "s/\`/ /g;" "$MySB_InstallDir/files/banner_$gsCurrentVersion" &>/dev/null
+	if [ -f "${MySB_InstallDir}/files/banner_${gsCurrentVersion}" ]; then
+		sed -i "s/,/ /g;" "${MySB_InstallDir}/files/banner_${gsCurrentVersion}" &>/dev/null
+		sed -i "s/\`/ /g;" "${MySB_InstallDir}/files/banner_${gsCurrentVersion}" &>/dev/null
 		clear
 		# shellcheck source=/dev/null
-		source "$MySB_InstallDir/files/banner_$gsCurrentVersion"
+		source "${MySB_InstallDir}/files/banner_${gsCurrentVersion}"
 	fi
 	echo
 }
@@ -94,7 +88,7 @@ gfnSendMail() {
 		case "$sCase" in
 		'new_user' | 'renting' | 'account_created' | 'delete_user')
 			echo "in_porgress" >>/tmp/SendMails.lock
-			screen -dmS SendMails "$MySB_InstallDir"/scripts/SendMails.bsh CRON
+			screen -dmS SendMails "${MySB_InstallDir}"/scripts/SendMails.bsh CRON
 			nIdMail="$(cmdMySQL 'MySB_db' "SELECT id_mails FROM mails WHERE user='$sUser' AND use_case='$sCase';" 2>/dev/null)"
 			if [ -z "$nIdMail" ]; then
 				cmdMySQL 'MySB_db' "INSERT INTO mails (user,subject,use_case,info,mail_address) VALUES ('$sUser','$sSubject','$sCase','$sInfo','$sUserMail');"
@@ -119,9 +113,9 @@ gfnSendMail() {
 			fi
 			;;
 		*)
-			curl --silent --retry 2 --user "${gsMySB_User}":"${gsMySB_Password}" "http://127.0.0.1:${gsPort_System_HTTP}/UserInfoMail?case=$sCase&user=$sUser" >"$MySB_InstallDir/temp/$sUser.html"
-			if [ -s "$MySB_InstallDir/temp/$sUser.html" ]; then
-				sAttach="$MySB_InstallDir/temp/$sUser.html"
+			curl --silent --retry 2 --user "${gsMySB_User}":"${gsMySB_Password}" "http://127.0.0.1:${gsPort_System_HTTP}/UserInfoMail?case=$sCase&user=$sUser" >"${MySB_InstallDir}/temp/$sUser.html"
+			if [ -s "${MySB_InstallDir}/temp/$sUser.html" ]; then
+				sAttach="${MySB_InstallDir}/temp/$sUser.html"
 				sMailType="html"
 			else
 				sMailType="plain"
@@ -179,7 +173,7 @@ gfnManageServices() {
 	if [ -n "$sServices" ]; then
 		case "$LOGSTD" in
 		"STDOUT")
-			echo "---- $(date +"%T")" >>"$MySB_InstallDir/logs/${gsScriptName}.log"
+			echo "---- $(date +"%T")" >>"${MySB_InstallDir}/logs/${gsScriptName}.log"
 			;;
 		esac
 
@@ -239,7 +233,7 @@ gfnManageServices() {
 					if gfnCheckCommand 0 pglcmd; then
 						if [ -z "$funcs_PeerGuardian" ]; then
 							# shellcheck source=inc/funcs_by_script/funcs_PeerGuardian
-							source "$MySB_InstallDir"/inc/funcs_by_script/funcs_PeerGuardian
+							source "${MySB_InstallDir}"/inc/funcs_by_script/funcs_PeerGuardian
 						fi
 
 						nNext=0
@@ -265,8 +259,8 @@ gfnManageServices() {
 
 							case "$LOGSTD" in
 							"STDOUT")
-								echo "$(date +"%T") --> The updated list of PGL may have failed." >>"$MySB_InstallDir/logs/$gsScriptName.log"
-								echo "$(date +"%T") --> Attempting to clean lists error." >>"$MySB_InstallDir/logs/$gsScriptName.log"
+								echo "$(date +"%T") --> The updated list of PGL may have failed." >>"${MySB_InstallDir}/logs/$gsScriptName.log"
+								echo "$(date +"%T") --> Attempting to clean lists error." >>"${MySB_InstallDir}/logs/$gsScriptName.log"
 								;;
 							esac
 
@@ -274,7 +268,7 @@ gfnManageServices() {
 							for List in $sPglcmdLog; do
 								case "$LOGSTD" in
 								"STDOUT")
-									echo "$(date +"%T") --> '$List' will be disabled." >>"$MySB_InstallDir/logs/$gsScriptName.log"
+									echo "$(date +"%T") --> '$List' will be disabled." >>"${MySB_InstallDir}/logs/$gsScriptName.log"
 									;;
 								esac
 
@@ -396,7 +390,7 @@ gfnManageServices() {
 
 		case "$LOGSTD" in
 		"STDOUT")
-			echo "---- $(date +"%T")" >>"$MySB_InstallDir/logs/$gsScriptName.log"
+			echo "---- $(date +"%T")" >>"${MySB_InstallDir}/logs/$gsScriptName.log"
 			;;
 		esac
 	fi
@@ -488,8 +482,9 @@ gfnQuestionGetString() {
 
 #### Script Invocation
 gfnScriptInvoke() {
-	local sMethod sScriptWished sScript aAllArgs
+	local sMethod sScriptWished sScript aAllArgs aArgs
 	aAllArgs=("$@")
+	aArgs=()
 
 	#### Use 'source' OR 'bash' OR 'ScreenSTD' OR 'ScreenWAIT' OR 'InQueue' ?
 	sMethod="${aAllArgs[0]}"
@@ -500,30 +495,34 @@ gfnScriptInvoke() {
 	aAllArgs=("${aAllArgs[@]/$sScriptWished/}")
 	sScript="$(basename "$sScriptWished")"
 
+	for arg in "${aAllArgs[@]}"; do
+		[ -n "${arg}" ] && aArgs+=("${arg}")
+	done
+
 	#### Start invovation
 	case "${sMethod}" in
 	"source" | "bash")
 		#### Prepare our script
 		# vars & funcs
-		echo "source $MySB_InstallDir/inc/vars" >"$MySB_InstallDir/temp/${gsScriptName}_${sScript}.invoked"
-		if [ -f "$MySB_InstallDir/inc/funcs_by_script/funcs_${sScript}" ]; then
-			echo "source $MySB_InstallDir/inc/funcs_by_script/funcs_${sScript}" >>"$MySB_InstallDir/temp/${gsScriptName}_${sScript}.invoked"
+		echo "source ${MySB_InstallDir}/inc/vars" >"${MySB_InstallDir}/temp/${gsScriptName}_${sScript}.invoked"
+		if [ -f "${MySB_InstallDir}/inc/funcs_by_script/funcs_${sScript}" ]; then
+			echo "source ${MySB_InstallDir}/inc/funcs_by_script/funcs_${sScript}" >>"${MySB_InstallDir}/temp/${gsScriptName}_${sScript}.invoked"
 		fi
 		# copy it
-		cat "$sScriptWished" >>"$MySB_InstallDir/temp/${gsScriptName}_${sScript}.invoked"
+		cat "$sScriptWished" >>"${MySB_InstallDir}/temp/${gsScriptName}_${sScript}.invoked"
 		# delete line start with comments
-		sed -i '/^#/d' "$MySB_InstallDir/temp/${gsScriptName}_${sScript}.invoked"
-		#delete includes before and after (on top and bottom of every script)
-		sed -i '/includes_before/d' "$MySB_InstallDir/temp/${gsScriptName}_${sScript}.invoked"
-		sed -i '/includes_after/d' "$MySB_InstallDir/temp/${gsScriptName}_${sScript}.invoked"
+		sed -i '/^#/d' "${MySB_InstallDir}/temp/${gsScriptName}_${sScript}.invoked"
+		# delete includes before and after (on top and bottom of every script)
+		sed -i '/includes_before/d' "${MySB_InstallDir}/temp/${gsScriptName}_${sScript}.invoked"
+		sed -i '/includes_after/d' "${MySB_InstallDir}/temp/${gsScriptName}_${sScript}.invoked"
 		# Language
 		gfnLoadLanguage "$sScript"
 
-		${sMethod} "$MySB_InstallDir/temp/${gsScriptName}_${sScript}.invoked" "${aAllArgs[@]}"
-		[ "$gbDevMode" -eq 0 ] && rm -f "$MySB_InstallDir/temp/${gsScriptName}_${sScript}.invoked"
+		${sMethod} "${MySB_InstallDir}/temp/${gsScriptName}_${sScript}.invoked" "${aArgs[@]}"
+		[ "$gbDevMode" -eq 0 ] && rm -f "${MySB_InstallDir}/temp/${gsScriptName}_${sScript}.invoked"
 		;;
 	"ScreenSTD" | "ScreenWAIT" | "InQueue")
-		screen -dmS "${gsScriptName}_${sScript}" /bin/bash "$sScriptWished" "${aAllArgs[@]}"
+		screen -dmS "${gsScriptName}_${sScript}" /bin/bash "$sScriptWished" "${aArgs[@]}"
 		# Possibilities:
 		# 	ScreenSTD:	Waiting silently
 		# 	ScreenWAIT:	Waiting point to point
@@ -554,7 +553,7 @@ gfnManageDirAndFiles() {
 
 	if [ -z "$funcs_MySB_CreateUser" ] || [ "$funcs_MySB_CreateUser" -eq 0 ]; then
 		# shellcheck source=inc/funcs_by_script/funcs_MySB_CreateUser
-		source "$MySB_InstallDir"/inc/funcs_by_script/funcs_MySB_CreateUser
+		source "${MySB_InstallDir}"/inc/funcs_by_script/funcs_MySB_CreateUser
 	fi
 
 	#### Create missing directories
@@ -562,63 +561,63 @@ gfnManageDirAndFiles() {
 		# TMPFS
 		if [ ! -d /mnt/tmpFS ]; then mkdir /mnt/tmpFS; fi
 		# Root Directories
-		if [ ! -d "$MySB_InstallDir"/db ]; then mkdir "$MySB_InstallDir"/db; fi
-		if [ ! -d "$MySB_InstallDir"/files ]; then mkdir "$MySB_InstallDir"/files; fi
-		if [ ! -d "$MySB_InstallDir"/logs/archives ]; then mkdir -p "$MySB_InstallDir"/logs/archives; fi
-		if [ ! -d "$MySB_InstallDir"/sources ]; then mkdir "$MySB_InstallDir"/sources; fi
-		if [ ! -d "$MySB_InstallDir"/ssl ]; then mkdir "$MySB_InstallDir"/ssl; fi
-		if [ ! -d "$MySB_InstallDir"/temp ]; then mkdir "$MySB_InstallDir"/temp; fi
-		if [ ! -d "$MySB_InstallDir"/web/apps ]; then mkdir -p "$MySB_InstallDir"/web/apps; fi
-		if [ ! -d "$MySB_InstallDir"/web/openvpn ]; then mkdir -p "$MySB_InstallDir"/web/openvpn; fi
+		if [ ! -d "${MySB_InstallDir}"/db ]; then mkdir "${MySB_InstallDir}"/db; fi
+		if [ ! -d "${MySB_InstallDir}"/files ]; then mkdir "${MySB_InstallDir}"/files; fi
+		if [ ! -d "${MySB_InstallDir}"/logs/archives ]; then mkdir -p "${MySB_InstallDir}"/logs/archives; fi
+		if [ ! -d "${MySB_InstallDir}"/sources ]; then mkdir "${MySB_InstallDir}"/sources; fi
+		if [ ! -d "${MySB_InstallDir}"/ssl ]; then mkdir "${MySB_InstallDir}"/ssl; fi
+		if [ ! -d "${MySB_InstallDir}"/temp ]; then mkdir "${MySB_InstallDir}"/temp; fi
+		if [ ! -d "${MySB_InstallDir}"/web/apps ]; then mkdir -p "${MySB_InstallDir}"/web/apps; fi
+		if [ ! -d "${MySB_InstallDir}"/web/openvpn ]; then mkdir -p "${MySB_InstallDir}"/web/openvpn; fi
 		# Log directories
-		if [ ! -d "$MySB_InstallDir"/web/logs ]; then mkdir "$MySB_InstallDir"/web/logs; fi
-		if [ ! -d "$MySB_InstallDir"/web/logs/bin ]; then mkdir "$MySB_InstallDir"/web/logs/bin; fi
-		if [ ! -d "$MySB_InstallDir"/web/logs/install ]; then mkdir "$MySB_InstallDir"/web/logs/install; fi
-		if [ ! -d "$MySB_InstallDir"/web/logs/nginx ]; then mkdir "$MySB_InstallDir"/web/logs/nginx; fi
-		if [ ! -d "$MySB_InstallDir"/web/logs/scripts ]; then mkdir "$MySB_InstallDir"/web/logs/scripts; fi
-		if [ ! -d "$MySB_InstallDir"/web/logs/security ]; then mkdir "$MySB_InstallDir"/web/logs/security; fi
-		if [ ! -d "$MySB_InstallDir"/web/logs/upgrade ]; then mkdir "$MySB_InstallDir"/web/logs/upgrade; fi
-		if [ ! -d "$MySB_InstallDir"/web/logs/system ]; then mkdir "$MySB_InstallDir"/web/logs/system; fi
+		if [ ! -d "${MySB_InstallDir}"/web/logs ]; then mkdir "${MySB_InstallDir}"/web/logs; fi
+		if [ ! -d "${MySB_InstallDir}"/web/logs/bin ]; then mkdir "${MySB_InstallDir}"/web/logs/bin; fi
+		if [ ! -d "${MySB_InstallDir}"/web/logs/install ]; then mkdir "${MySB_InstallDir}"/web/logs/install; fi
+		if [ ! -d "${MySB_InstallDir}"/web/logs/nginx ]; then mkdir "${MySB_InstallDir}"/web/logs/nginx; fi
+		if [ ! -d "${MySB_InstallDir}"/web/logs/scripts ]; then mkdir "${MySB_InstallDir}"/web/logs/scripts; fi
+		if [ ! -d "${MySB_InstallDir}"/web/logs/security ]; then mkdir "${MySB_InstallDir}"/web/logs/security; fi
+		if [ ! -d "${MySB_InstallDir}"/web/logs/upgrade ]; then mkdir "${MySB_InstallDir}"/web/logs/upgrade; fi
+		if [ ! -d "${MySB_InstallDir}"/web/logs/system ]; then mkdir "${MySB_InstallDir}"/web/logs/system; fi
 
 		#### Convert with dos2unix
-		dos2unix "$MySB_InstallDir"/* &>/dev/null
-		dos2unix "$MySB_InstallDir"/bin/* &>/dev/null
-		dos2unix "$MySB_InstallDir"/files/* &>/dev/null
-		dos2unix "$MySB_InstallDir"/inc/* &>/dev/null
-		dos2unix "$MySB_InstallDir"/install/* &>/dev/null
-		dos2unix "$MySB_InstallDir"/scripts/* &>/dev/null
-		dos2unix "$MySB_InstallDir"/templates/* &>/dev/null
-		dos2unix "$MySB_InstallDir"/upgrade/* &>/dev/null
+		dos2unix "${MySB_InstallDir}"/* &>/dev/null
+		dos2unix "${MySB_InstallDir}"/bin/* &>/dev/null
+		dos2unix "${MySB_InstallDir}"/files/* &>/dev/null
+		dos2unix "${MySB_InstallDir}"/inc/* &>/dev/null
+		dos2unix "${MySB_InstallDir}"/install/* &>/dev/null
+		dos2unix "${MySB_InstallDir}"/scripts/* &>/dev/null
+		dos2unix "${MySB_InstallDir}"/templates/* &>/dev/null
+		dos2unix "${MySB_InstallDir}"/upgrade/* &>/dev/null
 
 		#### Change rights
-		# $MySB_InstallDir/
-		chmod -R 0700 "$MySB_InstallDir"
-		chmod 0755 "$MySB_InstallDir"
-		chown -R root:root "$MySB_InstallDir"
-		# $MySB_InstallDir/db
-		chmod 0770 "$MySB_InstallDir"/db
-		chmod 0660 "$MySB_InstallDir"/db/* &>/dev/null
-		chown -R root:www-data "$MySB_InstallDir"/db
-		# $MySB_InstallDir/ssl
-		chmod 0644 "$MySB_InstallDir"/ssl/*.cert &>/dev/null
-		# $MySB_InstallDir/install
-		chmod -R 0755 "$MySB_InstallDir"/install
-		# $MySB_InstallDir/temp
-		chown root:www-data "$MySB_InstallDir"/temp
-		chmod 0760 "$MySB_InstallDir"/temp
-		# $MySB_InstallDir/web
-		chown -R root:www-data "$MySB_InstallDir"/web/*
-		chmod -R 0640 "$MySB_InstallDir"/web/*
-		find "$MySB_InstallDir"/web/* -type d -not -path "*ru*" -not -path "*openvpn*" -print0 | xargs -0 chmod 0750
-		chmod 0755 "$MySB_InstallDir"/web
-		chmod 0755 "$MySB_InstallDir"/web/apps
+		# ${MySB_InstallDir}/
+		chmod -R 0700 "${MySB_InstallDir}"
+		chmod 0755 "${MySB_InstallDir}"
+		chown -R root:root "${MySB_InstallDir}"
+		# ${MySB_InstallDir}/db
+		chmod 0770 "${MySB_InstallDir}"/db
+		chmod 0660 "${MySB_InstallDir}"/db/* &>/dev/null
+		chown -R root:www-data "${MySB_InstallDir}"/db
+		# ${MySB_InstallDir}/ssl
+		chmod 0644 "${MySB_InstallDir}"/ssl/*.cert &>/dev/null
+		# ${MySB_InstallDir}/install
+		chmod -R 0755 "${MySB_InstallDir}"/install
+		# ${MySB_InstallDir}/temp
+		chown root:www-data "${MySB_InstallDir}"/temp
+		chmod 0760 "${MySB_InstallDir}"/temp
+		# ${MySB_InstallDir}/web
+		chown -R root:www-data "${MySB_InstallDir}"/web/*
+		chmod -R 0640 "${MySB_InstallDir}"/web/*
+		find "${MySB_InstallDir}"/web/* -type d -not -path "*ru*" -not -path "*openvpn*" -print0 | xargs -0 chmod 0750
+		chmod 0755 "${MySB_InstallDir}"/web
+		chmod 0755 "${MySB_InstallDir}"/web/apps
 		# Tautulli
-		if [ -d "$MySB_InstallDir"/web/apps/tt ] && (grep -q 'tautulli' /etc/passwd); then
-			chown tautulli:nogroup -R "$MySB_InstallDir"/web/apps/tt
+		if [ -d "${MySB_InstallDir}"/web/apps/tt ] && (grep -q 'tautulli' /etc/passwd); then
+			chown tautulli:nogroup -R "${MySB_InstallDir}"/web/apps/tt
 		fi
 
-		# $MySB_InstallDir/web/openvpn
-		if [ -d "$MySB_InstallDir"/web/openvpn ]; then chmod 0770 "$MySB_InstallDir"/web/openvpn; fi
+		# ${MySB_InstallDir}/web/openvpn
+		if [ -d "${MySB_InstallDir}"/web/openvpn ]; then chmod 0770 "${MySB_InstallDir}"/web/openvpn; fi
 		# /home/MySB_share
 		if [ -d /home/MySB_share ]; then
 			chown root:MySB_users /home/MySB_share
@@ -937,7 +936,7 @@ fnRuTorrentGlobalConfigs() {
 			[ "$bIsActive" -eq 0 ] && gfnDeleteDirectory $bVerbose "$gsRutorrentPluginsDir/$sPlugin"
 			;;
 		'diskspace')
-			install -o www-data -g www-data -m 0755 "$MySB_InstallDir"/templates/rutorrent/plugins.diskspace.action.php.tmpl "$gsRutorrentPluginsDir/$sPlugin/action.php"
+			install -o www-data -g www-data -m 0755 "${MySB_InstallDir}"/templates/rutorrent/plugins.diskspace.action.php.tmpl "$gsRutorrentPluginsDir/$sPlugin/action.php"
 			;;
 		'cpuload')
 			if [ -f "$gsRutorrentPluginsDir/$sPlugin/conf.php" ]; then

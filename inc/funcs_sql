@@ -26,8 +26,6 @@
 	echo "Please load 'vars' file before..."
 	return
 }
-funcs_sql=1
-export funcs_sql
 ##################### FIRST LINE #####################################
 
 #### MySQL command
