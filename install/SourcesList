@@ -67,7 +67,7 @@ if gfnCheckCommand 0 netselect-apt; then
 
 				if [ -z "$(cat $MySB_InstallDir/temp/sources.list | grep "$Mirror")" ]; then
 					ReleaseGPG="$($binCURL $Mirror/dists/$gsDebianRelease/Release.gpg)"
-					if [ ! -z "$ReleaseGPG" ]; then
+					if [ -n "$ReleaseGPG" ]; then
 						echo "# $Mirror" >>$MySB_InstallDir/temp/sources.list
 						echo "deb [arch=$Arch] $Mirror $gsDebianRelease main contrib non-free" >>$MySB_InstallDir/temp/sources.list
 						echo "deb [arch=$Arch] $Mirror $gsDebianRelease-updates main contrib non-free" >>$MySB_InstallDir/temp/sources.list

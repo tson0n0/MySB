@@ -28,7 +28,7 @@ source "$(dirname "$0")"/../inc/includes_before
 
 LocSwitch="$1"
 
-if [ ! -z "$LocSwitch" ] && gfnCheckCommand 0 pglcmd; then
+if [ -n "$LocSwitch" ] && gfnCheckCommand 0 pglcmd; then
 	case "$LocSwitch" in
 	"update")
 		#### Force PeerGuardian List Update

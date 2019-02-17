@@ -32,7 +32,7 @@ if [ ${?} -eq 0 ]; then
 fi
 
 #### Cleaning
-[[ ! -z "${PKG_TEMP}" ]] && apt-get remove --purge -y -q ${PKG_TEMP}
+[[ -n "${PKG_TEMP}" ]] && apt-get remove --purge -y -q ${PKG_TEMP}
 apt-get remove --purge --auto-remove systemd --allow-remove-essential -y -q
 apt-get -y -q autoclean
 apt-get -y -q autoremove

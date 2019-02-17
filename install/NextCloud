@@ -26,7 +26,7 @@ source "$(dirname "$0")"/../inc/includes_before
 ##################### FIRST LINE #####################################
 
 #### Switch (INSTALL/UPGRADE/INIT)
-if [ ! -z "$1" ]; then
+if [ -n "$1" ]; then
 	gsSwitch="$1"
 fi
 
@@ -201,7 +201,7 @@ if [ "$gbToInstall_NextCloud" == "YES" ] && [ "$gsSwitch" != "INIT" ]; then
 
 		# Force upgrade script on next boot if needed
 		ScriptOnBoot="$(cmdMySQL 'MySB_db' "SELECT script FROM repositories WHERE on_boot = '1' AND name = 'NextCloud';")"
-		if [ ! -z "$ScriptOnBoot" ]; then
+		if [ -n "$ScriptOnBoot" ]; then
 			cmdMySQL 'MySB_db' "UPDATE repositories SET script = '$0' WHERE name='NextCloud';" -v
 		else
 			su -s /bin/sh www-data -c "/usr/bin/php $gsNextCloudDir/occ maintenance:mode --off"
@@ -342,7 +342,7 @@ EOF
 			cmdMySQL 'NextCloud_db' "UPDATE nc_appconfig SET configvalue='yes' WHERE appid='files_external' AND configkey='allow_user_mounting';" -v
 		fi
 		IfExist="$(cmdMySQL 'NextCloud_db' "SELECT configvalue FROM nc_appconfig WHERE configkey='user_mounting_backends';")"
-		if [ ! -z "$IfExist" ]; then
+		if [ -n "$IfExist" ]; then
 			cmdMySQL 'NextCloud_db' "DELETE FROM nc_appconfig WHERE appid='files_external' AND configkey='user_mounting_backends';" -v
 		fi
 		cmdMySQL 'NextCloud_db' "INSERT INTO nc_appconfig (appid,configkey,configvalue) VALUES ('files_external','user_mounting_backends','ftp,dav,owncloud,sftp,amazons3,dropbox,googledrive,swift,smb,\\\OC\\\Files\\\Storage\\\SFTP_Key,\\\OC\\\Files\\\Storage\\\SMB_OC');" -v

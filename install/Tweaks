@@ -70,7 +70,7 @@ perl -pi -e "s/<MySB_Version>/$gsCurrentVersion/g" /etc/rc.local
 #### Change timezone
 echo
 echo "########## Timezone"
-if [ ! -z "$gsTimeZone" ]; then
+if [ -n "$gsTimeZone" ]; then
 	if [ -f /etc/timezone ]; then rm -vf /etc/timezone; fi
 	echo "$gsTimeZone" | tee -a /etc/timezone
 	if [ -f /etc/adjtime ]; then
@@ -125,7 +125,7 @@ echo "########## Remove IPv6"
 sysctl -p
 if [ -f /etc/default/grub ]; then
 	source /etc/default/grub
-	if [ ! -z "$GRUB_CMDLINE_LINUX" ] && [ -z "$(echo $GRUB_CMDLINE_LINUX | grep 'ipv6.disable=1')" ]; then
+	if [ -n "$GRUB_CMDLINE_LINUX" ] && [ -z "$(echo $GRUB_CMDLINE_LINUX | grep 'ipv6.disable=1')" ]; then
 		sed -i "s/$GRUB_CMDLINE_LINUX/$GRUB_CMDLINE_LINUX ipv6.disable=1/g;" /etc/default/grub
 	else
 		perl -pi -e "s/GRUB_CMDLINE_LINUX=\"\"/GRUB_CMDLINE_LINUX=\"ipv6.disable=1\"/g" /etc/default/grub
@@ -177,11 +177,11 @@ cat /root/.ssh/id_rsa
 #### AES-NI Crypto Acceleration
 echo
 echo "########## AES-NI Crypto Acceleration"
-if [ ! -z "$(grep 'aes' /proc/cpuinfo)" ]; then
+if [ -n "$(grep 'aes' /proc/cpuinfo)" ]; then
 	## load
 	modprobe aesni_intel
 
-	if [ ! -z "$(lsmod | grep 'aes')" ]; then
+	if [ -n "$(lsmod | grep 'aes')" ]; then
 		## make permanent
 		[ -z "$(grep 'aesni_intel' /etc/modules)" ] && echo aesni_intel | tee -a /etc/modules
 		[ -z "$(grep 'OPENSSL_ia32cap=~0x200000200000000' /etc/environment)" ] && echo "OPENSSL_ia32cap=~0x200000200000000" | tee -a /etc/environment
@@ -204,7 +204,7 @@ if [ -f /etc/default/grub ]; then
 	echo
 	echo "########## Tweaks for Redis"
 	source /etc/default/grub
-	if [ ! -z "$GRUB_CMDLINE_LINUX" ] && [ -z "$(echo $GRUB_CMDLINE_LINUX | grep 'transparent_hugepage=never')" ]; then
+	if [ -n "$GRUB_CMDLINE_LINUX" ] && [ -z "$(echo $GRUB_CMDLINE_LINUX | grep 'transparent_hugepage=never')" ]; then
 		sed -i "s/$GRUB_CMDLINE_LINUX/$GRUB_CMDLINE_LINUX transparent_hugepage=never/g;" /etc/default/grub
 	else
 		perl -pi -e "s/GRUB_CMDLINE_LINUX=\"\"/GRUB_CMDLINE_LINUX=\"transparent_hugepage=never\"/g" /etc/default/grub
@@ -225,7 +225,7 @@ echo "########## Cleaning"
 rm -rvf /var/log/exim4
 rm -rvf /var/log/news
 OldKernelList=$(dpkg --list | grep linux-image | awk '{ print $2 }' | sort -V | sed -n "/$(uname -r)/q;p")
-[ ! -z "$OldKernelList" ] && apt-get -y --assume-yes purge $OldKernelList
+[ -n "$OldKernelList" ] && apt-get -y --assume-yes purge $OldKernelList
 update-grub
 
 #### Logrotate

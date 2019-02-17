@@ -137,8 +137,8 @@ fi
 #### 7 - Add in 'commands' table to prevent simultaneous calls
 if [ -n "${gsScriptName}" ]; then
 	case "${gsScriptName}" in
-	MySB_SecurityRules) sed -i '/'$$'/d' /tmp/MySB_SecurityRules.lock ;;
-	MySB_UpdateTools) sed -i '/'$$'/d' /tmp/MySB_UpdateTools.lock ;;
+	MySB_SecurityRules) sed -i "/$$/d" /tmp/MySB_SecurityRules.lock ;;
+	MySB_UpdateTools) sed -i "/$$/d" /tmp/MySB_UpdateTools.lock ;;
 	esac
 fi
 

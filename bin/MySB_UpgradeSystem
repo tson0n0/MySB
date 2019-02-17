@@ -110,7 +110,7 @@ systemctl daemon-reload &>/dev/null
 # updatedb
 # NewFiles=$(locate *.dpkg-new *.dpkg-dist *.dpkg-bak *.ucf-dist)
 # for file in $NewFiles; do
-# if [ ! -z "$gbDevMode" ] && [ $gbDevMode -eq 1 ]; then
+# if [ -n "$gbDevMode" ] && [ $gbDevMode -eq 1 ]; then
 # mv -vf $file $MySB_InstallDir/logs/TODEL/
 # else
 # rm -vf $file

@@ -32,7 +32,7 @@ if [ "$gbIsInstalled_NextCloud" == "YES" ]; then
 	User="$2"
 	case "$Mode" in
 	'scan')
-		if [ ! -z "$User" ] && [ ! -z "$(getent passwd $User)" ] && [ -z "$(ps ax | grep "occ files:scan $User" | grep -v 'grep')" ]; then
+		if [ -n "$User" ] && [ -n "$(getent passwd $User)" ] && [ -z "$(ps ax | grep "occ files:scan $User" | grep -v 'grep')" ]; then
 			echo "$(/bin/date '+%Y-%m-%d - %H:%M:%S') --> Files scan for $User"
 			su -s /bin/sh www-data -c "/usr/bin/php $gsNextCloudDir/occ files:scan --path=\"/$User/files/MySB_Home\" --quiet"
 		else
@@ -44,7 +44,7 @@ if [ "$gbIsInstalled_NextCloud" == "YES" ]; then
 			if [ $IfCron -eq 1 ]; then
 				gfnListCountUsers 'normal'
 				for seedUser in $gsUsersList; do
-					if [ ! -z "$(getent passwd $seedUser)" ] && [ -z "$(ps ax | grep "occ files:scan" | grep -v 'grep')" ]; then
+					if [ -n "$(getent passwd $seedUser)" ] && [ -z "$(ps ax | grep "occ files:scan" | grep -v 'grep')" ]; then
 						echo "$(/bin/date '+%Y-%m-%d - %H:%M:%S') --> Files scan for $seedUser"
 						su -s /bin/sh www-data -c "/usr/bin/php $gsNextCloudDir/occ files:scan --path=\"/$seedUser/files/MySB_Home\" --quiet"
 					fi

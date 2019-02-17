@@ -60,8 +60,8 @@ if [ -d /opt/MySB/temp/nginx ]; then
 fi
 
 #### /etc/nginx/passwd/MySB
-if [ ! -z "$gsMySB_User" ] && [ -f /etc/nginx/passwd/MySB ]; then
-	sed -i '/'$gsMySB_User'/d' /etc/nginx/passwd/MySB
+if [ -n "$gsMySB_User" ] && [ -f /etc/nginx/passwd/MySB ]; then
+	sed -i "/${gsMySB_User}/d" /etc/nginx/passwd/MySB
 fi
 sPassword="$(gfnGenPassword 16)"
 sUser="$(gfnGenPassword 8)"
