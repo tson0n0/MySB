@@ -206,10 +206,8 @@ gfnManageServices start "$ServicesToRestart"
 #### Create again certificates listing in system
 if [ "$DoRehash" == 1 ]; then
     log_daemon_msg "$CertificateRehash"
-    c_rehash ${MySB_InstallDir}/ssl/trackers/ &
-    >/dev/null
-    update-ca-certificates --fresh &
-    >/dev/null
+    c_rehash ${MySB_InstallDir}/ssl/trackers/ &>/dev/null
+    update-ca-certificates --fresh &>/dev/null
     gfnStatusLSB
 fi
 
