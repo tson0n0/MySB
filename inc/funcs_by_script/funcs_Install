@@ -116,13 +116,6 @@ gfnPackagesManage() {
         tDiff=$((tVarY - tVarX))
     fi
 
-
-ERROR 1046 (3D000) at line 1: No database selected
-nAptUpdate
-tDiff 20
-sQuery install
-/opt/MySB/inc/funcs_by_script/funcs_Install: ligne 125 : [:  : nombre entier attendu comme expression
-
     #### Check last update
     if [ "$sQuery" != "test" ]; then
         if [ "$gbIsReady_MySB_Db" == "YES" ]; then
