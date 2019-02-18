@@ -46,7 +46,7 @@ sCerbotParams="certonly --authenticator standalone --verbose --update-registrati
 case "${gsSwitch}" in
 'INSTALL' | 'UPGRADE')
 	sPackages=(libaugeas0 augeas-lenses)
-	gfnPackagesManage install "${sPackages[@]}" 'backports'
+	gfnPackagesManage install 'backports' "${sPackages[@]}"
 	sPackages=(python-virtualenv python-dev gcc dialog libssl-dev libffi-dev libltdl-dev psutils python-augeas)
 	gfnPackageBundleInstall "${sPackages[@]}"
 	;;
