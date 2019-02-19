@@ -16,6 +16,10 @@
 - Remove Python packages update from MySB_UpgradeSystem
 - Update blocking lists every 6 hours for PeerGuardian et rTorrent
 - #54 Remove /home mounts for NFSv4
+- SSH code review
+  * possiblity for main user to change some params
+  * disable root login possiblity
+  * add root to sudo group
 
 ## v5.4 - 2019/01/14 _(start at: 2018/09/07)_
 - Tautulli latest _(auto)_
