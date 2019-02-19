@@ -406,14 +406,12 @@ if [ -n "${MySB_InstallDir}" ] && [ "$gbIsReady_MySB_Db" == "YES" ]; then
     ### ----- Networks ports (Services ports)
 
     ### ----- Repositories infos
-    sRequestValues="$($binMySQL "SELECT dir FROM repositories WHERE name='ruTorrent' OR name='Seedbox-Manager' OR name='Cakebox-Light' OR name='LoadAvg' OR name='NextCloud';" | sed "s/<InstallDir>/$gsInstallDirEscaped/g;")"
-    gsRutorrentDir="$(echo "$sRequestValues" | awk '{split($0,a," "); print a[1]}')"
-    gsManagerDir="$(echo "$sRequestValues" | awk '{split($0,a," "); print a[2]}')"
-    gsCakeboxDir="$(echo "$sRequestValues" | awk '{split($0,a," "); print a[3]}')"
-    gsLoadAvgDir="$(echo "$sRequestValues" | awk '{split($0,a," "); print a[4]}')"
-    gsNextCloudDir="$(echo "$sRequestValues" | awk '{split($0,a," "); print a[5]}')"
-    gsRutorrentPluginsDir=$gsRutorrentDir/plugins
-    unset sRequestValues
+    gsRutorrentDir="$($binMySQL "SELECT dir FROM repositories WHERE name='ruTorrent';" | sed "s/<InstallDir>/$gsInstallDirEscaped/g;")"
+    gsManagerDir="$($binMySQL "SELECT dir FROM repositories WHERE name='Seedbox-Manager';" | sed "s/<InstallDir>/$gsInstallDirEscaped/g;")"
+    gsCakeboxDir="$($binMySQL "SELECT dir FROM repositories WHERE name='Cakebox-Light';" | sed "s/<InstallDir>/$gsInstallDirEscaped/g;")"
+    gsLoadAvgDir="$($binMySQL "SELECT dir FROM repositories WHERE name='LoadAvg';" | sed "s/<InstallDir>/$gsInstallDirEscaped/g;")"
+    gsNextCloudDir="$($binMySQL "SELECT dir FROM repositories WHERE name='NextCloud';" | sed "s/<InstallDir>/$gsInstallDirEscaped/g;")"
+    gsRutorrentPluginsDir="$gsRutorrentDir/plugins"
     export gsRutorrentDir gsManagerDir gsCakeboxDir gsLoadAvgDir gsNextCloudDir gsRutorrentPluginsDir
     ### ----- Repositories infos
 fi
