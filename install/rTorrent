@@ -82,6 +82,6 @@ gfnPackageBundleInstall "${sPackages[@]}"
 
 # -----------------------------------------
 # shellcheck source=inc/includes_after
-source $"(dirname "$0")"/../inc/includes_after
+source "$(dirname "$0")"/../inc/includes_after
 # -----------------------------------------
 ##################### LAST LINE ######################################
