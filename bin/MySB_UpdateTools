@@ -27,10 +27,10 @@
 ##################### FIRST LINE #####################################
 
 #### PlexMedia & Tautulli update
-if [[ "${gbIsInstalled_PlexMedia}" == "YES" ]]; then
-	log_daemon_msg "${UpdateTools_Plex}"
-	gfnScriptInvoke 'ScreenSTD' "${MySB_InstallDir}/install/PlexMedia" 'CRON'
-	gfnStatusLSB
+if [[ ${gbIsInstalled_PlexMedia} == "YES"   ]]; then
+    log_daemon_msg "${UpdateTools_Plex}"
+    gfnScriptInvoke 'ScreenSTD' "${MySB_InstallDir}/install/PlexMedia" 'CRON'
+    gfnStatusLSB
 fi
 
 #### Docker tools
@@ -57,18 +57,20 @@ fi
 ## Postfix Aliases
 gfnListCountUsers 'all'
 for seedUser in ${gsUsersList}; do
-	sUserMail="$(cmdMySQL 'MySB_db' "SELECT users_email FROM users_history WHERE users_ident='$seedUser';")"
-	(! grep -q "$seedUser" /etc/aliases) && {
-		echo "$seedUser: $sUserMail" >>/etc/aliases
-		newaliases
-	}
+    sUserMail="$(cmdMySQL 'MySB_db' "SELECT users_email FROM users_history WHERE users_ident='$seedUser';")"
+    (! grep -q "$seedUser" /etc/aliases) && {
+        echo "$seedUser: $sUserMail" >>/etc/aliases
+        newaliases
+    }
 done
 ## ruTorrent Plugin Check Port
 gfnListCountUsers 'normal'
 for seedUser in ${gsUsersList}; do
-	(! grep -q 'portchecker.co' "${gsRutorrentPluginsDir}"/check_port/action.php) && { cp -v "$MySB_InstallDir"/templates/rutorrent/plugins.check_port.action.php "${gsRutorrentPluginsDir}"/check_port/action.php; }
-	gfnManageServices restart "rtorrent-$seedUser"
+    (! grep -q 'portchecker.co' "${gsRutorrentPluginsDir}"/check_port/action.php) && { cp -v "$MySB_InstallDir"/templates/rutorrent/plugins.check_port.action.php "${gsRutorrentPluginsDir}"/check_port/action.php; }
+    gfnManageServices restart "rtorrent-$seedUser"
 done
+## SSH
+# (! grep -q 'sudo' <<<"$(id $gsMainUserName)") && usermod -a -G sudo "$gsMainUserName"
 
 # -----------------------------------------
 # shellcheck source=inc/includes_after

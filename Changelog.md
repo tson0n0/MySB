@@ -1,27 +1,31 @@
+# Changelog
+
 ## v5.5 - 2019/xx/xx _(start at: 2019/01/26)_
+
 - NextCloud v15.0.2
 - Portal
-  * page referer bug
+  - page referer bug
 - Blocklists
-  * standardized management _(only one list for PeerGuardian and rTorrent)_
-  * update lists _(add & remove some)_
-  * add countries
+  - standardized management _(only one list for PeerGuardian and rTorrent)_
+  - update lists _(add & remove some)_
+  - add countries
 - Shellcheck code errors correction
 - CI check review
 - Bugs fix
-  * add system alias for all users
-  * add quota modules to /etc/modules
+  - add system alias for all users
+  - add quota modules to /etc/modules
 - MySQL templates conversion to MariaDB
 - NextCloud restore export OC_PASS for --password-from-env parameter
 - Remove Python packages update from MySB_UpgradeSystem
 - Update blocking lists every 6 hours for PeerGuardian et rTorrent
 - #54 Remove /home mounts for NFSv4
 - SSH code review
-  * possiblity for main user to change some params
-  * disable root login possiblity
-  * add root to sudo group
+  - possiblity for main user to change some params
+  - disable root login possiblity
+  - add main user to sudo group
 
 ## v5.4 - 2019/01/14 _(start at: 2018/09/07)_
+
 - Tautulli latest _(auto)_
 - PlexMedia latest _(auto)_
 - Docker-Compose latest _(auto)_
@@ -34,13 +38,14 @@
 - Certbot-auto script v0.29.1
 - Webmin, restore install via sources list
 - Portal
-  * Medoo Framework v1.6.1
+  - Medoo Framework v1.6.1
 - ruTorrent, get all labels from ruTorrent GitHub
 - Replace standards DNS from Google to Quad9
 - Add continuous integration checks for GitLab
 - Add pipeline status badge
 
 ## v5.3 - 2018/09/07 _(start at: 2018/03/25)_
+
 - DNScrypt-proxy, review resolvers list
 - Let's Encrypt, review renew method
 - Systemctl, review services management
@@ -73,24 +78,25 @@
 - Add new binary MySB_UpdateTools used for update some tools _(Plex, Tautulli, Docker tools, ...)_
 - Add function to get and add all actives trackers in DB for main user
 - Portal
-  * Medoo Framework v1.5.7
-  * Add dedicated menu for renting options
-  * Add system option for activate renting menu
+  - Medoo Framework v1.5.7
+  - Add dedicated menu for renting options
+  - Add system option for activate renting menu
 - Quota
-  * Bug fix for calculate available space
-  * Add possibility to choice quota per users
-  * Add possibility to choice simple management for 'normal' users _(total space / quantity of 'normal' users)_ _('plex' users or not included)_
+  - Bug fix for calculate available space
+  - Add possibility to choice quota per users
+  - Add possibility to choice simple management for 'normal' users _(total space / quantity of 'normal' users)_ _('plex' users or not included)_
 - Rental
-  * Add possibility to add aditional prices for options
+  - Add possibility to add aditional prices for options
 
 ## v5.2 - 2018/03/24 _(start at: 2018/01/18)_
+
 - NextCloud v13.0.1
 - Minisign v0.8.2
 - Composer v1.6.3
 - RKHunter v1.4.6
 - Certbot-auto script v0.22.2
 - PlexMedia v1.13.0.5023
-- Tautulli v2.1.9, PlexPy is renamed, repo moved to https://github.com/Tautulli/Tautulli
+- [Tautulli](https://github.com/Tautulli/Tautulli) v2.1.9, PlexPy is renamed
 - PlexMedia, add deb file for x86_64 and increased frequency of update verification
 - PlexMedia & Tautulli, daily check for new version and install it if needed
 - Use of Git LFS with a second Git repo
@@ -103,9 +109,10 @@
 - Monitoring, update OVH server's IP
 - MySQL config review
 - Portal
-  * Medoo Framework v1.5.5
+  - Medoo Framework v1.5.5
 
 ## v5.1 - 2018/01/15
+
 - OpenVPN Admin for Webmin v3.1
 - Maxmind GeoIP v2.5.0
 - Plex Media Server v1.10.1.4602
@@ -130,26 +137,27 @@
 - Removing Wget, not needed...
 - ruTorrent, use of ZIP file instead of GIT
 - rTorrent method review
-  * .rtorrent.rc
-	 + disabling incomplete folder, files are no longer moved
-	 + conservation of *.torrent files in "torrents/Label" directories
-	 + improved management of Watch records to assign a good label
-  * .rTorrent.bsh
-	 + deleting file movement
-  * synchro.sh
-	 + minor changes
-  * init script
-	 + minor changes
+  - .rtorrent.rc
+    - disabling incomplete folder, files are no longer moved
+    - conservation of *.torrent files in "torrents/Label" directories
+    - improved management of Watch records to assign a good label
+  - .rTorrent.bsh
+    - deleting file movement
+  - synchro.sh
+    - minor changes
+  - init script
+    - minor changes
 - PHP install review _(modules)_
 - Portal
-  * Medoo Framework v1.5.4
+  - Medoo Framework v1.5.4
 - ruTorrent
-  * add theme club-QuickBox
-  * add theme Material Design
-  * remove plugin DiskLog
+  - add theme club-QuickBox
+  - add theme Material Design
+  - remove plugin DiskLog
 - Add Sivel Speedtest-cli script v1.0.7, Command line interface for testing internet bandwidth using speedtest.net
 
 ## v5.0 - 2017/10/18
+
 - PlexPy v1.4.25
 - NextCloud v12.0.3
 - LibSodium v1.0.15
@@ -161,6 +169,7 @@
 - Correct user's rTorrent service watchdog
 
 ## v4.2 - 2017/08/26
+
 - NextCloud v12.0.2
 - Composer v1.5.1
 - Plowshare v2.1.7
@@ -169,6 +178,7 @@
 - Downgrade XMLRPC-C to v1.43.6 _(stable)_
 
 ## v4.1 - 2017/07/23
+
 - ruTorrent v3.8
 - PlexPy v1.4.21
 - Libsodium v1.0.13
@@ -179,6 +189,7 @@
 - PlexPy, minor changes
 
 ## v4.0 - 2017/06/30
+
 - Composer v1.4.2
 - NodeJS v0.12.18
 - XMLRPC-C Advanced v1.49.0
@@ -193,18 +204,18 @@
 - Add Shell In a Box
 - ruTorrent Plugin Diskspace, add quota check
 - DNScrypt-proxy, new init script _(greatly inspired by DNSCrypt-Loader)_
-  * new command lines and interactive mode _(**service dnscrypt-proxy help**)_
-  * config option, _resolvers select filters_
-	+ select IP version _(but forced to IPv4)_
-	+ selection of resolvers that do not keep logs of queries _(No Logs)_
-	+ selection of resolvers that accept the DNSsec protocol
-	+ selection of resolvers that accept the NameCoin protocol
-  * update option
-	+ download online 'dnscrypt-resolvers.csv'
-	+ minisign check of 'dnscrypt-resolvers.csv'
-	+ verify certificate validity of filtred resolvers
-	+ speed test of filtred resolvers
-  * speed-test option, _allows to start DNScrypt with the fastest resolvers_
+  - new command lines and interactive mode _(**service dnscrypt-proxy help**)_
+  - config option, _resolvers select filters_
+    - select IP version _(but forced to IPv4)_
+    - selection of resolvers that do not keep logs of queries _(No Logs)_
+    - selection of resolvers that accept the DNSsec protocol
+    - selection of resolvers that accept the NameCoin protocol
+  - update option
+    - download online 'dnscrypt-resolvers.csv'
+    - minisign check of 'dnscrypt-resolvers.csv'
+    - verify certificate validity of filtred resolvers
+    - speed test of filtred resolvers
+  - speed-test option, _allows to start DNScrypt with the fastest resolvers_
 - Replacing ownCloud v9.1.3 with NextCloud v12.0.0
 - Add Maxmind GeoIP automatic update script v2.4.0
 - Let's Encrypt _(certbot)_, certificate checks end date review for scheduled renew
@@ -215,11 +226,12 @@
 - Let's Encrypt, schedules the next task following a certificate renewal
 - rTorrent synchro script, compare local and remote size before
 - Portal
-  * Medoo Framework v1.4.5
-  * Add DNScrypt-proxy configuration
-  * Added the ability to create a designated account for Plex. Thus the disk quota will not be imputed to other users.
+  - Medoo Framework v1.4.5
+  - Add DNScrypt-proxy configuration
+  - Added the ability to create a designated account for Plex. Thus the disk quota will not be imputed to other users.
 
 ## v3.5 - 2017/01/11
+
 - ownCloud v9.1.3
 - Plowshare v2.1.6
 - Composer v1.2.4
@@ -244,16 +256,17 @@
 - PHP5, limit TMPFS cache to 32Mo
 - MySQL, limit TMPFS cache to 32Mo
 - Change apps directories
-  * Cakebox-Light:	web/apps/cb
-  * LoadAvg: **web/apps/la**
-  * ownCloud: **web/apps/oc**
-  * ruTorrent: **web/apps/ru**
-  * Seedbox-Manager: **web/apps/sm**
+  - Cakebox-Light: **web/apps/cb**
+  - LoadAvg: **web/apps/la**
+  - ownCloud: **web/apps/oc**
+  - ruTorrent: **web/apps/ru**
+  - Seedbox-Manager: **web/apps/sm**
 - Portal
-  * Medoo Framework v1.1.3
-  * jQuery v1.12.4
+  - Medoo Framework v1.1.3
+  - jQuery v1.12.4
 
 ## v3.4 - 2016/09/09
+
 - Update provider monitoring for OVH _(v3.3 and v3.4)_
 - MySQL, minor changes _(v3.3 and v3.4)_
 - Disable totaly IPv6 with grub _(v3.3 and v3.4)_
@@ -270,13 +283,13 @@
 - Add a simple quota management
 - Change script of synchronization _(use of SQlite DB)_
 - Cakebox-Light, bug fix of playback _(Cakebox not streaming #12)__
-  * Disable DivX Web Player _(HTTPS not supported)_
-  * Tested with Firefox 45 _(32 & 64 bits)_ + HTML 5 Web Player + MP4
-  * Tested with Firefox 45 _(32bits)_ + VLC Web Player + MP4,AVI,MKV
-  * Tested with Chrome 49 + HTML 5 Web Player + MP4
-  * Tested with IE 11 + HTML 5 Web Player + MP4
-  * Tested with Opera 36 + HTML 5 Web Player + MP4
-  * Tested with Opera 36 + VLC Web Player + MP4,AVI,MKV
+  - Disable DivX Web Player _(HTTPS not supported)_
+  - Tested with Firefox 45 _(32 & 64 bits)_ + HTML 5 Web Player + MP4
+  - Tested with Firefox 45 _(32bits)_ + VLC Web Player + MP4,AVI,MKV
+  - Tested with Chrome 49 + HTML 5 Web Player + MP4
+  - Tested with IE 11 + HTML 5 Web Player + MP4
+  - Tested with Opera 36 + HTML 5 Web Player + MP4
+  - Tested with Opera 36 + VLC Web Player + MP4,AVI,MKV
 - DNScrypt-proxy v1.7.0
 - Cakebox-Light v1.8.6
 - ownCloud v9.1.0
@@ -288,23 +301,24 @@
 - XMLRPC-C Stable v1.43.03
 - Let's Encrypt v0.8.1
 - Portal
-  * Wolf CMS v0.8.3.1
-  * Noty v2.3.8
-  * Modernizr v2.8.3
-  * jQuery v1.12.2
-  * Medoo Framework v1.1.2
-  * Tracker Add, minor changes
-  * Add view of files queue to synchro
-  * Add synchronization page _(manage files in queue, manual synchronization, ...)_
-  * Possibility LogWatch activation
+  - Wolf CMS v0.8.3.1
+  - Noty v2.3.8
+  - Modernizr v2.8.3
+  - jQuery v1.12.2
+  - Medoo Framework v1.1.2
+  - Tracker Add, minor changes
+  - Add view of files queue to synchro
+  - Add synchronization page _(manage files in queue, manual synchronization, ...)_
+  - Possibility LogWatch activation
 - ruTorrent Plugins
-  * NFO v3.6 _(AceP1983)_
-  * Check SFV v3.6 _(AceP1983)_
-  * Disk Log v3.6 _(AceP1983)_
-  * Speed Graph v3.6 _(AceP1983)_
-  * Show IP v3.6 _(AceP1983)_
+  - NFO v3.6 _(AceP1983)_
+  - Check SFV v3.6 _(AceP1983)_
+  - Disk Log v3.6 _(AceP1983)_
+  - Speed Graph v3.6 _(AceP1983)_
+  - Show IP v3.6 _(AceP1983)_
 
 ## v3.3 - 2016/03/03
+
 - DNScrypt-proxy v1.6.1 _(v3.3)_
 - RKHunter v1.4.2 _(v3.3)_
 - Use of Let's Encrypt _(v3.3)_
@@ -326,6 +340,7 @@
 - Renewing certificates _(v3.3)_
 
 ## v3.2 - 2016/01/31
+
 - funcs_iptables, small corrections _(v3.1 and v3.2)_
 - funcs, small corrections _(v3.1 and v3.2)_
 - LogServer.bsh, rewriting the script & reduce some HTML log files _(iptables.html, pgld.html, pglcmd.html)_ _(v3.1 and v3.2)_
@@ -344,6 +359,7 @@
 - Medoo Framework v1.0.1 _(v3.2)_
 
 ## v3.1 - 2015/11/17
+
 - DNScrypt-proxy, bug fix in init script _(v3.0 and v3.1)_
 - Bind, bug fix
 - NginX, bug fix
@@ -365,13 +381,14 @@
 - Bug fixes
 
 ## v3.0 - 2015/10/24
+
 - MySB portal, correcting Cakebox link in User Infos page _(v2.1 and v3.0)_
 - MySB portal, add some new actions _(v3.0)_
-  * OpenVPN, possibility to change protocol
-  * Translation, language select French and English
-  * PeerGuardian, mail report management
-  * IP restriction, switch possibility
-  * DNScrypt-proxy, switch possibility
+  - OpenVPN, possibility to change protocol
+  - Translation, language select French and English
+  - PeerGuardian, mail report management
+  - IP restriction, switch possibility
+  - DNScrypt-proxy, switch possibility
 - Seedbox-Manager, now keep your config in administration page _(v2.1 and v3.0)_
 - Nginx, some fixes _(v3.0)_
 - NFS, disabling IPv6 support _(v3.0)_
@@ -391,6 +408,7 @@
 - Bug fixes
 
 ## v2.1 - 2015/03/14
+
 - Correcting MySB logrotate bugs _(v2.0 and v2.1)_
 - Correcting Postfix configuration _(v2.0 and v2.1)_
 - MySB_SecurityRules, correcting 'ip_forward' for OpenVPN _(v2.0 and v2.1)_
@@ -403,6 +421,7 @@
 - Create certificates again _(wrong time period and go back to 1024bits unstead 2048bits)_ _(only v2.1)_
 
 ## v2.0 - 2015/02/14
+
 - Used of SQLite instead of flat file _(more convenient)_
 - Add Wolf CMS as portal _(more convenient)_, manage blocklists, trackers, users...
 - NginX, add PageSpeed functionnality
@@ -421,6 +440,7 @@
 - Some modifications
 
 ## v1.1 - 2014/10/26
+
 - "install/PeerGuardian", minor change
 - "scripts/FirewallAndSecurity.sh", minor change
 - Correcting PlexMedia ports management
@@ -435,6 +455,7 @@
 - Correcting bug about sending confirmation email _(purge of heirloom-mailx)_ and unreachable pages /MySB/* _(Sorry for the mistake)_
 
 ## v1.0 - 2014/05/04
+
 - Use of repository list _(SVN, GitHub, files)_
 - rTorrent v0.9.4 and libTorrent v0.13.4
 - Use of SVN for Xmlrpc-c
