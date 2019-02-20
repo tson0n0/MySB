@@ -536,7 +536,7 @@ gfnRepoManageByType() {
 			fi
 			;;
 		'WBM')
-			if [ ! -f $"gsRepoDir/$gsRepoFile" ]; then
+			if [ ! -f "$gsRepoDir/$gsRepoFile" ]; then
 				$binCURL -o "$gsRepoDir/$gsRepoFile" "$gsRepoURL"
 				gnError=$?
 			fi

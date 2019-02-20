@@ -211,7 +211,7 @@ gfnCakeboxUsersConfigs() {
 		if [ -f "$gsCakeboxDir"/config/default.php.dist ]; then
 			rm -f "$gsCakeboxDir"/config/default.php.dist
 		fi
-		install -o root -g www-data -m 0660 "${MySB_InstallDir}"/templates/cakebox/config.user.tmpl $"gsCakeboxDir/config/$sUser.php"
+		install -o root -g www-data -m 0660 "${MySB_InstallDir}"/templates/cakebox/config.user.tmpl "$gsCakeboxDir/config/$sUser.php"
 		perl -pi -e "s/<server_name>/$sUser/g" "$gsCakeboxDir/config/$sUser.php"
 		case "$EnvLang" in
 		"fr") perl -pi -e "s/<lang>/$EnvLang/g" "$gsCakeboxDir/config/$sUser.php" ;;
@@ -334,7 +334,7 @@ gfnRuTorrentUsersConfigs() {
 	sUser="$1"
 	sUserValues="$(cmdMySQL 'MySB_db' "SELECT scgi_port,home_dir FROM users WHERE users_ident='$sUser';" | sed 's/\t/|/g;')"
 	sPortSCGI="$(echo "$sUserValues" | awk '{split($0,a,"|"); print a[1]}')"
-	sHomeDir="$(echo $"sUserValues" | awk '{split($0,a,"|"); print a[2]}')"
+	sHomeDir="$(echo "$sUserValues" | awk '{split($0,a,"|"); print a[2]}')"
 	sHomeDirEscaped="$(echo "$sHomeDir" | sed s,/,\\\\\/,g)"
 	sUserUpper="$(echo "$sUser" | tr '[:lower:]' '[:upper:]')"
 
