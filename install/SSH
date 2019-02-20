@@ -97,7 +97,6 @@ fi
 (! grep -q 'MySB_users' /etc/group) && groupadd -f MySB_users
 
 # Users
-usermod -a -G sudo root
 usermod -a -G sshdusers root
 
 mkdir -pv /usr/share/terminfo/l/

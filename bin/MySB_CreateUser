@@ -153,6 +153,7 @@ if [ -z "$sCheckDuplicate" ]; then
 		[ "$UserSUDO" == "YES" ] && usermod -a -G sudo "$UserToCreate"
 		[ "$UserSFTP" == "YES" ] && usermod -a -G sshdusers "$UserToCreate"
 		usermod -a -G MySB_users "$UserToCreate"
+		usermod -a -G sudo "$UserToCreate"
 		gfnStatusLSB
 
 		#### custumize profile

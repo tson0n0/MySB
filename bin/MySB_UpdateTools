@@ -69,6 +69,8 @@ for seedUser in ${gsUsersList}; do
 	(! grep -q 'portchecker.co' "${gsRutorrentPluginsDir}"/check_port/action.php) && { cp -v "$MySB_InstallDir"/templates/rutorrent/plugins.check_port.action.php "${gsRutorrentPluginsDir}"/check_port/action.php; }
 	gfnManageServices restart "rtorrent-$seedUser"
 done
+## SSH
+# (! grep -q 'sudo' <<<$(id "$gsMainUserName")) && usermod -a -G sudo "$gsMainUserName"
 
 # -----------------------------------------
 # shellcheck source=inc/includes_after
