@@ -26,133 +26,138 @@ source $"(dirname "$0")"/../inc/includes_before
 ##################### FIRST LINE #####################################
 
 case "$1" in
-"BEFORE")
-	####################################
-	#### To call for every upgrade - BoF
-	# Get new vars after MySQL.bsh script
-	# shellcheck source=inc/vars
-	source "$MySB_InstallDir"/inc/vars
+    "BEFORE")
+        ####################################
+        #### To call for every upgrade - BoF
+        # Get new vars after MySQL.bsh script
+        # shellcheck source=inc/vars
+        source "$MySB_InstallDir"/inc/vars
 
-	# Create missing directories and change rights
-	gfnManageDirAndFiles 'global'
+        # Create missing directories and change rights
+        gfnManageDirAndFiles 'global'
 
-	# Switching DNS
-	gfnSwitchDNS "bind"
+        # Switching DNS
+        gfnSwitchDNS "bind"
 
-	# Forcing NTP update
-	ping -c4 0.fr.pool.ntp.org
-	/usr/sbin/ntpdate -u 0.fr.pool.ntp.org
+        # Forcing NTP update
+        ping -c4 0.fr.pool.ntp.org
+        /usr/sbin/ntpdate -u 0.fr.pool.ntp.org
 
-	# MySQL
-	[ -f /tmp/MySQL.bsh.log ] && cat /tmp/MySQL.bsh.log >>$MySB_InstallDir/logs/BulkChanges.bsh.log
+        # MySQL
+        [ -f /tmp/MySQL.bsh.log ] && cat /tmp/MySQL.bsh.log >>$MySB_InstallDir/logs/BulkChanges.bsh.log
 
-	# VARs & Functions
-	# shellcheck source=inc/funcs_by_script/funcs_Install
-	[ -z $funcs_Install ] && source $MySB_InstallDir/inc/funcs_by_script/funcs_Install
-	# shellcheck source=inc/funcs_by_script/funcs_SourcesList
-	[ -z $funcs_SourcesList ] && source $MySB_InstallDir/inc/funcs_by_script/funcs_SourcesList
+        # VARs & Functions
+        # shellcheck source=inc/funcs_by_script/funcs_Install
+        [ -z $funcs_Install ] && source $MySB_InstallDir/inc/funcs_by_script/funcs_Install
+        # shellcheck source=inc/funcs_by_script/funcs_SourcesList
+        [ -z $funcs_SourcesList ] && source $MySB_InstallDir/inc/funcs_by_script/funcs_SourcesList
 
-	# Remove old banners
-	rm -fv $MySB_InstallDir/files/banner_*
+        # Remove old banners
+        rm -fv $MySB_InstallDir/files/banner_*
 
-	# Force install for depends
-	# shellcheck source=inc/funcs_by_script/funcs_Install
-	source $MySB_InstallDir/inc/funcs_by_script/funcs_Install
-	gfnPackagesManage install
-	#### To call for every upgrade - EoF
-	####################################
+        # Force install for depends
+        # shellcheck source=inc/funcs_by_script/funcs_Install
+        source $MySB_InstallDir/inc/funcs_by_script/funcs_Install
+        gfnPackagesManage install
+        #### To call for every upgrade - EoF
+        ####################################
 
-	#### NFS
-	sed -i '/fs.nfs.nfs_callback_tcpport/d' /etc/sysctl.conf
-	sysctl --system
-	;;
-"AFTER" | "INIT")
-	####################################
-	#### To call for every upgrade - BoF
-	if gfnCheckCommand 0 ldconfig; then
-		log_daemon_msg "$IncAfter_ConfigureDynamicLinks"
-		/sbin/ldconfig
-		gfnStatusLSB
-	fi
-	#### Free cache server
-	## To free pagecache, dentries and inodes
-	sync
-	echo 3 >/proc/sys/vm/drop_caches
-	# Create missing directories and change rights
-	gfnManageDirAndFiles 'global'
+        #### NFS
+        sed -i '/fs.nfs.nfs_callback_tcpport/d' /etc/sysctl.conf
+        sysctl --system
 
-	# STOP & START services
-	gfnManageServices stop "ntp postfix stunnel4 smbd nginx $binPhpService redis-server webmin dnscrypt-proxy"
-	gfnManageServices start "dnscrypt-proxy ntp stunnel4 postfix smbd redis-server $binPhpService webmin nginx"
+        #### SSH
+        if [ "${gsSwitch}" == "UPGRADE" ]; then
+            install -v -o root -g root -m 0644 $MySB_InstallDir/templates/other/etc.ssh.sshd_config.tmpl /etc/ssh/sshd_config
+        fi
+        ;;
+    "AFTER" | "INIT")
+        ####################################
+        #### To call for every upgrade - BoF
+        if gfnCheckCommand 0 ldconfig; then
+            log_daemon_msg "$IncAfter_ConfigureDynamicLinks"
+            /sbin/ldconfig
+            gfnStatusLSB
+        fi
+        #### Free cache server
+        ## To free pagecache, dentries and inodes
+        sync
+        echo 3 >/proc/sys/vm/drop_caches
+        # Create missing directories and change rights
+        gfnManageDirAndFiles 'global'
 
-	# Update version info
-	cmdMySQL 'MySB_db' "UPDATE system SET mysb_version = '$gsCurrentVersion' WHERE id_system='1';" -v
+        # STOP & START services
+        gfnManageServices stop "ntp postfix stunnel4 smbd nginx $binPhpService redis-server webmin dnscrypt-proxy"
+        gfnManageServices start "dnscrypt-proxy ntp stunnel4 postfix smbd redis-server $binPhpService webmin nginx"
 
-	# Send mail for each user with new version
-	# shellcheck source=/dev/null
-	source $MySB_InstallDir/inc/vars
-	# shellcheck source=inc/funcs_by_script/funcs_MySB_CreateUser
-	source $MySB_InstallDir/inc/funcs_by_script/funcs_MySB_CreateUser
-	gfnListCountUsers 'normal'
-	# gsRutorrentDirEscaped="$(echo $gsRutorrentDir | sed s,/,\\\\\/,g)"
-	for seedUser in $gsUsersList; do
-		sRequestValues="$(cmdMySQL 'MySB_db' "SELECT id_users,users_passwd FROM users WHERE users_ident = '$seedUser';" | sed 's/\t/|/g;')"
-		UserId="$(echo $sRequestValues | awk '{split($0,a,"|"); print a[1]}')"
-		UserPassword="$(echo $sRequestValues | awk '{split($0,a,"|"); print a[2]}')"
-		# rTorrent init
-		install -v -o root -g root -m 0755 $MySB_InstallDir/templates/init/etc.init.d.rtorrent.tmpl /etc/init.d/rtorrent-$seedUser
-		perl -pi -e "s/<username>/$seedUser/g" /etc/init.d/rtorrent-$seedUser
-		systemctl daemon-reload
-		systemctl enable rtorrent-$seedUser
-		# rTorrent Config File
-		gfnCreateRtorrentConfigFile "$seedUser" 'force'
+        # Update version info
+        cmdMySQL 'MySB_db' "UPDATE system SET mysb_version = '$gsCurrentVersion' WHERE id_system='1';" -v
 
-		if [ "$UserId" == "$gnMainUserId" ] && [ -n "$UserPassword" ]; then
-			# Remove main user password from database
-			cmdMySQL 'MySB_db' "UPDATE users SET users_passwd = '' WHERE admin = '1';" -v
-			gfnScriptInvoke 'ScreenSTD' "$MySB_InstallDir/bin/MySB_ChangeUserPassword" "$seedUser" "$UserPassword" 'UPGRADE'
-		else
-			# Init password required
-			echo "Uncomment lines below for send reset password mail to users"
-			# cmdMySQL 'MySB_db' "UPDATE users SET init_password = '1' WHERE users_ident = '$seedUser';" -v
-			# Subject="$Upgrade_SubjectUpgraded $gsCurrentVersion"
-			# gfnSendMail "$Subject" "$seedUser" "upgrade"
-		fi
+        # Send mail for each user with new version
+        # shellcheck source=/dev/null
+        source $MySB_InstallDir/inc/vars
+        # shellcheck source=inc/funcs_by_script/funcs_MySB_CreateUser
+        source $MySB_InstallDir/inc/funcs_by_script/funcs_MySB_CreateUser
+        gfnListCountUsers 'normal'
+        # gsRutorrentDirEscaped="$(echo $gsRutorrentDir | sed s,/,\\\\\/,g)"
+        for seedUser in $gsUsersList; do
+            sRequestValues="$(cmdMySQL 'MySB_db' "SELECT id_users,users_passwd FROM users WHERE users_ident = '$seedUser';" | sed 's/\t/|/g;')"
+            UserId="$(echo $sRequestValues | awk '{split($0,a,"|"); print a[1]}')"
+            UserPassword="$(echo $sRequestValues | awk '{split($0,a,"|"); print a[2]}')"
+            # rTorrent init
+            install -v -o root -g root -m 0755 $MySB_InstallDir/templates/init/etc.init.d.rtorrent.tmpl /etc/init.d/rtorrent-$seedUser
+            perl -pi -e "s/<username>/$seedUser/g" /etc/init.d/rtorrent-$seedUser
+            systemctl daemon-reload
+            systemctl enable rtorrent-$seedUser
+            # rTorrent Config File
+            gfnCreateRtorrentConfigFile "$seedUser" 'force'
 
-		# Change some rights
-		chown -v $seedUser:$seedUser /home/$seedUser/.ssh/authorized_keys
-		chmod -v 0644 /home/$seedUser/.ssh/authorized_keys
+            if [ "$UserId" == "$gnMainUserId" ] && [ -n "$UserPassword" ]; then
+                # Remove main user password from database
+                cmdMySQL 'MySB_db' "UPDATE users SET users_passwd = '' WHERE admin = '1';" -v
+                gfnScriptInvoke 'ScreenSTD' "$MySB_InstallDir/bin/MySB_ChangeUserPassword" "$seedUser" "$UserPassword" 'UPGRADE'
+            else
+                # Init password required
+                echo "Uncomment lines below for send reset password mail to users"
+                # cmdMySQL 'MySB_db' "UPDATE users SET init_password = '1' WHERE users_ident = '$seedUser';" -v
+                # Subject="$Upgrade_SubjectUpgraded $gsCurrentVersion"
+                # gfnSendMail "$Subject" "$seedUser" "upgrade"
+            fi
 
-		#### OpenVPN - Create again clients configurations if needed
-		if [ "$(find /etc/openvpn/clients/ -maxdepth 1 -type f -name "${seedUser}*" 2>/dev/null | wc -l)" -eq 0 ]; then
-			gfnScriptInvoke 'ScreenSTD' "${MySB_InstallDir}/install/OpenVPN" 'client' "$seedUser" 'UPGRADE'
-		fi
-	done
+            # Change some rights
+            chown -v $seedUser:$seedUser /home/$seedUser/.ssh/authorized_keys
+            chmod -v 0644 /home/$seedUser/.ssh/authorized_keys
 
-	#### Apply quota for users
-	gfnManageQuota '-v'
+            #### OpenVPN - Create again clients configurations if needed
+            if [ "$(find /etc/openvpn/clients/ -maxdepth 1 -type f -name "${seedUser}*" 2>/dev/null | wc -l)" -eq 0 ]; then
+                gfnScriptInvoke 'ScreenSTD' "${MySB_InstallDir}/install/OpenVPN" 'client' "$seedUser" 'UPGRADE'
+            fi
+        done
 
-	#### Check actuel quota
-	repquota -a
+        #### Apply quota for users
+        gfnManageQuota '-v'
 
-	#### Cleaning
-	# updatedb
-	# for file in $(locate *.dpkg-old *.dpkg-new *.dpkg-dist *.dpkg-bak *.ucf-dist); do
-	# if [ -n "$gbDevMode" ] && [ $gbDevMode -eq 1 ]; then
-	# mv -vf $file $MySB_InstallDir/logs/TODEL/
-	# else
-	# rm -vf $file
-	# fi
-	# done
+        #### Check actuel quota
+        repquota -a
 
-	#### Flush mail queue
-	if gfnCheckCommand 0 postfix && gfnGetPid postfix; then postfix flush; fi
+        #### Cleaning
+        # updatedb
+        # for file in $(locate *.dpkg-old *.dpkg-new *.dpkg-dist *.dpkg-bak *.ucf-dist); do
+        # if [ -n "$gbDevMode" ] && [ $gbDevMode -eq 1 ]; then
+        # mv -vf $file $MySB_InstallDir/logs/TODEL/
+        # else
+        # rm -vf $file
+        # fi
+        # done
 
-	#### Upgrade in progress page + Start Cron service
-	gfnUpgradeInProgress "off"
-	#### To call for every upgrade - EoF
-	####################################
-	;;
+        #### Flush mail queue
+        if gfnCheckCommand 0 postfix && gfnGetPid postfix; then postfix flush; fi
+
+        #### Upgrade in progress page + Start Cron service
+        gfnUpgradeInProgress "off"
+        #### To call for every upgrade - EoF
+        ####################################
+        ;;
 esac
 
 # -----------------------------------------
