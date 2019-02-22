@@ -43,9 +43,9 @@ LABEL maintainer=${PROJECT_NAMESPACE} \
 	org.label-schema.name=${PROJECT_NAME} \
 	org.label-schema.description=${PROJECT_DESCRIPTION} \
 	org.label-schema.url=${PROJECT_URL} \
-	org.label-schema.vendor='MySB - '${PROJECT_NAMESPACE} \
-	org.label-schema.usage=${PROJECT_URL}'/blob/'${BUILD_VERSION}'/cd/docker/README.md' \
-	org.label-schema.changelog-url=${PROJECT_URL}'/blob/'${BUILD_VERSION}'/cd/docker/Changelog.md'
+	org.label-schema.vendor="MySB - ${PROJECT_NAMESPACE}" \
+	org.label-schema.usage="${PROJECT_URL}/blob/${BUILD_VERSION}/cd/docker/README.md" \
+	org.label-schema.changelog-url="${PROJECT_URL}/blob/${BUILD_VERSION}/cd/docker/Changelog.md"
 
 #### Environment variables
 ENV PKG_BASE="php7.0-fpm dos2unix yamllint python3-pkg-resources pylint pylint3 xz-utils rsync" \

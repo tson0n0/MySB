@@ -28,52 +28,52 @@ source "$(dirname "$0")"/../inc/includes_before
 #### Shellcheck
 gfnGetRepoValues 'Shellcheck'
 if [ "$gsVersionInstalled" != "$gsVersionLatest" ]; then
-	[ -f "${MySB_Files}/${gsRepoFile}" ] && mv -v "${MySB_Files}/${gsRepoFile}" "${MySB_Files}/${gsRepoFile}.tmp"
-	gfnRepoManageByType
-	[ -f "${MySB_Files}/${gsRepoFile}" ] && rm -fv "${MySB_Files}/${gsRepoFile}.tmp"
-	tar --xz -xvf /tmp/shellcheck-stable.linux.x86_64.tar.xz -C /tmp/
-	cp /tmp/shellcheck-stable/shellcheck /usr/local/bin/shellcheck
-	chmod -v +x /usr/local/bin/shellcheck
-	/usr/local/bin/shellcheck --version
+    [ -f "${MySB_Files}/${gsRepoFile}" ] && mv -v "${MySB_Files}/${gsRepoFile}" "${MySB_Files}/${gsRepoFile}.tmp"
+    gfnRepoManageByType
+    [ -f "${MySB_Files}/${gsRepoFile}" ] && rm -fv "${MySB_Files}/${gsRepoFile}.tmp"
+    tar --xz -xvf "${MySB_Files}/${gsRepoFile}" -C /tmp/
+    cp /tmp/shellcheck-stable/shellcheck /usr/local/bin/shellcheck
+    chmod -v +x /usr/local/bin/shellcheck
+    /usr/local/bin/shellcheck --version
 fi
 
 #### GeoIP update
 gfnGetRepoValues 'GeoIPupdate' && gfnRepoManageByType
 if [ $gnRepoUpgrade -eq 1 ] || [ "$gsSwitch" == "INSTALL" ]; then
-	cd ${gsRepoDir}/ || exit
-	make clean
-	autoreconf
-	./configure
-	make -j$gsProcessors
-	make install
-	install -v -o root -g root -m 0644 $MySB_InstallDir/templates/other/usr.local.etc.geoip.conf.tmpl /usr/local/etc/GeoIP.conf
-	# Disable the upgrade job
-	cmdMySQL 'MySB_db' "UPDATE repositories SET upgrade='0' WHERE name='GeoIPupdate';" -v
+    cd ${gsRepoDir}/ || exit
+    make clean
+    autoreconf
+    ./configure
+    make -j$gsProcessors
+    make install
+    install -v -o root -g root -m 0644 $MySB_InstallDir/templates/other/usr.local.etc.geoip.conf.tmpl /usr/local/etc/GeoIP.conf
+    # Disable the upgrade job
+    cmdMySQL 'MySB_db' "UPDATE repositories SET upgrade='0' WHERE name='GeoIPupdate';" -v
 fi
 
 #### Composer
 gfnGetRepoValues 'Composer'
 gfnRepoManageByType
 if [ "$gsVersionInstalled" != "$gsVersionLatest" ]; then
-	gfnRepoManageByType
-	chmod -v +x ${gsRepoDir}
-	${gsRepoDir} --version | grep 'Composer version'
+    gfnRepoManageByType
+    chmod -v +x ${gsRepoDir}
+    ${gsRepoDir} --version | grep 'Composer version'
 fi
 composer self-update
 
 #### NodeJS
 gfnGetRepoValues 'NodeJS' && gfnRepoManageByType
 if [ $gnRepoUpgrade -eq 1 ] || [ "$gsSwitch" == "INSTALL" ]; then
-	cd ${gsRepoDir} || exit
-	if [ -d out/ ]; then
-		make clean
-	fi
-	./configure
-	make -j$gsProcessors
-	make install
-	/sbin/ldconfig
-	# Disable the upgrade job
-	cmdMySQL 'MySB_db' "UPDATE repositories SET upgrade='0' WHERE name='NodeJS';" -v
+    cd ${gsRepoDir} || exit
+    if [ -d out/ ]; then
+        make clean
+    fi
+    ./configure
+    make -j$gsProcessors
+    make install
+    /sbin/ldconfig
+    # Disable the upgrade job
+    cmdMySQL 'MySB_db' "UPDATE repositories SET upgrade='0' WHERE name='NodeJS';" -v
 fi
 
 #### Python

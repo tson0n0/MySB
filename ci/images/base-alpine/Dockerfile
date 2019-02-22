@@ -64,9 +64,9 @@ LABEL maintainer=${PROJECT_NAMESPACE} \
 	org.label-schema.name=${PROJECT_NAME} \
 	org.label-schema.description=${PROJECT_DESCRIPTION} \
 	org.label-schema.url=${PROJECT_URL} \
-	org.label-schema.vendor='MySB - '${PROJECT_NAMESPACE} \
-	org.label-schema.usage=${PROJECT_URL}'/blob/'${BUILD_VERSION}'/cd/docker/README.md' \
-	org.label-schema.changelog-url=${PROJECT_URL}'/blob/'${BUILD_VERSION}'/cd/docker/Changelog.md'
+	org.label-schema.vendor="MySB - ${PROJECT_NAMESPACE}" \
+	org.label-schema.usage="${PROJECT_URL}/blob/${BUILD_VERSION}/cd/docker/README.md" \
+	org.label-schema.changelog-url="${PROJECT_URL}/blob/${BUILD_VERSION}/cd/docker/Changelog.md"
 
 #### Copy files
 COPY ./rootfs /tmp/rootfs
@@ -89,13 +89,13 @@ RUN echo '@edge http://dl-cdn.alpinelinux.org/alpine/edge/testing' >> /etc/apk/r
 #### S6 Overlay
 # https://github.com/gliderlabs/docker-alpine/issues/11#issuecomment-106233554
 RUN echo 'hosts: files mdns4_minimal [NOTFOUND=return] dns mdns4' > /etc/nsswitch.conf \
-	&& sLatestUrl=$(curl --retry 3 -k -L -S https://api.github.com/repos/just-containers/s6-overlay/releases/latest | grep 'browser_' | grep 'amd64' | grep -v '.sig' | cut -d\" -f4) \
+	&& sLatestUrl=$(curl --retry 3 -k -L -S https://api.github.com/repos/just-containers/s6-overlay/releases/latest | grep 'browser_' | grep 'amd64' | grep -v '.sig' | cut -d '"' -f4) \
 	&& curl --retry 3 -k -L -S -o /tmp/s6-overlay-amd64.tar.gz ${sLatestUrl} \
 	&& tar zxvf /tmp/s6-overlay-amd64.tar.gz -C /
 
 #### Goss
 # Add goss for local, serverspec-like testing
-RUN sLatestUrl=$(curl --retry 3 -k -L -S https://api.github.com/repos/aelsabbahy/goss/releases/latest | grep 'browser_' | grep 'amd64' | grep -v '.sig' | cut -d\" -f4) \
+RUN sLatestUrl=$(curl --retry 3 -k -L -S https://api.github.com/repos/aelsabbahy/goss/releases/latest | grep 'browser_' | grep 'amd64' | grep -v '.sig' | cut -d '"' -f4) \
 	&& curl --retry 3 -k -L -S -o /usr/local/bin/goss ${sLatestUrl} \
 	&& chmod -v +x /usr/local/bin/goss
 
