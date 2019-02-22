@@ -46,7 +46,7 @@ EOF
 	fi
 
 	sed -i "s/<Port_SSH>/${gsPort_SSH}/g;" /etc/fail2ban/jail.local
-	sed -i "s/<gsPort_FTP>/${gsPort_FTP}/g;" /etc/fail2ban/jail.local
+	sed -i "s/<Port_FTP>/${gsPort_FTP}/g;" /etc/fail2ban/jail.local
 	sed -i "s/<Port_FTP_Data>/${gsPort_FTP_Data}/g;" /etc/fail2ban/jail.local
 	sed -i "s/<Port_MySB_HTTPS>/${gsPort_MySB_HTTPS}/g;" /etc/fail2ban/jail.local
 
