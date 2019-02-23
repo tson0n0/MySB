@@ -47,7 +47,7 @@ define('MainUser_UserAdd_Table_Monthly', 'Mensualit&eacute;');
 define('MainUser_UserAdd_Table_CreatedAt', 'Date de<br />cr&eacute;ation');
 define('MainUser_UserAdd_QuotaTypeManual', 'manuel');
 define('MainUser_UserAdd_PasswordOK', 'Modifi&eacute;');
-define('MainUser_UserAdd_Comment_FreeSpace', 'Espace disponible: %s<br />Espace r&eacute;elle disponible: %s');
+define('MainUser_UserAdd_Comment_FreeSpace', 'Espace disponible: %s<br />Espace r&eacute;el disponible: %s');
 define('MainUser_UserAdd_Comment', 'Un compte "<b>normal</b>" disposera de tous les services.<br />
 Un compte "<b>plex</b>" ne disposera d\'aucun service. Ce type de compte est conseill&eacute; pour les utilisateurs acc&eacute;dant uniquement &agrave; Plex.<br />
 Les services tels que ruTorrent, Cakebox, Seedbox Manager, OpenVPN et NextCloud ne seront pas disponibles.<br />
