@@ -30,6 +30,9 @@ gsRutorrentDirEscaped="$(echo $gsRutorrentDir | sed s,/,\\\\\/,g)"
 gsRutorrentPluginsDirEscaped="$(echo $gsRutorrentPluginsDir | sed s,/,\\\\\/,g)"
 LoadavgDirEscaped="$(echo $gsLoadAvgDir | sed s,/,\\\\\/,g)"
 
+#### STOP services
+gfnManageServices stop "nginx"
+
 #### Install packages
 gfnPackageBundleInstall 'nginx-extras'
 

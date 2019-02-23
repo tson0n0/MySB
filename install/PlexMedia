@@ -37,7 +37,7 @@ function fnInstallDebPackage() {
 
 	# Change architecture if needed
 	case $(getconf LONG_BIT) in
-	32) gsRepoURL="$(echo ${gsRepoURL} | sed 's/x86_64/i686/g;')" ;;
+	32) gsRepoURL="$(echo "${gsRepoURL}" | sed 's/x86_64/i686/g;')" ;;
 	esac
 
 	# Install Plex if needed
