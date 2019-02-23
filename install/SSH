@@ -73,7 +73,7 @@ sed -i '/UseDNS /d' /etc/ssh/sshd_config
 sed -i "${nNumLine}i\UseDNS no" /etc/ssh/sshd_config
 # Subsystem
 nNumLine=$(grep 'Subsystem' -n -m 1 /etc/ssh/sshd_config | cut -d ':' -f 1)
-sed -i '/Subsystem /d' /etc/ssh/sshd_config
+sed -i '/Subsystem/d' /etc/ssh/sshd_config
 sed -i "${nNumLine}i\Subsystem sftp internal-sftp -l ERROR -f AUTH" /etc/ssh/sshd_config
 # sed -i "${nNumLine}i\Subsystem sftp /usr/lib/openssh/sftp-server -l ERROR -f AUTH" /etc/ssh/sshd_config
 # MySB

@@ -50,43 +50,45 @@ rm -f /etc/nginx/conf.d/*
 
 #### Restore config files if needed
 if [ -d /opt/MySB/temp/nginx ]; then
-	mv -v $MySB_InstallDir/temp/nginx/locations/* /etc/nginx/locations/
-	mv -v $MySB_InstallDir/temp/nginx/proxy/* /etc/nginx/proxy/
-	mv -v $MySB_InstallDir/temp/nginx/rpc/* /etc/nginx/rpc/
-	mv -v $MySB_InstallDir/temp/nginx/sites_available/* /etc/nginx/sites-available/
-	mv -v $MySB_InstallDir/temp/nginx/sites_enabled/* /etc/nginx/sites-enabled/
-	mv -v $MySB_InstallDir/temp/nginx/upstream/* /etc/nginx/upstream/
-	rm -rfv $MySB_InstallDir/temp/nginx
+    mv -v $MySB_InstallDir/temp/nginx/locations/* /etc/nginx/locations/
+    mv -v $MySB_InstallDir/temp/nginx/proxy/* /etc/nginx/proxy/
+    mv -v $MySB_InstallDir/temp/nginx/rpc/* /etc/nginx/rpc/
+    mv -v $MySB_InstallDir/temp/nginx/sites_available/* /etc/nginx/sites-available/
+    mv -v $MySB_InstallDir/temp/nginx/sites_enabled/* /etc/nginx/sites-enabled/
+    mv -v $MySB_InstallDir/temp/nginx/upstream/* /etc/nginx/upstream/
+    rm -rfv $MySB_InstallDir/temp/nginx
 fi
 
 #### /etc/nginx/passwd/MySB
 if [ -n "$gsMySB_User" ] && [ -f /etc/nginx/passwd/MySB ]; then
-	sed -i "/${gsMySB_User}/d" /etc/nginx/passwd/MySB
+    sed -i "/${gsMySB_User}/d" /etc/nginx/passwd/MySB
 fi
 sPassword="$(gfnGenPassword 16)"
 sUser="$(gfnGenPassword 8)"
 cmdMySQL 'MySB_db' "UPDATE system SET mysb_user = '$sUser', mysb_password = '$sPassword' WHERE id_system='1';" -v
 if [ ! -f /etc/nginx/passwd/MySB ]; then
-	touch /etc/nginx/passwd/MySB
+    touch /etc/nginx/passwd/MySB
 fi
 htpasswd -bs /etc/nginx/passwd/MySB $sUser $sPassword &>/dev/null
 chmod -v 640 /etc/nginx/passwd/MySB
 chown -v www-data:www-data /etc/nginx/passwd/MySB
 
+#### Certificates
+if ([ -f ${MySB_InstallDir}/ssl/mysb.key ] && [ -f ${MySB_InstallDir}/ssl/mysb.cert ]); then
+    echo "	ssl_certificate_key ${MySB_InstallDir}/ssl/mysb.key;" >/etc/nginx/snippets/mysb_selfsigned.conf
+    echo "	ssl_certificate ${MySB_InstallDir}/ssl/mysb.cert;" >>/etc/nginx/snippets/mysb_selfsigned.conf
+    echo "	include snippets/mysb_selfsigned.conf;" >/etc/nginx/ssl_certificate
+fi
+if [[ -f /etc/nginx/snippets/letsencrypt_${gsHostNameFqdn}.conf ]]; then
+    echo "	include snippets/letsencrypt_${gsHostNameFqdn}.conf;" >/etc/nginx/ssl_certificate
+fi
+chmod 0600 /etc/nginx/ssl_certificate
+
 #### nginx.conf
+install -v -o root -g root -m 0600 ${MySB_InstallDir}/templates/nginx/etc.nginx.mime.types.tmpl /etc/nginx/mime.types
 install -v -o root -g root -m 0600 ${MySB_InstallDir}/templates/nginx/etc.nginx.logs_format.tmpl /etc/nginx/logs_format
 install -v -o root -g root -m 0600 $MySB_InstallDir/templates/nginx/etc.nginx.nginx.conf.tmpl /etc/nginx/nginx.conf
 perl -pi -e "s/worker_processes auto;/worker_processes $gsProcessors;/g" /etc/nginx/nginx.conf
-
-#### Certificates
-if ([ -f ${MySB_InstallDir}/ssl/mysb.key ] && [ -f ${MySB_InstallDir}/ssl/mysb.cert ]); then
-	echo "	ssl_certificate_key ${MySB_InstallDir}/ssl/mysb.key;" >/etc/nginx/snippets/mysb_selfsigned.conf
-	echo "	ssl_certificate ${MySB_InstallDir}/ssl/mysb.cert;" >>/etc/nginx/snippets/mysb_selfsigned.conf
-	echo "	include snippets/mysb_selfsigned.conf;" >/etc/nginx/ssl_certificate
-fi
-if [[ -f /etc/nginx/snippets/letsencrypt_${gsHostNameFqdn}.conf ]]; then
-	echo "	include snippets/letsencrypt_${gsHostNameFqdn}.conf;" >/etc/nginx/ssl_certificate
-fi
 
 #### Default Server
 install -v -o root -g root -m 0600 $MySB_InstallDir/templates/nginx/etc.nginx.site-enabled.default.tmpl /etc/nginx/sites-available/default
@@ -137,20 +139,20 @@ echo "www-data ALL = (root) NOPASSWD: /bin/bash $MySB_InstallDir/scripts/ApplyCo
 addgroup www-data MySB_users
 
 #### Remove errors logs
-rm -f /var/log/nginx/error.log
+# rm -f /var/log/nginx/error.log
 rm -f /var/log/nginx/*-error.log
 
 #### NextCloud
 if [ "$gbToInstall_NextCloud" == "YES" ] || [ "$gbIsInstalled_NextCloud" == "YES" ]; then
-	install -v -g root -o root -m 0644 $MySB_InstallDir/templates/nginx/etc.nginx.locations.nextcloud.conf.tmpl /etc/nginx/locations/NextCloud.conf
-	perl -pi -e "s/<MySB_InstallDir>/$gsInstallDirEscaped/g" /etc/nginx/locations/NextCloud.conf
+    install -v -g root -o root -m 0644 $MySB_InstallDir/templates/nginx/etc.nginx.locations.nextcloud.conf.tmpl /etc/nginx/locations/NextCloud.conf
+    perl -pi -e "s/<MySB_InstallDir>/$gsInstallDirEscaped/g" /etc/nginx/locations/NextCloud.conf
 fi
 
 #### Tautulli
 if [ "$gbToInstall_PlexMedia" == "YES" ] || [ "$gbIsInstalled_PlexMedia" == "YES" ]; then
-	install -v -o root -g root -m 0644 $MySB_InstallDir/templates/nginx/etc.nginx.locations.tautulli.conf.tmpl /etc/nginx/locations/Tautulli.conf
-	install -v -o root -g root -m 0644 $MySB_InstallDir/templates/nginx/etc.nginx.proxy.tautulli.conf.tmpl /etc/nginx/proxy/Tautulli.conf
-	perl -pi -e "s/<MainUser>/$gsMainUserName/g" /etc/nginx/locations/Tautulli.conf
+    install -v -o root -g root -m 0644 $MySB_InstallDir/templates/nginx/etc.nginx.locations.tautulli.conf.tmpl /etc/nginx/locations/Tautulli.conf
+    install -v -o root -g root -m 0644 $MySB_InstallDir/templates/nginx/etc.nginx.proxy.tautulli.conf.tmpl /etc/nginx/proxy/Tautulli.conf
+    perl -pi -e "s/<MainUser>/$gsMainUserName/g" /etc/nginx/locations/Tautulli.conf
 fi
 
 #### START services
