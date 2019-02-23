@@ -918,7 +918,7 @@ fnRuTorrentGlobalConfigs() {
 						nNumLine=$(sed -n "/\$auth =/=" "$gsRutorrentPluginsDir/$sPlugin/config.php")
 						sed -i "${nNumLine}i\$password = \$_SERVER['PHP_AUTH_PW'];" "$gsRutorrentPluginsDir/$sPlugin/config.php"
 					fi
-					if (! grep "\$auth = \"\$username:\$password\";" "$gsRutorrentPluginsDir/$sPlugin/config.php"); then
+					if (! grep '$auth = "$username:$password";' "$gsRutorrentPluginsDir/$sPlugin/config.php"); then
 						nNumLine=$(sed -n "/\$auth =/=" "$gsRutorrentPluginsDir/$sPlugin/config.php")
 						sed -i "/\$auth =/d" "$gsRutorrentPluginsDir/$sPlugin/config.php"
 						nNumLine=$((nNumLine + 2))
