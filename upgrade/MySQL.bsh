@@ -4,17 +4,6 @@
 #### 1 - ALTER some tables - BoF
 # blocklists
 cmdMySQL 'MySB_db' "DROP TABLE blocklists;" -v
-# cmdMySQL 'MySB_db' "ALTER TABLE blocklists CHANGE list_name list_name VARCHAR(48) NOT NULL;" -v
-# cmdMySQL 'MySB_db' "ALTER TABLE blocklists CHANGE pgl_list_name list_id VARCHAR(34) NOT NULL;" -v
-# cmdMySQL 'MySB_db' "ALTER TABLE blocklists CHANGE url_infos infos_url VARCHAR(256) NOT NULL;" -v
-# cmdMySQL 'MySB_db' "ALTER TABLE blocklists CHANGE peerguardian_list list_url VARCHAR(256) NOT NULL;" -v
-# cmdMySQL 'MySB_db' "ALTER TABLE blocklists CHANGE rtorrent_list subscription VARCHAR(5) NOT NULL DEFAULT 'true';" -v
-# cmdMySQL 'MySB_db' "ALTER TABLE blocklists CHANGE peerguardian_active default TINYINT(1) NOT NULL DEFAULT '0';" -v
-# cmdMySQL 'MySB_db' "ALTER TABLE blocklists CHANGE rtorrent_active enable TINYINT(1) NOT NULL DEFAULT '0';" -v
-# cmdMySQL 'MySB_db' "ALTER TABLE blocklists DROP COLUMN default;" -v
-# cmdMySQL 'MySB_db' "ALTER TABLE blocklists CHANGE comments comments VARCHAR(64) NOT NULL;" -v
-# cmdMySQL 'MySB_db' "ALTER TABLE blocklists CHANGE peerguardian_lastupdate lastupdate DATETIME NOT NULL;" -v
-# cmdMySQL 'MySB_db' "ALTER TABLE blocklists DROP COLUMN rtorrent_lastupdate;" -v
 #### 1 - ALTER some tables - EoF
 
 #### 2 - Import Schema for new tables, triggers & constraints - BoF

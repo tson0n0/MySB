@@ -451,13 +451,13 @@ gfnGetRepoValues() {
 		gsFileURL="$($binCURL "$gsRepoURL" | jq -r '.assets[] | select(.name == "docker-compose-Linux-x86_64").browser_download_url')"
 		;;
 	'Composer')
-		[ -f "$gsRepoDir" ] && chmod -v +x "$gsRepoDir"
+		[ -f "$gsRepoDir" ] && chmod +x "$gsRepoDir"
 		gsVersionInstalled="$(gfnCheckCommand 0 composer && composer --version 2>/dev/null | grep 'Composer version' | awk '{ print $3 }' || echo 'Not installed')"
 		gsVersionLatest="$($binCURL "$gsRepoURL" | grep 'tag_name' | awk '{ print $2 }' | cut -d '"' -f 2)"
 		gsFileURL="$($binCURL "$gsRepoURL" | jq -r '.assets[] | select(.name == "composer.phar").browser_download_url')"
 		;;
 	'Shellcheck')
-		[ -f "$gsRepoDir" ] && chmod -v +x "$gsRepoDir"
+		[ -f "$gsRepoDir" ] && chmod +x "$gsRepoDir"
 		gsVersionInstalled="$(gfnCheckCommand 0 shellcheck && shellcheck --version | grep 'version' | head -n 1 | awk '{ print $2 }' || echo 'Not installed')"
 		gsVersionLatest="$($binCURL 'https://api.github.com/repos/koalaman/shellcheck/tags' | grep 'name' | head -n 1 | awk '{ print $2 }' | cut -d '"' -f 2 | sed 's/v//g;')"
 		;;
@@ -501,25 +501,25 @@ gfnRepoManageByType() {
 		gnError=0
 
 		case "$gsRepoType" in
-		# 'TARXZ')
-		# 	[ -n "$gsFileURL" ] && gsRepoURL="$gsFileURL"
-		# 	if [ ! -f "$MySB_Files/$gsRepoFile" ]; then
-		# 		$binCURL -o "$MySB_Files/$gsRepoFile" "$gsRepoURL"
-		# 		gnError=$?
-		# 	fi
-		# 	if [ ! -d "$gsRepoDir" ] && [ $gnError -eq 0 ]; then
-		# 		sSubDir="$(tar --xz -tf $MySB_Files/$gsRepoFile | cut -d '/' -f 1 | uniq)"
-		# 		if [ ! -d "${MySB_InstallDir}/temp/$sSubDir" ]; then
-		# 			tar --xz -xf "$MySB_Files/$gsRepoFile" -C "${MySB_InstallDir}/temp/"
-		# 			gnError=$?
-		# 		fi
-		# 		if [ -d "${MySB_InstallDir}/temp/$sSubDir" ] && [ ! -d "$gsRepoDir" ]; then
-		# 			mv -v "${MySB_InstallDir}/temp/$sSubDir" "$gsRepoDir"
-		# 			chown -R root:root "$gsRepoDir"
-		# 			gnError=$?
-		# 		fi
-		# 	fi
-		# ;;
+		'TARXZ')
+			[ -n "$gsFileURL" ] && gsRepoURL="$gsFileURL"
+			if [ ! -f "$MySB_Files/$gsRepoFile" ]; then
+				$binCURL -o "$MySB_Files/$gsRepoFile" "$gsRepoURL"
+				gnError=$?
+			fi
+			if [ ! -d "$gsRepoDir" ] && [ $gnError -eq 0 ]; then
+				sSubDir="$(tar --xz -tf $MySB_Files/$gsRepoFile | cut -d '/' -f 1 | uniq)"
+				if [ ! -d "${MySB_InstallDir}/temp/$sSubDir" ]; then
+					tar --xz -xf "$MySB_Files/$gsRepoFile" -C "${MySB_InstallDir}/temp/"
+					gnError=$?
+				fi
+				if [ -d "${MySB_InstallDir}/temp/$sSubDir" ] && [ ! -d "$gsRepoDir" ]; then
+					mv -v "${MySB_InstallDir}/temp/$sSubDir" "$gsRepoDir"
+					chown -R root:root "$gsRepoDir"
+					gnError=$?
+				fi
+			fi
+		;;
 		'TARGZ')
 			[ -n "$gsFileURL" ] && gsRepoURL="$gsFileURL"
 			if [ ! -f "$MySB_Files/$gsRepoFile" ]; then

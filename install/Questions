@@ -459,23 +459,33 @@ DisplaySurvey() {
 		fi
 
 		if [ "$gbToInstall_OpenVPN" == "$Global_YES" ] || [ "$gbIsInstalled_OpenVPN" == "YES" ]; then
-			[ ! -d /etc/openvpn/backup/ ] && mkdir -p /etc/openvpn/backup/
-			# Server - Backup
-			for sFile in $(echo /etc/openvpn/*${gsPreviousHostNameFqdn}*); do
-				[ -f "${sFile}" ] && mv "${sFile}" /etc/openvpn/backup/
-			done
-			# Server - Restore
-			for sFile in $(echo /etc/openvpn/backup/*${gsHostNameFqdn}*); do
-				[ -f "${sFile}" ] && mv "${sFile}" /etc/openvpn/
-			done
-			# Clients - Backup
-			for sFile in $(echo /etc/openvpn/clients/*${gsPreviousHostNameFqdn}*); do
-				[ -f "${sFile}" ] && mv "${sFile}" /etc/openvpn/clients/backup/
-			done
-			# Clients - Restore
-			for sFile in $(echo /etc/openvpn/backup/*${gsHostNameFqdn}*); do
-				[ -f "${sFile}" ] && mv "${sFile}" /etc/openvpn/clients/
-			done
+			[ ! -d /etc/openvpn/backup/ ] && mkdir -pv /etc/openvpn/backup/ >>${gsLogFile}
+			[ ! -d /etc/openvpn/clients/backup/ ] && mkdir -pv /etc/openvpn/clients/backup/ >>${gsLogFile}
+
+			if [ -n "${gsPreviousHostNameFqdn}" ]; then
+				# Server - Backup
+				sFilesList="$(find /etc/openvpn/ -maxdepth 1 -type f -name "*${gsPreviousHostNameFqdn}*")"
+				for sFile in ${sFilesList}; do
+					[ -f "${sFile}" ] && mv -v "${sFile}" /etc/openvpn/backup/ >>${gsLogFile}
+				done
+				# Clients - Backup
+				sFilesList="$(find /etc/openvpn/clients/ -maxdepth 1 -type f -name "*${gsPreviousHostNameFqdn}*")"
+				for sFile in ${sFilesList}; do
+					[ -f "${sFile}" ] && mv -v "${sFile}" /etc/openvpn/clients/backup/ >>${gsLogFile}
+				done
+			fi
+			if [ -n "${gsHostNameFqdn}" ]; then
+				# Server - Restore
+				sFilesList="$(find /etc/openvpn/backup/ -maxdepth 1 -type f -name "*${gsHostNameFqdn}*")"
+				for sFile in ${sFilesList}; do
+					[ -f "${sFile}" ] && mv -v "${sFile}" /etc/openvpn/ >>${gsLogFile}
+				done
+				# Clients - Restore
+				sFilesList="$(find /etc/openvpn/clients/backup/ -maxdepth 1 -type f -name "*${gsHostNameFqdn}*")"
+				for sFile in ${sFilesList}; do
+					[ -f "${sFile}" ] && mv -v "${sFile}" /etc/openvpn/clients/ >>${gsLogFile}
+				done
+			fi
 
 			if [ "$RepeatSurvey" == "YES" ]; then
 				sValueProto="$gsOpenVPN_Proto"
