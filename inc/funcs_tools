@@ -422,6 +422,7 @@ gfnGetRepoValues() {
 	gsRepoFile="$(echo "$sValues" | awk '{split($0,a,"|"); print a[5]}')"
 	gsRepoURL="$(echo "$sValues" | awk '{split($0,a,"|"); print a[6]}')"
 	gnRepoActive="$(echo "$sValues" | awk '{split($0,a,"|"); print a[7]}')"
+	gsVersionInstalled="Not installed !"
 
 	case "$sRepoName" in
 	'Plex Media Server')
@@ -542,7 +543,7 @@ gfnRepoManageByType() {
 			fi
 			;;
 		'DEB')
-			if [ ! -f $gsRepoDir/$gsRepoFile ]; then
+			if [ ! -f "$gsRepoDir/$gsRepoFile" ]; then
 				$binCURL -o "$MySB_Files/$gsRepoFile" "$gsRepoURL"
 				gnError=$?
 			fi
