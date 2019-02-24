@@ -61,8 +61,10 @@ gfnPackageBundleInstall() {
     mapfile -t aPackagesRequired < <(echo "${aArgs[*]}" | tr ' ' '\n' | sort | uniq)
 
     for sPackage in "${aPackagesRequired[@]}"; do
-        if ! dpkg -s "$sPackage" &>/dev/null; then
-            aPackagesToInstall+=("$sPackage")
+        if [ -n "$sPackage" ]; then
+            if ! dpkg -s "$sPackage" &>/dev/null; then
+                aPackagesToInstall+=("$sPackage")
+            fi
         fi
     done
 
@@ -70,7 +72,9 @@ gfnPackageBundleInstall() {
         gfnPackagesManage 'install' "$sOption" "${aPackagesToInstall[@]}"
     else
         for sPackage in "${aPackagesRequired[@]}"; do
-            echo "$sPackage is already installed !"
+            if [ -n "$sPackage" ]; then
+                echo "$sPackage is already installed !"
+            fi
         done
     fi
 }

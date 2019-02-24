@@ -37,7 +37,7 @@ systemctl daemon-reload
 systemctl enable docker
 
 #### Secure
-if [[ -z "$(grep 'docker' <<< "$(id ${gsMainUserName})")" ]]; then
+if (! grep -q 'docker' <<< "$(id ${gsMainUserName})"); then
 	usermod -aG docker ${gsMainUserName}
 fi
 
@@ -68,6 +68,7 @@ fi
 
 #### Dry
 echo
+echo "########## Dry"
 $binCURL https://moncho.github.io/dry/dryup.sh | sh
 if gfnCheckCommand 0 dry; then
 	chmod 0755 /usr/local/bin/dry
