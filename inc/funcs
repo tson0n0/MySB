@@ -207,7 +207,7 @@ gfnManageServices() {
 							[[ -n ${gsPort_NginX_HTTPS} ]] && fuser -k "$gsPort_NginX_HTTPS"/tcp &>/dev/null
 							gfnStatusLSB 0
 						fi
-						if gfnGetPid "$Service" || [ -n "$(pgrep -f 'nginx' >/dev/null)" ]; then
+						if (gfnGetPid "$Service"); then
 							gfnStatusLSB 1
 							log_daemon_msg "${Funcs_Killing} $Service"
 							killall "$Service"
@@ -313,7 +313,7 @@ gfnManageServices() {
 							else
 								log_daemon_msg "${Funcs_Reloading} $Service"
 								service "$Service" $sFinalCmd >/dev/null
-								if [ -z "$(pgrep -f "named" >/dev/null)" ]; then
+								if (! gfnGetPid "named"); then
 									gfnStatusLSB 1
 									log_daemon_msg "${Funcs_Restarting} $Service"
 									service "$Service" restart >/dev/null
@@ -331,7 +331,7 @@ gfnManageServices() {
 							else
 								log_daemon_msg "$Funcs_Reloading $Service"
 								service "$Service" $sFinalCmd >/dev/null
-								if [ -z "$(pgrep -f 'nginx' >/dev/null)" ]; then
+								if (! gfnGetPid "$Service"); then
 									gfnStatusLSB 1
 									log_daemon_msg "$Funcs_Restarting $Service"
 									fuser -k 81/tcp &>/dev/null
@@ -340,7 +340,7 @@ gfnManageServices() {
 									[[ -n $gsPort_NginX_HTTP ]] && fuser -k "$gsPort_NginX_HTTP"/tcp &>/dev/null
 									[[ -n $gsPort_NginX_HTTPS ]] && fuser -k "$gsPort_NginX_HTTPS"/tcp &>/dev/null
 									service "$Service" restart >/dev/null
-									if [ -z "$(pgrep -f 'nginx' >/dev/null)" ]; then
+									if (! gfnGetPid "$Service"); then
 										gfnStatusLSB 1
 										log_daemon_msg "$Funcs_Killing $Service"
 										service "$Service" stop >/dev/null

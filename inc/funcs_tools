@@ -161,7 +161,11 @@ gfnGetPid() {
 	if [ -n "$sPid" ]; then
 		return 0
 	else
-		return 1
+		if (pgrep -f "$1" >/dev/null); then
+			return 0
+		else
+			return 1
+		fi
 	fi
 }
 
@@ -422,7 +426,6 @@ gfnGetRepoValues() {
 	gsRepoFile="$(echo "$sValues" | awk '{split($0,a,"|"); print a[5]}')"
 	gsRepoURL="$(echo "$sValues" | awk '{split($0,a,"|"); print a[6]}')"
 	gnRepoActive="$(echo "$sValues" | awk '{split($0,a,"|"); print a[7]}')"
-	gsVersionInstalled="Not installed !"
 
 	case "$sRepoName" in
 	'Plex Media Server')
@@ -470,7 +473,7 @@ gfnGetRepoValues() {
 	echo "Type : $gsRepoType"
 	echo "Active : $(echo "$gnRepoActive" | sed 's/0/NO/g;' | sed 's/1/YES/g;')"
 	echo "Repo URL : $gsRepoURL"
-	[ -n "$gsVersionInstalled" ] && echo "Current version : $gsVersionInstalled"
+	[ -n "$gsVersionInstalled" ] && echo "Current version : $gsVersionInstalled" || echo "Not installed !"
 	[ -n "$gsVersionLatest" ] && echo "Latest version : $gsVersionLatest"
 	[ -n "$gsFileURL" ] && echo "File URL : $gsFileURL"
 	echo
