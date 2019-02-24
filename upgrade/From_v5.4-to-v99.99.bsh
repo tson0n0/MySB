@@ -31,7 +31,7 @@ CurrentSTEP=0
 TotalSTEP=$(cat $0 | grep 'CurrentSTEP++' | grep -v 'TotalSTEP' | wc -l)
 
 #### Questions
-gfnScriptInvoke 'source' "$MySB_InstallDir/install/Questions" "$$" 'UPGRADE' "$MySB_InstallDir"
+gfnScriptInvoke 'source' "$MySB_InstallDir/install/Questions" 'UPGRADE'
 echo
 
 #### Vars
@@ -86,11 +86,11 @@ gfnStatusSTD
 ((CurrentSTEP++))
 echo -e -n "${CBLUE}$CurrentSTEP/$TotalSTEP	- $Upgrade_ProviderInfos$CEND..."
 case "$gsServerProvider" in
-'OVH' | 'HETZNER')
-	gfnScriptInvoke 'ScreenWAIT' "$MySB_InstallDir/install/Monitoring" 'UPGRADE'
-	gfnStatusSTD
-	;;
-*) echo -e "$Global_NothingToDo" ;;
+    'OVH' | 'HETZNER')
+        gfnScriptInvoke 'ScreenWAIT' "$MySB_InstallDir/install/Monitoring" 'UPGRADE'
+        gfnStatusSTD
+        ;;
+    *) echo -e "$Global_NothingToDo" ;;
 esac
 
 #### Tweaks
@@ -185,35 +185,35 @@ gfnStatusSTD
 ((CurrentSTEP++))
 echo -e -n "${CBLUE}$CurrentSTEP/$TotalSTEP	- $Upgrade_Fail2Ban$CEND..."
 if [ "$gbToInstall_Fail2Ban" == "YES" ] || [ "$gbIsInstalled_Fail2Ban" == "YES" ]; then
-	cmdMySQL 'MySB_db' "UPDATE services SET to_install = '1' WHERE serv_name='Fail2Ban';"
-	gfnScriptInvoke 'ScreenWAIT' "$MySB_InstallDir/install/Fail2Ban" 'UPGRADE'
-	gfnStatusSTD
+    cmdMySQL 'MySB_db' "UPDATE services SET to_install = '1' WHERE serv_name='Fail2Ban';"
+    gfnScriptInvoke 'ScreenWAIT' "$MySB_InstallDir/install/Fail2Ban" 'UPGRADE'
+    gfnStatusSTD
 else
-	echo -e "$Global_NothingToDo"
+    echo -e "$Global_NothingToDo"
 fi
 
 #### PeerGuardian
 ((CurrentSTEP++))
 echo -e -n "${CBLUE}$CurrentSTEP/$TotalSTEP	- $Upgrade_PeerGuardian$CEND..."
 if [ "$gsMySB_PeerBlock" == "PeerGuardian" ]; then
-	cmdMySQL 'MySB_db' "UPDATE services SET to_install = '1' WHERE serv_name='PeerGuardian';"
-	gfnScriptInvoke 'ScreenWAIT' "$MySB_InstallDir/install/PeerGuardian" 'UPGRADE'
-	gfnStatusSTD
+    cmdMySQL 'MySB_db' "UPDATE services SET to_install = '1' WHERE serv_name='PeerGuardian';"
+    gfnScriptInvoke 'ScreenWAIT' "$MySB_InstallDir/install/PeerGuardian" 'UPGRADE'
+    gfnStatusSTD
 else
-	echo -e "$Global_NothingToDo"
+    echo -e "$Global_NothingToDo"
 fi
 
 ### DNScrypt-proxy 1/2
 ((CurrentSTEP++))
 echo -e -n "${CBLUE}$CurrentSTEP/$TotalSTEP	- $Upgrade_DNScrypt$CEND..."
 if [ "$gbToInstall_DNScrypt" == "YES" ] || [ "$gbIsInstalled_DNScrypt" == "YES" ]; then
-	cmdMySQL 'MySB_db' "UPDATE services SET to_install = '1' WHERE serv_name='DNScrypt-proxy';"
-	cmdMySQL 'MySB_db' "UPDATE system SET dnscrypt='1' WHERE id_system='1';"
-	gfnScriptInvoke 'ScreenWAIT' "$MySB_InstallDir/install/DNScrypt" 'UPGRADE'
-	cmdMySQL 'MySB_db' "UPDATE system SET dnscrypt='0' WHERE id_system='1';"
-	gfnStatusSTD
+    cmdMySQL 'MySB_db' "UPDATE services SET to_install = '1' WHERE serv_name='DNScrypt-proxy';"
+    cmdMySQL 'MySB_db' "UPDATE system SET dnscrypt='1' WHERE id_system='1';"
+    gfnScriptInvoke 'ScreenWAIT' "$MySB_InstallDir/install/DNScrypt" 'UPGRADE'
+    cmdMySQL 'MySB_db' "UPDATE system SET dnscrypt='0' WHERE id_system='1';"
+    gfnStatusSTD
 else
-	echo -e "$Global_NothingToDo"
+    echo -e "$Global_NothingToDo"
 fi
 
 #### RKHunter
@@ -246,22 +246,22 @@ gfnStatusSTD
 ((CurrentSTEP++))
 echo -e -n "${CBLUE}$CurrentSTEP/$TotalSTEP	- $Upgrade_Manager$CEND..."
 if [ "$gbToInstall_Manager" == "YES" ] || [ "$gbIsInstalled_Manager" == "YES" ]; then
-	cmdMySQL 'MySB_db' "UPDATE services SET to_install = '1' WHERE serv_name='Seedbox-Manager';"
-	gfnScriptInvoke 'ScreenWAIT' "$MySB_InstallDir/install/SeedboxManager" 'UPGRADE'
-	gfnStatusSTD
+    cmdMySQL 'MySB_db' "UPDATE services SET to_install = '1' WHERE serv_name='Seedbox-Manager';"
+    gfnScriptInvoke 'ScreenWAIT' "$MySB_InstallDir/install/SeedboxManager" 'UPGRADE'
+    gfnStatusSTD
 else
-	echo -e "$Global_NothingToDo"
+    echo -e "$Global_NothingToDo"
 fi
 
 #### Cakebox Light
 ((CurrentSTEP++))
 echo -e -n "${CBLUE}$CurrentSTEP/$TotalSTEP	- $Upgrade_Cakebox$CEND..."
 if [ "$gbToInstall_Cakebox" == "YES" ] || [ "$gbIsInstalled_Cakebox" == "YES" ]; then
-	cmdMySQL 'MySB_db' "UPDATE services SET to_install = '1' WHERE serv_name='CakeBox-Light';"
-	gfnScriptInvoke 'ScreenWAIT' "$MySB_InstallDir/install/CakeboxLight" 'UPGRADE'
-	gfnStatusSTD
+    cmdMySQL 'MySB_db' "UPDATE services SET to_install = '1' WHERE serv_name='CakeBox-Light';"
+    gfnScriptInvoke 'ScreenWAIT' "$MySB_InstallDir/install/CakeboxLight" 'UPGRADE'
+    gfnStatusSTD
 else
-	echo -e "$Global_NothingToDo"
+    echo -e "$Global_NothingToDo"
 fi
 
 #### LoadAvg
@@ -274,80 +274,80 @@ gfnStatusSTD
 ((CurrentSTEP++))
 echo -e -n "${CBLUE}$CurrentSTEP/$TotalSTEP	- $Upgrade_OpenVPN$CEND..."
 if [ "$gbToInstall_OpenVPN" == "YES" ]; then
-	cmdMySQL 'MySB_db' "UPDATE services SET to_install = '1' WHERE serv_name='OpenVPN';"
-	gfnScriptInvoke 'ScreenWAIT' "$MySB_InstallDir/install/OpenVPN" 'server' 'UPGRADE' 'FORCE'
-	gfnStatusSTD
+    cmdMySQL 'MySB_db' "UPDATE services SET to_install = '1' WHERE serv_name='OpenVPN';"
+    gfnScriptInvoke 'ScreenWAIT' "$MySB_InstallDir/install/OpenVPN" 'server' 'UPGRADE' 'FORCE'
+    gfnStatusSTD
 elif [ "$gbToInstall_OpenVPN" == "REFRESH" ]; then
-	gfnScriptInvoke 'ScreenWAIT' "$MySB_InstallDir/install/OpenVPN" 'refresh' 'UPGRADE'
-	gfnStatusSTD
+    gfnScriptInvoke 'ScreenWAIT' "$MySB_InstallDir/install/OpenVPN" 'refresh' 'UPGRADE'
+    gfnStatusSTD
 else
-	echo -e "$Global_NothingToDo"
+    echo -e "$Global_NothingToDo"
 fi
 
 #### Samba
 ((CurrentSTEP++))
 echo -e -n "${CBLUE}$CurrentSTEP/$TotalSTEP	- $Upgrade_Samba$CEND..."
 if [ "$gbToInstall_OpenVPN" == "YES" ]; then
-	cmdMySQL 'MySB_db' "UPDATE services SET to_install = '1' WHERE serv_name='Samba';"
-	gfnScriptInvoke 'ScreenWAIT' "$MySB_InstallDir/install/Samba" 'UPGRADE'
-	gfnStatusSTD
+    cmdMySQL 'MySB_db' "UPDATE services SET to_install = '1' WHERE serv_name='Samba';"
+    gfnScriptInvoke 'ScreenWAIT' "$MySB_InstallDir/install/Samba" 'UPGRADE'
+    gfnStatusSTD
 else
-	echo -e "$Global_NothingToDo"
+    echo -e "$Global_NothingToDo"
 fi
 
 #### NFS
 ((CurrentSTEP++))
 echo -e -n "${CBLUE}$CurrentSTEP/$TotalSTEP	- $Upgrade_NFS$CEND..."
 if [ "$gbToInstall_OpenVPN" == "YES" ]; then
-	cmdMySQL 'MySB_db' "UPDATE services SET to_install = '1' WHERE serv_name='NFS';"
-	gfnScriptInvoke 'ScreenWAIT' "$MySB_InstallDir/install/NFS" 'UPGRADE'
-	gfnStatusSTD
+    cmdMySQL 'MySB_db' "UPDATE services SET to_install = '1' WHERE serv_name='NFS';"
+    gfnScriptInvoke 'ScreenWAIT' "$MySB_InstallDir/install/NFS" 'UPGRADE'
+    gfnStatusSTD
 else
-	echo -e "$Global_NothingToDo"
+    echo -e "$Global_NothingToDo"
 fi
 
 #### LogWatch
 ((CurrentSTEP++))
 echo -e -n "${CBLUE}$CurrentSTEP/$TotalSTEP	- $Upgrade_LogWatch$CEND..."
 if [ "$gbToInstall_LogWatch" == "YES" ] || [ "$gbIsInstalled_LogWatch" == "YES" ]; then
-	cmdMySQL 'MySB_db' "UPDATE services SET to_install = '1' WHERE serv_name='LogWatch';"
-	gfnScriptInvoke 'ScreenWAIT' "$MySB_InstallDir/install/Logwatch" 'UPGRADE'
-	gfnStatusSTD
+    cmdMySQL 'MySB_db' "UPDATE services SET to_install = '1' WHERE serv_name='LogWatch';"
+    gfnScriptInvoke 'ScreenWAIT' "$MySB_InstallDir/install/Logwatch" 'UPGRADE'
+    gfnStatusSTD
 else
-	echo -e "$Global_NothingToDo"
+    echo -e "$Global_NothingToDo"
 fi
 
 ### PlexMedia
 ((CurrentSTEP++))
 echo -e -n "${CBLUE}$CurrentSTEP/$TotalSTEP	- $Upgrade_PlexMedia$CEND..."
 if [ "$gbToInstall_PlexMedia" == "YES" ] || [ "$gbIsInstalled_PlexMedia" == "YES" ]; then
-	cmdMySQL 'MySB_db' "UPDATE services SET to_install = '1' WHERE serv_name='Plex Media Server';"
-	gfnScriptInvoke 'ScreenWAIT' "$MySB_InstallDir/install/PlexMedia" 'UPGRADE'
-	gfnStatusSTD
+    cmdMySQL 'MySB_db' "UPDATE services SET to_install = '1' WHERE serv_name='Plex Media Server';"
+    gfnScriptInvoke 'ScreenWAIT' "$MySB_InstallDir/install/PlexMedia" 'UPGRADE'
+    gfnStatusSTD
 else
-	echo -e "$Global_NothingToDo"
+    echo -e "$Global_NothingToDo"
 fi
 
 #### NextCloud
 ((CurrentSTEP++))
 echo -e -n "${CBLUE}$CurrentSTEP/$TotalSTEP	- $Upgrade_NextCloud$CEND..."
 if [ "$gbToInstall_NextCloud" == "YES" ] || [ "$gbIsInstalled_NextCloud" == "YES" ]; then
-	cmdMySQL 'MySB_db' "UPDATE services SET to_install = '1' WHERE serv_name='NextCloud';"
-	gfnScriptInvoke 'ScreenWAIT' "$MySB_InstallDir/install/NextCloud" 'UPGRADE'
-	gfnStatusSTD
+    cmdMySQL 'MySB_db' "UPDATE services SET to_install = '1' WHERE serv_name='NextCloud';"
+    gfnScriptInvoke 'ScreenWAIT' "$MySB_InstallDir/install/NextCloud" 'UPGRADE'
+    gfnStatusSTD
 else
-	echo -e "$Global_NothingToDo"
+    echo -e "$Global_NothingToDo"
 fi
 
 #### Webmin
 ((CurrentSTEP++))
 echo -e -n "${CBLUE}$CurrentSTEP/$TotalSTEP	- $Upgrade_Webmin$CEND..."
 if [ "$gbToInstall_Webmin" == "YES" ] || [ "$gbIsInstalled_Webmin" == "YES" ]; then
-	cmdMySQL 'MySB_db' "UPDATE services SET to_install = '1' WHERE serv_name='Webmin';"
-	gfnScriptInvoke 'ScreenWAIT' "$MySB_InstallDir/install/Webmin" 'UPGRADE'
-	gfnStatusSTD
+    cmdMySQL 'MySB_db' "UPDATE services SET to_install = '1' WHERE serv_name='Webmin';"
+    gfnScriptInvoke 'ScreenWAIT' "$MySB_InstallDir/install/Webmin" 'UPGRADE'
+    gfnStatusSTD
 else
-	echo -e "$Global_NothingToDo"
+    echo -e "$Global_NothingToDo"
 fi
 
 #
@@ -377,7 +377,7 @@ gfnStatusSTD
 
 ### DNScrypt-proxy 2/2
 if [ "$gbToInstall_DNScrypt" == "YES" ] || [ "$gbIsInstalled_DNScrypt" == "YES" ]; then
-	cmdMySQL 'MySB_db' "UPDATE system SET dnscrypt='1' WHERE id_system='1';"
+    cmdMySQL 'MySB_db' "UPDATE system SET dnscrypt='1' WHERE id_system='1';"
 fi
 
 clear

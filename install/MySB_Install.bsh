@@ -27,9 +27,9 @@
 gsCurrentVersion="v99.99"
 MySB_InstallDir="/opt/MySB"
 for Arg in "$@"; do
-	case "$Arg" in
-	fr | en) EnvLang="$Arg" ;;
-	esac
+    case "$Arg" in
+        fr | en) EnvLang="$Arg" ;;
+    esac
 done
 # Colors
 CEND="\033[0m"
@@ -42,9 +42,9 @@ CBLUE="\033[1;34m"
 
 # English mesages
 LoadEnglish() {
-	AnswerYES="YES"
-	AnswerNO="NO"
-	OnlyForDebian="
+    AnswerYES="YES"
+    AnswerNO="NO"
+    OnlyForDebian="
 ${CRED}MySB $gsCurrentVersion script is designed only for Debian 9 (Stretch).
 Systems with a kernel PVE is no longer supported.
 A default Debian kernel is also required.
@@ -53,12 +53,12 @@ You must be logged in as ROOT.
 
 Aborting !$CEND"
 
-	RebootBeforeInstall="${CBLUE}You need to reboot your server before install MySB.
+    RebootBeforeInstall="${CBLUE}You need to reboot your server before install MySB.
 After the reboot, you can start again '$0'.$CEND
 
 ${CYELLOW}Do you want to reboot now ?$CEND"
 
-	MessageIsReady="${CYELLOW}All is ok to start MySB installation.
+    MessageIsReady="${CYELLOW}All is ok to start MySB installation.
 The following actions will be performed.
 	1) Updating sources (verbosely)
 	2) Update System (verbosely)
@@ -73,7 +73,7 @@ This will depend on your server configuration and choice of services to install.
 
 Are you ready to install MySB ? (yes/no)$CEND "
 
-	CustomKernel="${CRED}Your server use a custom kernel (maybe installed by OVH, DigiCube or other).
+    CustomKernel="${CRED}Your server use a custom kernel (maybe installed by OVH, DigiCube or other).
 This kernel does not support networking modules required by Iptables, PeerGuardian and OpenVPN.
 If you want install MySB, you must install a Debian standard kernel.$CEND
 
@@ -91,37 +91,37 @@ ${CBLUE}Type$CEND ${CGREEN}NO$CEND ${CBLUE}for stop the script now and proceed t
 
 ${CBLUE}What do you want to do ?$CEND"
 
-	BannerAdvertising="${CRED}############################################################$CEND
+    BannerAdvertising="${CRED}############################################################$CEND
 ${CRED}#$CEND ${CYELLOW}At the end of the installation, you will receive an email.$CEND
 ${CRED}#$CEND ${CYELLOW}It list informations about your account.$CEND
 ${CRED}# IMPORTANT:$CEND ${CYELLOW}Remember to also to check the SPAM folder of your mail account...$CEND
 ${CRED}############################################################$CEND"
 
-	KernelManualInstall="${CRED}I can't find the last kernel for your server, please install it yourself.$CEND"
-	LatestKernel="${CYELLOW}Latest Debian kernel	: $CEND"
-	LetsGo="${CYELLOW}OK, let's go !$CEND"
-	SeeYouLater="${CYELLOW}OK, see you later...$CEND"
-	WhereToInstall="${CBLUE}Where do you want to install MySB ? (Hit enter for default choice) [$MySB_InstallDir]$CEND"
-	UpdatingSource="${CBLUE}Updating Debian source lists$CEND... "
-	SomethingWrong="${CRED}Looks like something was wrong during the update, aborting !$CEND"
-	NeededPackage="${CBLUE}Installing some needed packages$CEND... "
-	DirNotEmpty="${CYELLOW}The selected folder [$MySB_InstallDir] is not empty, choose another one:$CEND"
-	DownloadingGithub="${CBLUE}Downloading files from GitHub into [$MySB_InstallDir]$CEND"
-	Done="${CGREEN}Done !$CEND"
-	CreatingDir="${CBLUE}Creating directories$CEND..."
-	CreatingMySQL_DB="${CBLUE}Creating MySQL databases$CEND..."
-	StartingScreen="${CBLUE}Starting SCREEN session...$CEND"
-	PleaseWait="${CRED}Please wait $CEND"
-	AlreadyExecuted="${CRED}MySB is already started with SCREEN, aborting !$CEND"
-	AlreadyInstalled="${CRED}MySB is already installed, aborting!$CEND"
-	ToUpgradeUse="${CBLUE}To upgrade MySB, thank you to use the following command.$CEND"
+    KernelManualInstall="${CRED}I can't find the last kernel for your server, please install it yourself.$CEND"
+    LatestKernel="${CYELLOW}Latest Debian kernel	: $CEND"
+    LetsGo="${CYELLOW}OK, let's go !$CEND"
+    SeeYouLater="${CYELLOW}OK, see you later...$CEND"
+    WhereToInstall="${CBLUE}Where do you want to install MySB ? (Hit enter for default choice) [$MySB_InstallDir]$CEND"
+    UpdatingSource="${CBLUE}Updating Debian source lists$CEND... "
+    SomethingWrong="${CRED}Looks like something was wrong during the update, aborting !$CEND"
+    NeededPackage="${CBLUE}Installing some needed packages$CEND... "
+    DirNotEmpty="${CYELLOW}The selected folder [$MySB_InstallDir] is not empty, choose another one:$CEND"
+    DownloadingGithub="${CBLUE}Downloading files from GitHub into [$MySB_InstallDir]$CEND"
+    Done="${CGREEN}Done !$CEND"
+    CreatingDir="${CBLUE}Creating directories$CEND..."
+    CreatingMySQL_DB="${CBLUE}Creating MySQL databases$CEND..."
+    StartingScreen="${CBLUE}Starting SCREEN session...$CEND"
+    PleaseWait="${CRED}Please wait $CEND"
+    AlreadyExecuted="${CRED}MySB is already started with SCREEN, aborting !$CEND"
+    AlreadyInstalled="${CRED}MySB is already installed, aborting!$CEND"
+    ToUpgradeUse="${CBLUE}To upgrade MySB, thank you to use the following command.$CEND"
 }
 
 # French mesages
 LoadFrench() {
-	AnswerYES="OUI"
-	AnswerNO="NON"
-	OnlyForDebian="
+    AnswerYES="OUI"
+    AnswerNO="NON"
+    OnlyForDebian="
 ${CRED}MySB $gsCurrentVersion est conçu uniquement pour Debian 9 (Stretch).
 Les systèmes avec un noyau PVE ne sont pas supportés.
 Un noyau Debian standard est également nécessaire.
@@ -130,12 +130,12 @@ Vous devez être connecté en tant que ROOT.
 
 Abandon !$CEND"
 
-	RebootBeforeInstall="${CBLUE}Vous devez redémarrer votre serveur avant d'installer MySB.
+    RebootBeforeInstall="${CBLUE}Vous devez redémarrer votre serveur avant d'installer MySB.
 Après le redémarrage, vous pourrez exécuter '$0' à nouveau.$CEND
 
 ${CYELLOW}Voulez-vous redémarrer maintenant ?$CEND"
 
-	MessageIsReady="${CYELLOW}Tout est OK pour démarrer l'installation de MySB.
+    MessageIsReady="${CYELLOW}Tout est OK pour démarrer l'installation de MySB.
 Les actions suivantes vont être exécutées.
 	1) Mise à jour rapide des sources (verbeusement)
 	2) Mise à jour du système (verbeusement)
@@ -150,7 +150,7 @@ Cela dépendra de la configuration de votre serveur et du choix des services à 
 
 Êtes-vous prêt à installer MySB ? (oui/non)$CEND "
 
-	CustomKernel="${CRED}Votre serveur utilise un noyau personnalisé (peut-être installé par OVH, DigiCube ou autre).
+    CustomKernel="${CRED}Votre serveur utilise un noyau personnalisé (peut-être installé par OVH, DigiCube ou autre).
 Ce noyau ne supporte pas les modules requis par IPtables, OpenVPN et PeerGuardian.
 Si vous voulez installer MySB, vous devez installer un noyau Debian standard.$CEND
 
@@ -167,213 +167,213 @@ ${CBLUE}Tapez$CEND ${CGREEN}NON$CEND ${CBLUE}pour arrêter le script maintenant 
 
 ${CBLUE}Que voulez-vous faire?$CEND"
 
-	BannerAdvertising="${CRED}############################################################$CEND
+    BannerAdvertising="${CRED}############################################################$CEND
 ${CRED}#$CEND ${CYELLOW}A la fin de l'installation, vous recevrez un e-mail.$CEND
 ${CRED}#$CEND ${CYELLOW}Il listera les informations sur votre compte.$CEND
 ${CRED}# IMPORTANT:$CEND ${CYELLOW}Pensez à vérifier également le dossier SPAM de votre compte de messagerie...$CEND
 ${CRED}############################################################$CEND"
 
-	KernelManualInstall="${CRED}Je ne peux pas trouver le dernier noyau pour votre serveur, merci d'installer vous-même un noyau standard.$CEND"
-	LatestKernel="${CYELLOW}Dernier noyau debian	: $CEND"
-	LetsGo="${CYELLOW}OK, c'est parti !$CEND"
-	SeeYouLater="${CYELLOW}OK, à plus tard ...$CEND"
-	WhereToInstall="${CBLUE}Où voulez-vous installer MySB ? (Appuyez sur Entrée pour le choix par défaut) [$MySB_InstallDir]$CEND"
-	UpdatingSource="${CBLUE}Mise à jour des listes sources de Debian$CEND... "
-	SomethingWrong="${CRED}On dirait que quelque chose clochait au cours de la mise à jour, abandon!$CEND"
-	NeededPackage="${CBLUE}Installation des paquets nécessaires$CEND... "
-	DirNotEmpty="${CYELLOW}Le dossier sélectionné [$MySB_InstallDir] n'est pas vide, choisissez en un autre:$CEND"
-	DownloadingGithub="${CBLUE}Téléchargement des fichiers provenant de GitHub dans [$MySB_InstallDir]$CEND"
-	Done="${CGREEN}Fait !$CEND"
-	CreatingDir="${CBLUE}Création des répertoires$CEND..."
-	CreatingMySQL_DB="${CBLUE}Création des bases de données MySQL$CEND..."
-	StartingScreen="${CBLUE}Démarrage de la session SCREEN...$CEND"
-	PleaseWait="${CRED}Merci de patienter $CEND"
-	AlreadyExecuted="${CRED}L'installation de MySB est déjà exécutée avec SCREEN, abandon !$CEND"
-	AlreadyInstalled="${CRED}MySB est déjà installé, abandon!$CEND"
-	ToUpgradeUse="${CBLUE}Pour mettre à jour MySB, merci d'utiliser la commande suivante.$CEND"
+    KernelManualInstall="${CRED}Je ne peux pas trouver le dernier noyau pour votre serveur, merci d'installer vous-même un noyau standard.$CEND"
+    LatestKernel="${CYELLOW}Dernier noyau debian	: $CEND"
+    LetsGo="${CYELLOW}OK, c'est parti !$CEND"
+    SeeYouLater="${CYELLOW}OK, à plus tard ...$CEND"
+    WhereToInstall="${CBLUE}Où voulez-vous installer MySB ? (Appuyez sur Entrée pour le choix par défaut) [$MySB_InstallDir]$CEND"
+    UpdatingSource="${CBLUE}Mise à jour des listes sources de Debian$CEND... "
+    SomethingWrong="${CRED}On dirait que quelque chose clochait au cours de la mise à jour, abandon!$CEND"
+    NeededPackage="${CBLUE}Installation des paquets nécessaires$CEND... "
+    DirNotEmpty="${CYELLOW}Le dossier sélectionné [$MySB_InstallDir] n'est pas vide, choisissez en un autre:$CEND"
+    DownloadingGithub="${CBLUE}Téléchargement des fichiers provenant de GitHub dans [$MySB_InstallDir]$CEND"
+    Done="${CGREEN}Fait !$CEND"
+    CreatingDir="${CBLUE}Création des répertoires$CEND..."
+    CreatingMySQL_DB="${CBLUE}Création des bases de données MySQL$CEND..."
+    StartingScreen="${CBLUE}Démarrage de la session SCREEN...$CEND"
+    PleaseWait="${CRED}Merci de patienter $CEND"
+    AlreadyExecuted="${CRED}L'installation de MySB est déjà exécutée avec SCREEN, abandon !$CEND"
+    AlreadyInstalled="${CRED}MySB est déjà installé, abandon!$CEND"
+    ToUpgradeUse="${CBLUE}Pour mettre à jour MySB, merci d'utiliser la commande suivante.$CEND"
 }
 
 # To execute when this script will exited
 ExitOnError() {
-	# shellcheck source=inc/includes_after
-	if [ -f $MySB_InstallDir/inc/includes_after ]; then source "$MySB_InstallDir"/inc/includes_after; fi
-	case "$1" in
-	0)
-		echo -e "$2"
-		exit 0
-		;;
-	*)
-		echo -e "$SomethingWrong"
-		echo -e "$2"
-		exit 1
-		;;
-	esac
+    # shellcheck source=inc/includes_after
+    if [ -f $MySB_InstallDir/inc/includes_after ]; then source "$MySB_InstallDir"/inc/includes_after; fi
+    case "$1" in
+        0)
+            echo -e "$2"
+            exit 0
+            ;;
+        *)
+            echo -e "$SomethingWrong"
+            echo -e "$2"
+            exit 1
+            ;;
+    esac
 }
 
 # Kernel replace ?
 KernelReplace() {
-	local KernelFind Answer
-	KernelFind="$(apt-cache search linux-image | grep -v 'rt-' | grep -v 'dummy' | grep -v 'dbg' | grep -v 'bpo' | grep -v 'grsec' | grep 'image' | awk '{ print $1 }' | grep '[.]' | head -n 1)"
+    local KernelFind Answer
+    KernelFind="$(apt-cache search linux-image | grep -v 'rt-' | grep -v 'dummy' | grep -v 'dbg' | grep -v 'bpo' | grep -v 'grsec' | grep 'image' | awk '{ print $1 }' | grep '[.]' | head -n 1)"
 
-	echo
-	if [ -n "$KernelFind" ]; then
-		echo -e "$LatestKernel${CGREEN}$KernelFind$CEND"
-		echo
-		apt-get -y --assume-yes -o 'Acquire::Check-Valid-Until=false' update
-		apt-get -y --assume-yes -V -o Dpkg::Options::="--force-confold" upgrade
-		apt-get -y --assume-yes install "$KernelFind"
-		if [ -f /etc/grub.d/06_OVHkerne ]; then
-			mv /etc/grub.d/06_OVHkernel /etc/grub.d/99_OVHkernel
-			update-grub
-		fi
-		echo
-		echo -e -n "$RebootBeforeInstall"
+    echo
+    if [ -n "$KernelFind" ]; then
+        echo -e "$LatestKernel${CGREEN}$KernelFind$CEND"
+        echo
+        apt-get -y --assume-yes -o 'Acquire::Check-Valid-Until=false' update
+        apt-get -y --assume-yes -V -o Dpkg::Options::="--force-confold" upgrade
+        apt-get -y --assume-yes install "$KernelFind"
+        if [ -f /etc/grub.d/06_OVHkerne ]; then
+            mv /etc/grub.d/06_OVHkernel /etc/grub.d/99_OVHkernel
+            update-grub
+        fi
+        echo
+        echo -e -n "$RebootBeforeInstall"
 
-		read -r Answer
-		case ${Answer:0:1} in
-		y | Y | yes | YES | o | O | oui | OUI)
-			echo -e "$LetsGo"
-			fnCountDown 3
-			reboot
-			ExitOnError 0
-			;;
-		n | N | no | NO | non | NON)
-			nContinue=1
-			;;
-		esac
-	else
-		echo -e "$LatestKernel${CRED}$CEND"
-		echo -e "$KernelManualInstall"
-		nContinue=1
-	fi
+        read -r Answer
+        case ${Answer:0:1} in
+            y | Y | yes | YES | o | O | oui | OUI)
+                echo -e "$LetsGo"
+                fnCountDown 3
+                reboot
+                ExitOnError 0
+                ;;
+            n | N | no | NO | non | NON)
+                nContinue=1
+                ;;
+        esac
+    else
+        echo -e "$LatestKernel${CRED}$CEND"
+        echo -e "$KernelManualInstall"
+        nContinue=1
+    fi
 }
 
 # Banner
 BannerInstall() {
-	#### Banner
-	clear
-	echo -e "${CGREEN}############################################################$CEND"
-	echo -e "${CGREEN}#$CEND"
-	echo -e "${CGREEN}#$CEND 			${CYELLOW}MySB$CEND ${CRED}$gsCurrentVersion$CEND"
-	echo -e "${CGREEN}#$CEND"
-	echo -e "${CGREEN}############################################################$CEND"
-	echo
+    #### Banner
+    clear
+    echo -e "${CGREEN}############################################################$CEND"
+    echo -e "${CGREEN}#$CEND"
+    echo -e "${CGREEN}#$CEND 			${CYELLOW}MySB$CEND ${CRED}$gsCurrentVersion$CEND"
+    echo -e "${CGREEN}#$CEND"
+    echo -e "${CGREEN}############################################################$CEND"
+    echo
 
-	#### Advertising
-	echo -e "$BannerAdvertising"
-	echo
+    #### Advertising
+    echo -e "$BannerAdvertising"
+    echo
 }
 
 # Count down...
 fnCountDown() {
-	for ((i = $1; i >= 0; i -= 1)); do
-		echo -n " $i"
-		sleep 1
-	done
-	echo
+    for ((i = $1; i >= 0; i -= 1)); do
+        echo -n " $i"
+        sleep 1
+    done
+    echo
 }
 
 SystemChecks() {
-	local nContinue sOS_Id sOS_Ver sOS_Arch sPVE_Kernel sOVH_Kernel sFlex_Kernel sAnswer
+    local nContinue sOS_Id sOS_Ver sOS_Arch sPVE_Kernel sOVH_Kernel sFlex_Kernel sAnswer
 
-	nContinue=0
+    nContinue=0
 
-	#### Must be Debian 9 Stretch
-	if type -P lsb_release >/dev/null; then
-		sOS_Id="$(lsb_release -is)"
-		sOS_Ver="$(lsb_release -rs | cut -d '.' -f 1)"
-	else
-		if [ -f /etc/lsb-release ]; then
-			sOS_Id="$(grep 'DISTRIB_ID' /etc/lsb-release | cut -d '=' -f 2)"
-			sOS_Ver="$(grep 'DISTRIB_RELEASE' /etc/issue.net | cut -d '=' -f 2)"
-		elif [ -f /etc/issue.net ]; then
-			sOS_Id="$(awk '{ print $1 }' </etc/issue.net | sed -e 's/^$//g;')"
-			sOS_Ver="$(awk '{ print $3 }' </etc/issue.net | sed -e 's/^$//g;')"
-		fi
-	fi
-	sOS_Arch="$(dpkg --print-architecture)"
-	sPVE_Kernel="$(uname -r | grep 'pve')"
-	sOVH_Kernel="$(uname -r | grep 'xxxx')"
-	sFlex_Kernel="$(uname -a | grep 'Ubuntu')"
-	echo -e "${CYELLOW}Architecture	: $CEND${CGREEN}$sOS_Arch$CEND"
-	if [ "$sOS_Id" != "Debian" ]; then
-		if [ -f /etc/debian_version ]; then
-			echo -e "${CYELLOW}Distributor ID	: $CEND${CGREEN}$sOS_Id$CEND"
-			sOS_Ver="$(cut -d '.' -f 1 </etc/debian_version)"
-		else
-			echo -e "${CYELLOW}Distributor ID	: $CEND${CRED}$sOS_Id$CEND"
-			nContinue=1
-		fi
-	else
-		echo -e "${CYELLOW}Distributor ID	: $CEND${CGREEN}$sOS_Id$CEND"
-	fi
-	case "$sOS_Ver" in
-	9) echo -e "${CYELLOW}Release		: $CEND${CGREEN}$sOS_Ver$CEND" ;;
-	*)
-		echo -e "${CYELLOW}Release		: $CEND${CRED}$sOS_Ver$CEND"
-		nContinue=1
-		;;
-	esac
+    #### Must be Debian 9 Stretch
+    if type -P lsb_release >/dev/null; then
+        sOS_Id="$(lsb_release -is)"
+        sOS_Ver="$(lsb_release -rs | cut -d '.' -f 1)"
+    else
+        if [ -f /etc/lsb-release ]; then
+            sOS_Id="$(grep 'DISTRIB_ID' /etc/lsb-release | cut -d '=' -f 2)"
+            sOS_Ver="$(grep 'DISTRIB_RELEASE' /etc/issue.net | cut -d '=' -f 2)"
+        elif [ -f /etc/issue.net ]; then
+            sOS_Id="$(awk '{ print $1 }' </etc/issue.net | sed -e 's/^$//g;')"
+            sOS_Ver="$(awk '{ print $3 }' </etc/issue.net | sed -e 's/^$//g;')"
+        fi
+    fi
+    sOS_Arch="$(dpkg --print-architecture)"
+    sPVE_Kernel="$(uname -r | grep 'pve')"
+    sOVH_Kernel="$(uname -r | grep 'xxxx')"
+    sFlex_Kernel="$(uname -a | grep 'Ubuntu')"
+    echo -e "${CYELLOW}Architecture	: $CEND${CGREEN}$sOS_Arch$CEND"
+    if [ "$sOS_Id" != "Debian" ]; then
+        if [ -f /etc/debian_version ]; then
+            echo -e "${CYELLOW}Distributor ID	: $CEND${CGREEN}$sOS_Id$CEND"
+            sOS_Ver="$(cut -d '.' -f 1 </etc/debian_version)"
+        else
+            echo -e "${CYELLOW}Distributor ID	: $CEND${CRED}$sOS_Id$CEND"
+            nContinue=1
+        fi
+    else
+        echo -e "${CYELLOW}Distributor ID	: $CEND${CGREEN}$sOS_Id$CEND"
+    fi
+    case "$sOS_Ver" in
+        9) echo -e "${CYELLOW}Release		: $CEND${CGREEN}$sOS_Ver$CEND" ;;
+        *)
+            echo -e "${CYELLOW}Release		: $CEND${CRED}$sOS_Ver$CEND"
+            nContinue=1
+            ;;
+    esac
 
-	#### Check kernel if is a PVE kernel
-	if [ -n "$sPVE_Kernel" ]; then
-		nContinue=1
-		echo -e "${CYELLOW}PVE kernel	: $CEND${CRED}$AnswerYES$CEND"
-	else
-		echo -e "${CYELLOW}PVE kernel	: $CEND${CGREEN}$AnswerNO$CEND"
-	fi
+    #### Check kernel if is a PVE kernel
+    if [ -n "$sPVE_Kernel" ]; then
+        nContinue=1
+        echo -e "${CYELLOW}PVE kernel	: $CEND${CRED}$AnswerYES$CEND"
+    else
+        echo -e "${CYELLOW}PVE kernel	: $CEND${CGREEN}$AnswerNO$CEND"
+    fi
 
-	#### Must be root
-	if [[ $EUID -ne 0 ]]; then
-		nContinue=1
-		echo -e "${CYELLOW}Root		: $CEND${CRED}$AnswerNO$CEND"
-	else
-		echo -e "${CYELLOW}Root		: $CEND${CGREEN}$AnswerYES$CEND"
-	fi
+    #### Must be root
+    if [[ $EUID -ne 0 ]]; then
+        nContinue=1
+        echo -e "${CYELLOW}Root		: $CEND${CRED}$AnswerNO$CEND"
+    else
+        echo -e "${CYELLOW}Root		: $CEND${CGREEN}$AnswerYES$CEND"
+    fi
 
-	#### Check internet access
-	if (! ping -c4 github.com >>/tmp/"$(basename "$0")".log); then
-		nContinue=1
-		echo -e "${CYELLOW}Internet	: $CEND${CRED}$AnswerNO$CEND"
-	else
-		echo -e "${CYELLOW}Internet	: $CEND${CGREEN}$AnswerYES$CEND"
-	fi
+    #### Check internet access
+    if (! ping -c4 github.com >>/tmp/"$(basename "$0")".log); then
+        nContinue=1
+        echo -e "${CYELLOW}Internet	: $CEND${CRED}$AnswerNO$CEND"
+    else
+        echo -e "${CYELLOW}Internet	: $CEND${CGREEN}$AnswerYES$CEND"
+    fi
 
-	#### Check kernel if is an Ubuntu kernel (DigiCube)
-	if [ -n "$sFlex_Kernel" ]; then
-		nContinue=1
-		echo -e "${CYELLOW}Ubuntu kernel	: $CEND${CRED}$AnswerYES$CEND"
-	else
-		echo -e "${CYELLOW}Ubuntu kernel	: $CEND${CGREEN}$AnswerNO$CEND"
-	fi
+    #### Check kernel if is an Ubuntu kernel (DigiCube)
+    if [ -n "$sFlex_Kernel" ]; then
+        nContinue=1
+        echo -e "${CYELLOW}Ubuntu kernel	: $CEND${CRED}$AnswerYES$CEND"
+    else
+        echo -e "${CYELLOW}Ubuntu kernel	: $CEND${CGREEN}$AnswerNO$CEND"
+    fi
 
-	#### Check kernel if is an OVH kernel, replace the kernel if needed
-	if [ -n "$sOVH_Kernel" ]; then
-		echo -e "${CYELLOW}OVH kernel	: $CEND${CRED}$AnswerYES$CEND"
-	else
-		echo -e "${CYELLOW}OVH kernel	: $CEND${CGREEN}$AnswerNO$CEND"
-	fi
-	if [ -n "$sOVH_Kernel" ]; then
-		sAnswer=""
-		while [ -z "$sAnswer" ]; do
-			clear
-			echo -e -n "$CustomKernel"
-			read -r sAnswer
-			case ${sAnswer:0:1} in
-			y | Y | yes | YES | o | O | oui | OUI)
-				echo -e "$LetsGo"
-				fnCountDown 3
-				KernelReplace
-				;;
-			n | N | no | NO | non | NON)
-				nContinue=1
-				;;
-			*) unset sAnswer ;;
-			esac
-		done
-	fi
+    #### Check kernel if is an OVH kernel, replace the kernel if needed
+    if [ -n "$sOVH_Kernel" ]; then
+        echo -e "${CYELLOW}OVH kernel	: $CEND${CRED}$AnswerYES$CEND"
+    else
+        echo -e "${CYELLOW}OVH kernel	: $CEND${CGREEN}$AnswerNO$CEND"
+    fi
+    if [ -n "$sOVH_Kernel" ]; then
+        sAnswer=""
+        while [ -z "$sAnswer" ]; do
+            clear
+            echo -e -n "$CustomKernel"
+            read -r sAnswer
+            case ${sAnswer:0:1} in
+                y | Y | yes | YES | o | O | oui | OUI)
+                    echo -e "$LetsGo"
+                    fnCountDown 3
+                    KernelReplace
+                    ;;
+                n | N | no | NO | non | NON)
+                    nContinue=1
+                    ;;
+                *) unset sAnswer ;;
+            esac
+        done
+    fi
 
-	[ $nContinue -gt 0 ] && ExitOnError 1 "$OnlyForDebian"
+    [ $nContinue -gt 0 ] && ExitOnError 1 "$OnlyForDebian"
 }
 
 ##################### INIT ###########################################
@@ -381,23 +381,23 @@ SystemChecks() {
 # Start Log
 clear
 {
-	echo "------------------------------------------------------------"
-	echo "START Err: $(/bin/date '+%Y-%m-%d - %H:%M:%S') - $(basename "$0")"
-	echo "------------------------------------------------------------"
+    echo "------------------------------------------------------------"
+    echo "START Err: $(/bin/date '+%Y-%m-%d - %H:%M:%S') - $(basename "$0")"
+    echo "------------------------------------------------------------"
 } >/tmp/"$(basename "$0")".log
 exec 2>>/tmp/"$(basename "$0")".log
 
 # Language select
 if [ -z "$EnvLang" ]; then
-	EnvLang="${LANG:0:2}"
+    EnvLang="${LANG:0:2}"
 fi
 case "$EnvLang" in
-en) LoadEnglish ;;
-fr) LoadFrench ;;
-*)
-	EnvLang="en"
-	LoadEnglish
-	;;
+    en) LoadEnglish ;;
+    fr) LoadFrench ;;
+    *)
+        EnvLang="en"
+        LoadEnglish
+        ;;
 esac
 
 # Banner
@@ -408,58 +408,58 @@ SystemChecks
 
 # Check if ths script is already running with screen
 if type -P screen >/dev/null; then
-	if (screen -ls | grep -q 'MySB' 2>/dev/null); then
-		ExitOnError 1 "$AlreadyExecuted"
-	fi
+    if (screen -ls | grep -q 'MySB' 2>/dev/null); then
+        ExitOnError 1 "$AlreadyExecuted"
+    fi
 fi
 
 # Check if MySB is already installed
 if [ -s $MySB_InstallDir/version ]; then # Upgrade ?
-	echo -e "$AlreadyInstalled"
-	echo -e "$ToUpgradeUse"
-	echo -e "${CGREEN}	MySB_UpgradeMe$CEND"
-	ExitOnError 1
+    echo -e "$AlreadyInstalled"
+    echo -e "$ToUpgradeUse"
+    echo -e "${CGREEN}	MySB_UpgradeMe$CEND"
+    ExitOnError 1
 fi
 
 # A fresh install ?
 Answer=""
 while [ -z "$Answer" ]; do
-	echo
-	echo
-	echo -e -n "$MessageIsReady"
+    echo
+    echo
+    echo -e -n "$MessageIsReady"
 
-	read -r Answer
-	case ${Answer:0:1} in
-	y | Y | yes | YES | o | O | oui | OUI)
-		echo -e "$LetsGo"
-		# Select destination directory
-		echo
-		echo -e -n "$WhereToInstall"
-		read -r MySB_InstallDir
-		if [ -z "$MySB_InstallDir" ]; then
-			MySB_InstallDir="/opt/MySB"
-		fi
+    read -r Answer
+    case ${Answer:0:1} in
+        y | Y | yes | YES | o | O | oui | OUI)
+            echo -e "$LetsGo"
+            # Select destination directory
+            echo
+            echo -e -n "$WhereToInstall"
+            read -r MySB_InstallDir
+            if [ -z "$MySB_InstallDir" ]; then
+                MySB_InstallDir="/opt/MySB"
+            fi
 
-		[ -d $MySB_InstallDir ] && IfEmpty="$(find $MySB_InstallDir/ -maxdepth 1 | wc -l)" || IfEmpty=0
-		while [ -z "$MySB_InstallDir" ] || [ -d $MySB_InstallDir ] || [ "$IfEmpty" -gt 0 ]; do
-			echo -e -n "$DirNotEmpty"
-			read -r MySB_InstallDir
-			if [ -z "$MySB_InstallDir" ]; then
-				MySB_InstallDir="/opt/MySB"
-			fi
+            [ -d $MySB_InstallDir ] && IfEmpty="$(find $MySB_InstallDir/ -maxdepth 1 | wc -l)" || IfEmpty=0
+            while [ -z "$MySB_InstallDir" ] || [ -d $MySB_InstallDir ] || [ "$IfEmpty" -gt 0 ]; do
+                echo -e -n "$DirNotEmpty"
+                read -r MySB_InstallDir
+                if [ -z "$MySB_InstallDir" ]; then
+                    MySB_InstallDir="/opt/MySB"
+                fi
 
-			if [ -d $MySB_InstallDir ]; then
-				IfEmpty="$(find $MySB_InstallDir/ -maxdepth 1 | wc -l)"
-			else
-				IfEmpty=0
-			fi
-		done
-		;;
-	n | N | no | NO | non | NON)
-		ExitOnError 0 "$SeeYouLater"
-		;;
-	*) unset Answer ;;
-	esac
+                if [ -d $MySB_InstallDir ]; then
+                    IfEmpty="$(find $MySB_InstallDir/ -maxdepth 1 | wc -l)"
+                else
+                    IfEmpty=0
+                fi
+            done
+            ;;
+        n | N | no | NO | non | NON)
+            ExitOnError 0 "$SeeYouLater"
+            ;;
+        *) unset Answer ;;
+    esac
 done
 
 # First we disable IPv6
@@ -470,7 +470,7 @@ BannerInstall
 echo -e -n "$UpdatingSource"
 fnCountDown 3
 if (! apt-get -y --assume-yes -o 'Acquire::Check-Valid-Until=false' update); then
-	ExitOnError 1 "apt-get -y --assume-yes -o 'Acquire::Check-Valid-Until=false' update"
+    ExitOnError 1 "apt-get -y --assume-yes -o 'Acquire::Check-Valid-Until=false' update"
 fi
 
 # Now we can install required packages
@@ -479,7 +479,7 @@ echo -e -n "$NeededPackage"
 fnCountDown 3
 TOOLS=(git-core dos2unix lsb-release screen ccze gnupg figlet mlocate dnsutils curl man-db geoip-bin) # DO NO RENAME 'TOOLS' VARIABLES !
 if (! apt-get -y --assume-yes install "${TOOLS[@]}"); then
-	ExitOnError 1 "apt-get -y --assume-yes install ${TOOLS[*]}"
+    ExitOnError 1 "apt-get -y --assume-yes install ${TOOLS[*]}"
 fi
 
 #### download files from Git
@@ -487,8 +487,8 @@ BannerInstall
 echo -e -n "$DownloadingGithub"
 screen -dmS MySB_GitClone git clone --progress -b "$gsCurrentVersion" https://github.com/toulousain79/MySB.git $MySB_InstallDir >>/tmp/"$(basename "$0")".log
 while (screen -ls | grep -q 'MySB_GitClone'); do
-	echo -n "."
-	sleep 1
+    echo -n "."
+    sleep 1
 done
 echo -e "$Done"
 
@@ -515,16 +515,15 @@ gfnStatusSTD
 
 # Update DB with usable values
 if (! cmdMySQL 'MySB_db' "UPDATE system SET mysb_version='$gsCurrentVersion' WHERE id_system='1';" -v >>/tmp/"$(basename "$0")".log); then
-	ExitOnError 1 "UPDATE system SET mysb_version='$gsCurrentVersion' WHERE id_system='1';"
+    ExitOnError 1 "UPDATE system SET mysb_version='$gsCurrentVersion' WHERE id_system='1';"
 fi
 if (! cmdMySQL 'MySB_db' "INSERT INTO users (users_ident,users_email,language,admin) VALUES ('MySB','MySB','$EnvLang','1');" -v >>/tmp/"$(basename "$0")".log); then
-	ExitOnError 1 "INSERT INTO users (users_ident,users_email,language,admin) VALUES ('MySB','MySB','$EnvLang','1');"
+    ExitOnError 1 "INSERT INTO users (users_ident,users_email,language,admin) VALUES ('MySB','MySB','$EnvLang','1');"
 fi
 # shellcheck source=inc/vars
 source "$MySB_InstallDir"/inc/vars
 
 # Some questions
-# /bin/bash "$MySB_InstallDir"/install/Questions $$ 'INSTALL'
 /bin/bash "$MySB_InstallDir"/install/Questions 'INSTALL'
 echo
 echo
