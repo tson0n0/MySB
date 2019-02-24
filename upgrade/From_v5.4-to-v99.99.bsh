@@ -31,7 +31,7 @@ CurrentSTEP=0
 TotalSTEP=$(cat $0 | grep 'CurrentSTEP++' | grep -v 'TotalSTEP' | wc -l)
 
 #### Questions
-gfnScriptInvoke 'source' "$MySB_InstallDir/install/Questions" "$$" 'UPGRADE' "$MySB_InstallDir"
+gfnScriptInvoke 'source' "$MySB_InstallDir/install/Questions" 'UPGRADE'
 echo
 
 #### Vars
