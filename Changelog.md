@@ -5,6 +5,8 @@
 - NextCloud v15.0.4
 - Portal
   - page referer bug
+  - users: correction of the display of available space
+  - users: correction of manual quota capture by user
 - Blocklists
   - standardized management _(only one list for PeerGuardian and rTorrent)_
   - update lists _(add & remove some)_
