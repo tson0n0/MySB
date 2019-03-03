@@ -53,25 +53,6 @@ fi
 # rm -f /tmp/CPAN.lock
 # fi
 
-#### Correcting minor bugs
-## Postfix Aliases
-gfnListCountUsers 'all'
-for seedUser in ${gsUsersList}; do
-    sUserMail="$(cmdMySQL 'MySB_db' "SELECT users_email FROM users_history WHERE users_ident='$seedUser';")"
-    (! grep -q "$seedUser" /etc/aliases) && {
-        echo "$seedUser: $sUserMail" >>/etc/aliases
-        newaliases
-    }
-done
-## ruTorrent Plugin Check Port
-gfnListCountUsers 'normal'
-for seedUser in ${gsUsersList}; do
-    (! grep -q 'portchecker.co' "${gsRutorrentPluginsDir}"/check_port/action.php) && { cp -v "$MySB_InstallDir"/templates/rutorrent/plugins.check_port.action.php "${gsRutorrentPluginsDir}"/check_port/action.php; }
-    gfnManageServices restart "rtorrent-$seedUser"
-done
-## SSH
-# (! grep -q 'sudo' <<<"$(id $gsMainUserName)") && usermod -a -G sudo "$gsMainUserName"
-
 # -----------------------------------------
 # shellcheck source=inc/includes_after
 . "$(dirname "$0")"/../inc/includes_after
