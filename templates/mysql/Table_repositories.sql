@@ -22,9 +22,7 @@
 LOCK TABLES `repositories` WRITE;
 /*!40000 ALTER TABLE `repositories` DISABLE KEYS */;
 INSERT INTO `repositories` (`type`, `dir`, `name`, `version`, `upgrade`, `file`, `url`, `active`, `on_boot`, `script`) VALUES
-('ZIP', '<InstallDir>/web/apps/ru', 'ruTorrent', '3.8_307151c', 0, 'ruTorrent_v3.8_307151c.zip', 'https://github.com/toulousain79/MySB_files/raw/v99.99/ruTorrent_v3.8_307151c.zip', 1, 0, ''),
--- ('ZIP', '<InstallDir>/web/apps/ru', 'ruTorrent', '3.8', 0, 'ruTorrent_v3.8.zip', 'https://github.com/Novik/ruTorrent/archive/v3.8.zip', 1, 0, ''),
--- ('GIT', '<InstallDir>/web/apps/ru', 'ruTorrent', '3.8', 0, 'ruTorrent_v3.8.zip', 'https://github.com/Novik/ruTorrent/archive/master.zip', 1, 0, ''),
+('ZIP', '<InstallDir>/web/apps/ru', 'ruTorrent', '3.8_2434df6', 0, 'ruTorrent_v3.8_2434df6.zip', 'https://github.com/toulousain79/MySB_files/raw/v99.99/ruTorrent_v3.8_2434df6.zip', 1, 0, ''),
 ('TARGZ', '<InstallDir>/web/apps/ru/plugins/chat', 'ruTorrent Plugin Chat', '2.0', 0, 'chat_v2.0.tar.gz', 'https://storage.googleapis.com/google-code-archive-downloads/v2/code.google.com/rutorrent-chat/chat-2.0.tar.gz', 1, 0, ''),
 ('TARGZ', '<InstallDir>/web/apps/ru/plugins/logoff', 'ruTorrent Plugin Logoff', '1.3', 0, 'logoff_v1.3.tar.gz', 'https://storage.googleapis.com/google-code-archive-downloads/v2/code.google.com/rutorrent-logoff/logoff-1.3.tar.gz', 1, 0, ''),
 ('TARGZ', '<InstallDir>/web/apps/ru/plugins/lbll-suite', 'ruTorrent Plugin LBLL-Suite', '0.8.1', 0, 'lbll-suite_v0.8.1.tar.gz', 'https://storage.googleapis.com/google-code-archive-downloads/v2/code.google.com/rutorrent-tadd-labels/lbll-suite_0.8.1.tar.gz', 1, 0, ''),
@@ -47,7 +45,6 @@ INSERT INTO `repositories` (`type`, `dir`, `name`, `version`, `upgrade`, `file`,
 ('GIT', '<InstallDir>/web/apps/ru/plugins/sync', 'ruTorrent Plugin Sync', '0.1', 0, 'sync_v0.1.zip', 'https://github.com/ArthurJam/ruTorrent-plugin-sync.git', 0, 0, ''),
 ('GIT', '<InstallDir>/web/apps/ru/plugins/theme/themes/club-QuickBox', 'ruTorrent Theme club-QuickBox', '0.1p', 0, 'club-QuickBox_v0.1p.zip', 'https://github.com/QuickBox/club-QuickBox.git', 1, 0, ''),
 ('GIT', '<InstallDir>/web/apps/ru/plugins/theme/themes/MaterialDesign', 'ruTorrent Theme MaterialDesign', '0.1', 0, 'MaterialDesign_v0.1.zip', 'https://github.com/Phlooo/ruTorrent-MaterialDesign.git', 1, 0, ''),
-('GIT', '<InstallDir>/temp/rutorrent_dev', 'ruTorrent Dev', 'dev', 0, 'ruTorrent_dev.zip', 'https://github.com/Novik/ruTorrent.git', 1, 0, ''),
 ('ZIP', '<InstallDir>/web/wolf', 'Wolf CMS', '0.8.3.1', 0, 'wolf_v0.8.3.1.zip', 'https://github.com/toulousain79/MySB_files/raw/v99.99/wolf_v0.8.3.1.zip', 1, 0, ''),
 ('CURL', '/usr/bin/docker-compose', 'Docker-Compose', 'latest', 0, 'docker-compose-Linux-x86_64', 'https://api.github.com/repos/docker/compose/releases/latest', 1, 0, ''),
 ('CURL', '/usr/bin/composer', 'Composer', 'latest', 0, 'composer.phar', 'https://api.github.com/repos/composer/composer/releases/latest', 1, 0, ''),

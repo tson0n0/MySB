@@ -33,8 +33,8 @@ install -v -o root -g root -m 0644 $MySB_InstallDir/templates/tweaks/profile.tmp
 install -v -o root -g root -m 0644 $MySB_InstallDir/templates/tweaks/bash_aliases.tmpl /root/.bash_aliases
 install -v -o root -g root -m 0644 /etc/skel/.bash_logout /root/.bash_logout
 if [ ! -f /root/.bash_profile ] || [ -z "$(grep 'bash_completion' /root/.bash_profile)" ] || [ -z "$(grep '.bashrc' /root/.bash_profile)" ]; then
-	(
-		cat <<'EOF'
+    (
+        cat <<'EOF'
 if [ -f /etc/bash_completion ]; then
 	. /etc/bash_completion
 fi
@@ -43,16 +43,16 @@ if [ -f "$HOME/.bashrc" ]; then
 fi
 
 EOF
-	) | tee -a /root/.bash_profile
+    ) | tee -a /root/.bash_profile
 fi
 
 #### permanently adding scripts to PATH to all users and root
 if [ -z "$(grep "$MySB_InstallDir/bin" /etc/profile)" ]; then
-	echo
-	echo "########## /etc/profile"
-	echo "" >>/etc/profile
-	echo "# MySB" >>/etc/profile
-	echo "PATH=$PATH:$MySB_InstallDir/bin:/sbin" | tee -a /etc/profile
+    echo
+    echo "########## /etc/profile"
+    echo "" >>/etc/profile
+    echo "# MySB" >>/etc/profile
+    echo "PATH=$PATH:$MySB_InstallDir/bin:/sbin" | tee -a /etc/profile
 fi
 
 #### Editors
@@ -71,25 +71,25 @@ perl -pi -e "s/<MySB_Version>/$gsCurrentVersion/g" /etc/rc.local
 echo
 echo "########## Timezone"
 if [ -n "$gsTimeZone" ]; then
-	if [ -f /etc/timezone ]; then rm -vf /etc/timezone; fi
-	echo "$gsTimeZone" | tee -a /etc/timezone
-	if [ -f /etc/adjtime ]; then
-		sed -i "s/UTC/LOCAL/g;" /etc/adjtime
-	fi
-	dpkg-reconfigure -f noninteractive tzdata
+    if [ -f /etc/timezone ]; then rm -vf /etc/timezone; fi
+    echo "$gsTimeZone" | tee -a /etc/timezone
+    if [ -f /etc/adjtime ]; then
+        sed -i "s/UTC/LOCAL/g;" /etc/adjtime
+    fi
+    dpkg-reconfigure -f noninteractive tzdata
 fi
 
 #### Swappiness
 if ([ "$gsMemory" -lt 2048 ] && [ "$(free -m | grep 'Swap' | awk '{ print $2 }')" -ne 0 ]); then
-	echo
-	echo "########## Swappiness"
-	echo 80 | tee -a /proc/sys/vm/swappiness
-	if [[ ! $(grep 'vm.swappiness' /etc/sysctl.conf) ]]; then
-		echo "" | tee -a /etc/sysctl.conf
-		echo "# Swappiness - BoF" | tee -a /etc/sysctl.conf
-		echo "vm.swappiness = 80" | tee -a /etc/sysctl.conf
-		echo "# Swappiness - EoF" | tee -a /etc/sysctl.conf
-	fi
+    echo
+    echo "########## Swappiness"
+    echo 80 | tee -a /proc/sys/vm/swappiness
+    if [[ ! $(grep 'vm.swappiness' /etc/sysctl.conf) ]]; then
+        echo "" | tee -a /etc/sysctl.conf
+        echo "# Swappiness - BoF" | tee -a /etc/sysctl.conf
+        echo "vm.swappiness = 80" | tee -a /etc/sysctl.conf
+        echo "# Swappiness - EoF" | tee -a /etc/sysctl.conf
+    fi
 fi
 
 #### locale
@@ -108,8 +108,8 @@ hostnamectl status
 echo
 echo "########## /etc/hosts"
 if [ -z $funcs_MySB_SecurityRules ]; then
-	# shellcheck source=inc/funcs_by_script/funcs_MySB_SecurityRules
-	source $MySB_InstallDir/inc/funcs_by_script/funcs_MySB_SecurityRules
+    # shellcheck source=inc/funcs_by_script/funcs_MySB_SecurityRules
+    source $MySB_InstallDir/inc/funcs_by_script/funcs_MySB_SecurityRules
 fi
 gfnCreateHostsFile
 cat /etc/hosts
@@ -124,13 +124,13 @@ echo "########## Remove IPv6"
 # /sbin/sysctl -w net.ipv6.conf.eth0.disable_ipv6="1"
 sysctl -p
 if [ -f /etc/default/grub ]; then
-	source /etc/default/grub
-	if [ -n "$GRUB_CMDLINE_LINUX" ] && [ -z "$(echo $GRUB_CMDLINE_LINUX | grep 'ipv6.disable=1')" ]; then
-		sed -i "s/$GRUB_CMDLINE_LINUX/$GRUB_CMDLINE_LINUX ipv6.disable=1/g;" /etc/default/grub
-	else
-		perl -pi -e "s/GRUB_CMDLINE_LINUX=\"\"/GRUB_CMDLINE_LINUX=\"ipv6.disable=1\"/g" /etc/default/grub
-	fi
-	update-grub
+    source /etc/default/grub
+    if [ -n "$GRUB_CMDLINE_LINUX" ] && [ -z "$(echo $GRUB_CMDLINE_LINUX | grep 'ipv6.disable=1')" ]; then
+        sed -i "s/$GRUB_CMDLINE_LINUX/$GRUB_CMDLINE_LINUX ipv6.disable=1/g;" /etc/default/grub
+    else
+        perl -pi -e 's/GRUB_CMDLINE_LINUX=""/GRUB_CMDLINE_LINUX="ipv6.disable=1"/g' /etc/default/grub
+    fi
+    update-grub
 fi
 rm -fv /etc/pgl/ipv6.*
 
@@ -140,15 +140,6 @@ echo "########## Persistent iptables rules"
 gfnPackageBundleInstall "iptables-persistent"
 systemctl enable netfilter-persistent
 install -d /etc/iptables
-# if [ -f /etc/network/interfaces ]; then
-# cp -v /etc/network/interfaces /etc/network/interfaces.bckp
-# if [ -z "`grep 'post-up iptables-restore < ${gsIptablesRules}' /etc/network/interfaces`" ]; then
-# echo >> /etc/network/interfaces
-# nNumLine=$(grep -n "[[:space:]]*iface[[:space:]]*$gsPrimaryInet[[:space:]]*inet [[:space:]]*" /etc/network/interfaces | grep -v "#" | cut -d ':' -f 1)
-# (( nNumLine++ ))
-# sed -i "${nNumLine}i\		post-up iptables-restore < ${gsIptablesRules}" /etc/network/interfaces
-# fi
-# fi
 
 #### NTP (disable IPv6)
 echo
@@ -177,14 +168,14 @@ mkdir -pv /root/.ssh/
 echo
 echo "########## AES-NI Crypto Acceleration"
 if [ -n "$(grep 'aes' /proc/cpuinfo)" ]; then
-	## load
-	modprobe aesni_intel
+    ## load
+    modprobe aesni_intel
 
-	if [ -n "$(lsmod | grep 'aes')" ]; then
-		## make permanent
-		[ -z "$(grep 'aesni_intel' /etc/modules)" ] && echo aesni_intel | tee -a /etc/modules
-		[ -z "$(grep 'OPENSSL_ia32cap=~0x200000200000000' /etc/environment)" ] && echo "OPENSSL_ia32cap=~0x200000200000000" | tee -a /etc/environment
-	fi
+    if [ -n "$(lsmod | grep 'aes')" ]; then
+        ## make permanent
+        [ -z "$(grep 'aesni_intel' /etc/modules)" ] && echo aesni_intel | tee -a /etc/modules
+        [ -z "$(grep 'OPENSSL_ia32cap=~0x200000200000000' /etc/environment)" ] && echo "OPENSSL_ia32cap=~0x200000200000000" | tee -a /etc/environment
+    fi
 fi
 
 #### Force CPU governor to "performance"
@@ -193,23 +184,23 @@ echo "########## Force CPU governor to 'performance'"
 install -v -o root -g root -m 0644 $MySB_InstallDir/templates/tweaks/etc.default.cpufrequtils.tmpl /etc/default/cpufrequtils
 cpufreq-set -r -g performance
 if [ -f /proc/cpuinfo ]; then
-	echo
-	grep 'model name' /proc/cpuinfo | head -n 1
-	grep 'cpu MHz' /proc/cpuinfo
+    echo
+    grep 'model name' /proc/cpuinfo | head -n 1
+    grep 'cpu MHz' /proc/cpuinfo
 fi
 
 #### Tweaks for Redis
 if [ -f /etc/default/grub ]; then
-	echo
-	echo "########## Tweaks for Redis"
-	source /etc/default/grub
-	if [ -n "$GRUB_CMDLINE_LINUX" ] && [ -z "$(echo $GRUB_CMDLINE_LINUX | grep 'transparent_hugepage=never')" ]; then
-		sed -i "s/$GRUB_CMDLINE_LINUX/$GRUB_CMDLINE_LINUX transparent_hugepage=never/g;" /etc/default/grub
-	else
-		perl -pi -e "s/GRUB_CMDLINE_LINUX=\"\"/GRUB_CMDLINE_LINUX=\"transparent_hugepage=never\"/g" /etc/default/grub
-	fi
-	update-grub
-	grep GRUB_CMDLINE_LINUX /etc/default/grub
+    echo
+    echo "########## Tweaks for Redis"
+    source /etc/default/grub
+    if [ -n "$GRUB_CMDLINE_LINUX" ] && [ -z "$(echo $GRUB_CMDLINE_LINUX | grep 'transparent_hugepage=never')" ]; then
+        sed -i "s/$GRUB_CMDLINE_LINUX/$GRUB_CMDLINE_LINUX transparent_hugepage=never/g;" /etc/default/grub
+    else
+        perl -pi -e 's/GRUB_CMDLINE_LINUX=""/GRUB_CMDLINE_LINUX="transparent_hugepage=never"/g' /etc/default/grub
+    fi
+    update-grub
+    grep GRUB_CMDLINE_LINUX /etc/default/grub
 fi
 
 #### /etc/fstab
@@ -217,6 +208,11 @@ echo
 echo "########## /etc/fstab"
 gfnFstabGeneration
 cat /etc/fstab
+
+#### SystemD
+#
+# aAllPackages=("${PackagesList_ToPurge[@]}")
+# gfnPackagesManage purge "${aAllPackages[@]}"
 
 #### Cleaning
 echo
