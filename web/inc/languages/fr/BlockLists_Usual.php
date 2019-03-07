@@ -23,10 +23,16 @@
 //
 //#################### FIRST LINE #####################################
 
-define('BlockLists_DB_Title', 'Abonnements i-Blocklists');
-define('BlockLists_DB_Username', 'Nom d\'utilisateur');
-define('BlockLists_DB_Password', 'PIN');
-define('BlockLists_DB_Save', 'Sauvegarder mes identifiants');
+define('iBlockLists_DB_Title', 'Abonnement i-Blocklists');
+define('iBlockLists_DB_Username', 'Nom d\'utilisateur');
+define('iBlockLists_DB_Password', 'PIN');
+define('iBlockLists_DB_Save', 'Sauvegarder mes identifiants');
+
+define('AddList_DB_Title', 'Ajouter une liste');
+define('AddList_DB_Source', 'Source');
+define('AddList_DB_Name', 'Nom');
+define('AddList_DB_URL', 'URL');
+define('AddList_DB_Save', 'Sauvegarder mes listes');
 
 define('BlockLists_Lists_Title', 'Usuelles');
 define('BlockLists_Table_Source', 'Source');

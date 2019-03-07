@@ -32,8 +32,23 @@ $IsMainUser = (MainUser($CurrentUser)) ? true : false;
 if ( $IsInstalled == '1' ) {
 	if (isset($_POST['submit'])) {
 		switch ($_POST['submit']) {
-			case BlockLists_DB_Save:
-				$result = $iBlocklists_DB->update("ident", ["username" => $_POST['username'], "pin" => $_POST['pin']], ["id" => 1]);
+			case iBlockLists_DB_Save:
+				$result = $iBlocklists_DB->update("iblocklist", ["iblocklist_username" => $_POST['iblocklist_username'], "iblocklist_pin" => $_POST['iblocklist_pin']], ["id" => 1]);
+				if ( $result->rowCount() == 0 ) {
+					$type = 'information';
+					$message = Global_NoChange;
+					$command = 'message_only';
+
+				} else {
+					$type = 'success';
+					$message = Global_Success;
+					$command = 'message_only';
+				}
+
+			break;
+
+			case Nexus23_DB_Save:
+				$result = $iBlocklists_DB->update("nexus23", ["nexus23_url" => $_POST['nexus23_url']], ["id" => 1]);
 				if ( $result->rowCount() == 0 ) {
 					$type = 'information';
 					$message = Global_NoChange;
@@ -73,7 +88,7 @@ if ( $IsInstalled == '1' ) {
 
 	$IdentIblocklist = $iBlocklists_DB->get("ident", "*", ["id" => 1]);
 
-	if (($IdentIblocklist['username'] == "") || ($IdentIblocklist['pin'] == "")) {
+	if (($IdentIblocklist['iblocklist_username'] == "") || ($IdentIblocklist['iblocklist_pin'] == "")) {
 		$BlockList = $MySB_DB->select("blocklists", "*", ["AND" => [
 															"list_url[!]" => "",
 															"comments[!]" => ["Country", "Subscription required "]
@@ -91,19 +106,35 @@ if ( $IsInstalled == '1' ) {
 	<div align="center" style="margin-top: 10px; margin-bottom: 20px;">
 	<form class="form_settings" method="post" action="">
 		<fieldset>
-		<legend><?php echo BlockLists_DB_Title; ?></legend>
+		<legend><?php echo iBlockLists_DB_Title; ?></legend>
 			<table style="width:100%">
 				<tr>
-					<th style="text-align:center;"><?php echo BlockLists_DB_Username; ?></th>
-					<th style="text-align:center;"><?php echo BlockLists_DB_Password; ?></th>
+					<th style="text-align:center;"><?php echo iBlockLists_DB_Username; ?></th>
+					<th style="text-align:center;"><?php echo iBlockLists_DB_Password; ?></th>
 				</tr>
 				<tr>
-					<td><input style="width:100%; cursor: pointer;" name="username" type="text" value="<?php echo $IdentIblocklist['username']; ?>" /></td>
-					<td><input style="width:100%; cursor: pointer;" name="pin" type="number" value="<?php echo $IdentIblocklist['pin']; ?>" /></td>
+					<td><input style="width:100%; cursor: pointer;" name="iblocklist_username" type="text" value="<?php echo $IdentIblocklist['iblocklist_username']; ?>" /></td>
+					<td><input style="width:100%; cursor: pointer;" name="iblocklist_pin" type="number" value="<?php echo $IdentIblocklist['iblocklist_pin']; ?>" /></td>
 				</tr>
 			</table>
 
-			<input type="submit" name="submit" id="submit" value="<?php echo BlockLists_DB_Save; ?>" style="cursor: pointer;" />
+			<input type="submit" name="submit" id="submit" value="<?php echo iBlockLists_DB_Save; ?>" style="cursor: pointer;" />
+		</fieldset>
+
+		<br />
+		<fieldset>
+		<legend><?php echo AddList_DB_Title; ?></legend>
+		<div id="input1" class="clonedInput">
+			<input class="input_id" id="input_id" name="input_id[1]" type="hidden" value="1" />
+			<?php echo AddList_DB_Source; ?>&nbsp;<input class="input_origin" id="input_origin" name="input_origin[1]" type="text" />
+			<?php echo AddList_DB_Name; ?>&nbsp;<input class="input_name" id="input_name" name="input_name[1]" type="text" />
+			<?php echo AddList_DB_URL; ?>&nbsp;<input class="input_url" id="input_url" name="input_url[1]" type="text" />
+		</div>
+		<div style="margin-top: 10px; margin-bottom: 20px;">
+			<input type="button" id="btnAdd" value="<?php echo User_Synchronization_rTorrentConfigAddDirectory; ?>" style="cursor: pointer;" />
+			<input type="button" id="btnDel" value="<?php echo User_Synchronization_rTorrentConfigDelDirectory; ?>" style="cursor: pointer;" />
+		</div>
+		<div align="center"><p class="Comments"><?php echo User_Synchronization_rTorrentConfig_Comment; ?></p></div>
 		</fieldset>
 	</form>
 	<?php } ?>
