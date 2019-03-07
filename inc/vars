@@ -236,8 +236,12 @@ if [ -n "${MySB_InstallDir}" ] && [ "$gbIsReady_MySB_Db" == "YES" ]; then
     gnMainUserId="$(echo "$sRequestValues" | awk '{split($0,a,"|"); print a[4]}')"
     [ -z "$EnvLang" ] && EnvLang="$(echo "$sRequestValues" | awk '{split($0,a,"|"); print a[5]}')"
     [ -z "$EnvLang" ] && EnvLang="${LANG:0:2}"
+    case "$EnvLang" in
+        "fr") gsLocale="fr_FR" ;;
+        "en") gsLocale="en_US" ;;
+    esac
     unset sRequestValues
-    export gsMainUserEmail gsMainUserName gsMainUserPassword gnMainUserId EnvLang
+    export gsMainUserEmail gsMainUserName gsMainUserPassword gnMainUserId EnvLang gsLocale
 
     if [ "$gsIpRestriction" == "YES" ]; then
         unset gsMainUserIPs
