@@ -59,6 +59,14 @@ $MySB_Version = GetVersion();
 		case '/?admin/smtp.html':
 			echo '	<script type="text/javascript" src="'. THEMES_PATH . 'MySB/js/smtp.js"></script>';
 			break;
+		case '/?blocklists/usual-blocklists.html':
+		case '/?user/synchronization.html':
+		case '/?user/manage-addresses.html':
+		case '/?renting/renting-options.html':
+		case '/?renting/renting-payments.html':
+		case '/?trackers/add-new-trackers.html':
+			echo '	<script type="text/javascript" src="'. THEMES_PATH . 'MySB/js/jquery-dynamically-adding-form-elements.js"></script>';
+			break;
 	}
 ?>
 </head>

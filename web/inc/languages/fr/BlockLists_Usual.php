@@ -28,10 +28,13 @@ define('iBlockLists_DB_Username', 'Nom d\'utilisateur');
 define('iBlockLists_DB_Password', 'PIN');
 define('iBlockLists_DB_Save', 'Sauvegarder mes identifiants');
 
-define('AddList_DB_Title', 'Ajouter une liste');
+define('AddList_DB_Title', 'Ajouter des listes');
 define('AddList_DB_Source', 'Source');
 define('AddList_DB_Name', 'Nom');
 define('AddList_DB_URL', 'URL');
+define('AddList_DB_AddList', 'Ajouter une ligne');
+define('AddList_DB_RemoveList', 'Supprimer la dernière ligne');
+define('AddList_DB_Comment', 'Ajoutez vos propres listes en plus de celles provenant de iBlockList. (ex: Nexus23)');
 define('AddList_DB_Save', 'Sauvegarder mes listes');
 
 define('BlockLists_Lists_Title', 'Usuelles');
