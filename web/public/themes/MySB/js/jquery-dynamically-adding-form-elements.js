@@ -13,8 +13,6 @@ jQuery(function ($) {
 		newElem.find('.input_sync_mode').attr('id', 'input_sync_mode' + newNum).attr('name', 'input_sync_mode[' + newNum + ']').val('');
 		// Add address (TrackersAdd.php)
 		newElem.find('.input_address').attr('id', 'address' + newNum).attr('name', 'address[' + newNum + ']').val('');
-		// Add select (TrackersAdd.php)
-		newElem.find('.select_is_active').attr('id', 'is_active' + newNum).attr('name', 'is_active[' + newNum + ']').val('0');
 		// Add amount (RentingInfo.php)
 		newElem.find('.input_amount').attr('id', 'input_amount' + newNum).attr('name', 'input_amount[' + newNum + ']').val('');
 		newElem.find('.select_user').attr('id', 'select_user' + newNum).attr('name', 'select_user[' + newNum + ']').val('0');

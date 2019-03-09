@@ -28,7 +28,7 @@ define('iBlockLists_DB_Username', 'Username');
 define('iBlockLists_DB_Password', 'PIN');
 define('iBlockLists_DB_Save', 'Save my credentials');
 
-define('AddList_DB_Title', 'Add lists');
+define('AddList_DB_Title', 'Personal blacklists');
 define('AddList_DB_Source', 'Origin');
 define('AddList_DB_Name', 'Name');
 define('AddList_DB_URL', 'URL');
@@ -40,5 +40,6 @@ define('AddList_DB_Save', 'Save my lists');
 define('BlockLists_Lists_Title', 'Usual');
 define('BlockLists_Table_Source', 'Source');
 define('BlockLists_Table_Name', 'Name');
+define('BlockLists_Table_URL', 'URL');
 
 //#################### LAST LINE ######################################

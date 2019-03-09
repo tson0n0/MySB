@@ -48,15 +48,46 @@ if ( $IsInstalled == '1' ) {
 			break;
 
 			case AddList_DB_Save:
-for ($i=0, $count = count($_POST['input_id']);$i<$count;$i++) {
-echo $_POST['input_origin'][$i].'<br />';
-echo $_POST['input_name'][$i].'<br />';
-echo $_POST['input_url'][$i].'<br />';
-echo $_POST['is_active'][$i].'<br />';
-}
+				if ( (isset($_POST['input_id'])) && (isset($_POST['input_url'][1])) ) {
+					$count = count($_POST['input_id']);
+					$success = false;
+					$command = 'message_only';
 
-				$result = $Blocklists_DB->update("blocklists", ["source" => $_POST['input_origin'], "name" => $_POST['input_name'], "url" => $_POST['input_url'], "active" => $_POST['is_active']], ["id" => 1]);
-				if ( $result->rowCount() == 0 ) {
+					for($i=1; $i<=$count; $i++) {
+						$URL = preg_replace('/\s\s+/', '', $_POST['input_url'][$i]);
+						if (filter_var($URL, FILTER_VALIDATE_URL)) {
+							$value = $Blocklists_DB->insert("blocklists", [ "source" => $_POST['input_origin'][$i], "name" => $_POST['input_name'][$i], "url" => "$URL"]);
+							if ( $Blocklists_DB->id() > 0 ) {
+								$success = true;
+							}
+						} else {
+							$success = 'error';
+						}
+					}
+
+					switch ($success) {
+						case 'error':
+							$type = 'error';
+							$message = Global_FailedUpdateMysbDB;
+							break;
+						case true:
+							$type = 'success';
+							$message = Global_Success;
+							break;
+						default:
+							$type = 'information';
+							$message = Global_NoChange;
+							break;
+					}
+				}
+
+				$count = count($_POST['personal_id']);
+				for ($i=0;$i<$count;$i++) {
+					$value = $Blocklists_DB->update("blocklists", ["active" => $_POST['personal_enable'][$i]], ["id" => $_POST['personal_id'][$i]]);
+					$result = $result+$value;
+				}
+
+				if ( $result == 0 ) {
 					$type = 'information';
 					$message = Global_NoChange;
 					$command = 'message_only';
@@ -64,14 +95,13 @@ echo $_POST['is_active'][$i].'<br />';
 				} else {
 					$type = 'success';
 					$message = Global_Success;
-					$command = 'message_only';
+					$command = 'Blocklists_PeerGuardian';
 				}
-
 			break;
 
-			default:	// Global_SaveChanges
+			case Global_SaveChanges:
 				for ($i=0, $count = count($_POST['id_blocklists']);$i<$count;$i++) {
-					$value = $MySB_DB->update("blocklists", ["enable" => $_POST['enable'][$i], "enable" => $_POST['enable'][$i]], ["id_blocklists" => $_POST['id_blocklists'][$i]]);
+					$value = $MySB_DB->update("blocklists", ["enable" => $_POST['enable'][$i]], ["id_blocklists" => $_POST['id_blocklists'][$i]]);
 
 					$result = $result+$value;
 				}
@@ -86,7 +116,25 @@ echo $_POST['is_active'][$i].'<br />';
 					$message = Global_Success;
 					$command = 'Blocklists_PeerGuardian';
 				}
+			break;
 
+			default:	// delete
+				foreach($_POST['submit'] as $key => $value) {
+					$Blocklists_DB->delete("blocklists", ["id" => "$key"]);
+					$result = $result+$data->rowCount();
+					if ( $result = 0 ) {
+						$success = false;
+					}
+				}
+
+				if ( $success == true ) {
+					$type = 'success';
+					$message = Global_Success;
+					$command = 'Blocklists_PeerGuardian';
+				} else {
+					$type = 'information';
+					$message = Global_NoChange;
+				}
 			break;
 		}
 
@@ -137,10 +185,6 @@ echo $_POST['is_active'][$i].'<br />';
 			<?php echo AddList_DB_Source; ?>&nbsp;<input class="input_origin" size="20" id="input_origin" name="input_origin[1]" type="text" />
 			<?php echo AddList_DB_Name; ?>&nbsp;<input class="input_name" size="20" id="input_name" name="input_name[1]" type="text" />
 			<?php echo AddList_DB_URL; ?>&nbsp;<input class="input_url" size="60" id="input_url" name="input_url[1]" type="text" />
-			&nbsp;&nbsp;<?php echo Global_IsActive; ?>&nbsp;&nbsp;<select class="redText" id="is_active" name="is_active[1]" style="width:60px; cursor: pointer;" required="required" onchange="this.className=this.options[this.selectedIndex].className">
-								<option value="0" selected="selected" class="redText"><?php echo Global_No; ?></option>
-								<option value="1" class="greenText"><?php echo Global_Yes; ?></option>
-							</select>
 		</div>
 		<div style="margin-top: 10px; margin-bottom: 20px;">
 			<input type="button" id="btnAdd" value="<?php echo AddList_DB_AddList; ?>" style="cursor: pointer;" />
@@ -148,6 +192,65 @@ echo $_POST['is_active'][$i].'<br />';
 		</div>
 		<div align="center">
 			<p class="Comments"><?php echo AddList_DB_Comment; ?></p>
+			<br />
+
+			<table style="border-spacing:1;">
+				<tr>
+					<th style="text-align:center;"><?php echo BlockLists_Table_Source; ?></th>
+					<th style="text-align:center;"><?php echo BlockLists_Table_Name; ?></th>
+					<th style="text-align:center;"><?php echo BlockLists_Table_URL; ?></th>
+					<th style="text-align:center;"><?php echo Global_LastUpdate; ?></th>
+					<th style="text-align:center;"><?php echo Global_IsActive; ?></th>
+					<th style="text-align:center;"><?php echo Global_Table_Delete; ?></th>
+				</tr>
+
+<?php
+	foreach($Personal_Blocklists as $List) {
+		switch ($List["enable"]) {
+			case '0':
+				if ( $IsMainUser ) {
+					$enable = '	<select name="personal_enable[]" style="width:60px;" class="redText" onchange="this.className=this.options[this.selectedIndex].className">
+										<option value="0" selected="selected" class="redText">' .Global_No. '</option>
+										<option value="1" class="greenText">' .Global_Yes. '</option>
+									</select>';
+				} else {
+					$enable = '	<select name="personal_enable[]" style="width:60px;" class="redText" disabled>
+										<option value="0" selected="selected" class="redText">' .Global_No. '</option>
+									</select>';
+				}
+				break;
+			default:
+				if ( $IsMainUser ) {
+					$enable = '	<select name="personal_enable[]" style="width:60px;" class="greenText" onchange="this.className=this.options[this.selectedIndex].className">
+										<option value="0" class="redText">' .Global_No. '</option>
+										<option value="1" selected="selected" class="greenText">' .Global_Yes. '</option>
+									</select>';
+				} else {
+					$enable = '	<select name="personal_enable[]" style="width:60px;" class="greenText" disabled>
+										<option value="1" selected="selected" class="greenText">' .Global_Yes. '</option>
+									</select>';
+				}
+				break;
+		}
+	?>
+				<tr>
+					<td><?php echo $List["source"]; ?></td>
+					<td>
+						<input type="hidden" name="personal_id[]" value="<?php echo $List["id"]; ?>" />
+						<input type="hidden" name="personal_name[]" value="<?php echo $List["name"]; ?>" />
+						<?php echo $List["name"]; ?>
+					</td>
+					<td><?php echo $List["url"]; ?></td>
+					<td><?php echo $List["lastupdate"]; ?></td>
+					<td><?php echo $enable; ?></td>
+					<td><input class="submit" name="submit[<?php echo $List["id"]; ?>]" type="submit" value="<?php echo Global_Delete; ?>" /></td>
+				</tr>
+
+	<?php
+	}
+?>
+			</table>
+
 			<input class="submit" style="width:<?php echo strlen(AddList_DB_Save)*10; ?>px; margin-top: 10px; margin-bottom: 10px;" name="submit" type="submit" value="<?php echo AddList_DB_Save; ?>">
 		</div>
 		</fieldset>
@@ -167,65 +270,6 @@ echo $_POST['is_active'][$i].'<br />';
 							<th style="text-align:center;"><?php echo Global_IsActive; ?></th>
 						</tr>
 	<?php
-	foreach($Personal_Blocklists as $List) {
-		switch ($List["enable"]) {
-			case '0':
-				$default = '<select name="default[]" style="width:60px; background-color:#FEBABC;" disabled>
-								<option value="0" selected="selected">' .Global_No. '</option>
-							</select>';
-				if ( $IsMainUser ) {
-					$enable = '	<select name="enable[]" style="width:60px;" class="redText" onchange="this.className=this.options[this.selectedIndex].className">
-										<option value="0" selected="selected" class="redText">' .Global_No. '</option>
-										<option value="1" class="greenText">' .Global_Yes. '</option>
-									</select>';
-				} else {
-					$enable = '	<select name="enable[]" style="width:60px;" class="redText" disabled>
-										<option value="0" selected="selected" class="redText">' .Global_No. '</option>
-									</select>';
-				}
-				break;
-			default:
-				$default = '<select name="default[]" style="width:60px; background-color:#B3FEA5;" disabled>
-								<option value="1" selected="selected">' .Global_Yes. '</option>
-							</select>';
-				if ( $IsMainUser ) {
-					$enable = '	<select name="enable[]" style="width:60px;" class="greenText" onchange="this.className=this.options[this.selectedIndex].className">
-										<option value="0" class="redText">' .Global_No. '</option>
-										<option value="1" selected="selected" class="greenText">' .Global_Yes. '</option>
-									</select>';
-				} else {
-					$enable = '	<select name="enable[]" style="width:60px;" class="greenText" disabled>
-										<option value="1" selected="selected" class="greenText">' .Global_Yes. '</option>
-									</select>';
-				}
-				break;
-		}
-	?>
-
-				<tr>
-					<td><?php echo $List["source"]; ?></td>
-					<td>
-						<input type="hidden" name="id[]" value="<?php echo $List["id"]; ?>" />
-						<input type="hidden" name="name[]" value="<?php echo $List["name"]; ?>" />
-						<?php echo $List["name"]; ?>
-					</td>
-					<td>
-
-					</td>
-					<td>
-						<?php echo $List["lastupdate"]; ?>
-					</td>
-					<td>
-						<?php echo $default; ?>
-					</td>
-					<td>
-						<?php echo $enable; ?>
-					</td>
-				</tr>
-
-	<?php
-	}
-
 	foreach($BlockList as $List) {
 		switch ($List["default"]) {
 			case '0':
