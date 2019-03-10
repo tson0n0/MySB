@@ -41,7 +41,11 @@ sIblocklistIdent="$(sqlite3 -cmd '.timeout 150000' "${gsblocklists_DB}" "SELECT 
 sUsername="$(echo "$sIblocklistIdent" | awk '{split($0,a,"|"); print a[1]}')"
 sPin="$(echo "$sIblocklistIdent" | awk '{split($0,a,"|"); print a[2]}')"
 
-cmdMySQL 'MySB_db' "SELECT author, list_name, list_url FROM blocklists WHERE enable = '1' AND list_url != '';" | sed 's/\t/|/g;' | while read -r ROW; do
+sPersonal="$(sqlite3 -cmd '.timeout 150000' "${gsblocklists_DB}" "SELECT source,name,list_url FROM blocklists WHERE enable='1' AND list_url != '';" | sed 's/\t/|/g;')"
+sIblocklists="$(cmdMySQL 'MySB_db' "SELECT author,list_name,list_url,subscription FROM blocklists WHERE enable='1' AND list_url != '';" | sed 's/\t/|/g;')"
+sAllLists="${sPersonal} ${sIblocklists}"
+
+while read -r ROW; do
     Author="$(echo "$ROW" | awk '{split($0,a,"|"); print a[1]}')"
     Author="${Author// /_}"
     ListName="$(echo "$ROW" | awk '{split($0,a,"|"); print a[2]}')"
@@ -49,10 +53,12 @@ cmdMySQL 'MySB_db' "SELECT author, list_name, list_url FROM blocklists WHERE ena
     ListName=" ${ListName// /_}"
     URL="$(echo "$ROW" | awk '{split($0,a,"|"); print a[3]}')"
     FILE="$Author#$ListName"
+    Subscription="$(echo "$ROW" | awk '{split($0,a,"|"); print a[4]}')"
 
     {
         [ -n "$sUsername" ]
         [ -n "$sPin" ]
+        [ "${Subscription}" == "true" ]
     } && URL="${URL}&username=${sUsername}&pin=${sPin}"
 
     if [ -n "$FILE" ] && [ -n "$URL" ]; then
@@ -73,7 +79,7 @@ cmdMySQL 'MySB_db' "SELECT author, list_name, list_url FROM blocklists WHERE ena
         fi
         gfnStatusLSB
     fi
-done
+done < <(echo "${sAllLists}" | sed 's/\t/|/g;')
 
 # Default IP of TMG
 log_daemon_msg "${AddKnowTmgIP}"
