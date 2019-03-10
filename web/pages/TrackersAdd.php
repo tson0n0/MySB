@@ -185,9 +185,7 @@ if (empty($TrackersList)) {
 	</form>
 </div>
 
-<?php
-	if ($ButtonSaveON) {
-?>
+
 <form class="form_settings" method="post" action="">
 	<div align="center">
 		<input class="submit" style="width:<?php echo strlen(Global_SaveChanges)*10; ?>px; margin-bottom: 10px;" name="submit" type="submit" value="<?php echo Global_SaveChanges; ?>">
@@ -284,9 +282,6 @@ foreach($TrackersList as $Tracker) {
 		<input class="submit" style="width:<?php echo strlen(Global_SaveChanges)*10; ?>px; margin-top: 10px;" name="submit" type="submit" value="<?php echo Global_SaveChanges; ?>">
 	</div>
 </form>
-<?php
-	}
-?>
 
 <?php
 //#################### LAST LINE ######################################

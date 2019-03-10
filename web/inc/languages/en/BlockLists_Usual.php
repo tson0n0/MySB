@@ -36,6 +36,7 @@ define('AddList_DB_AddList', 'Add a new line');
 define('AddList_DB_RemoveList', 'Remove the last line');
 define('AddList_DB_Comment', 'Add your own lists in addition to those of iBlockList. (ex: Nexus23)');
 define('AddList_DB_Save', 'Save my lists');
+define('AddList_DB_BadUrl', 'Bad URL<br />%s');
 
 define('BlockLists_Lists_Title', 'Usual');
 define('BlockLists_Table_Source', 'Source');
