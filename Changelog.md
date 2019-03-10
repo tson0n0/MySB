@@ -2,7 +2,7 @@
 
 ## v5.5 - 2019/xx/xx _(start at: 2019/01/26)_
 
-- NextCloud v15.0.4
+- NextCloud v15.0.5
 - Portal
   - page referer bug
   - users: correction of the display of available space

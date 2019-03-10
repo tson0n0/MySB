@@ -64,7 +64,7 @@ INSERT INTO `repositories` (`type`, `dir`, `name`, `version`, `upgrade`, `file`,
 ('GIT', '<InstallDir>/web/apps/sm', 'Seedbox-Manager', '3.0.1', 0, 'seedbox-manager_v3.0.1.zip', 'https://github.com/Magicalex/seedbox-manager.git', 1, 0, ''),
 ('GIT', '<InstallDir>/web/apps/cb', 'Cakebox-Light', '1.8.6', 0, 'cakebox-light_v1.8.6.zip', 'https://github.com/Cakebox/Cakebox-light.git', 1, 0, ''),
 ('TARGZ', '<InstallDir>/web/apps/la', 'LoadAvg', '2.2', 0, 'loadavg_v2.2.tar.gz', 'http://www.loadavg.com/files/loadavg.tar.gz', 1, 0, ''),
-('ZIP', '<InstallDir>/web/apps/nc', 'NextCloud', '15.0.4', 0, 'nextcloud_v15.0.4.zip', 'https://download.nextcloud.com/server/releases/nextcloud-15.0.4.zip', 1, 0, '');
+('ZIP', '<InstallDir>/web/apps/nc', 'NextCloud', '15.0.5', 0, 'nextcloud_v15.0.5.zip', 'https://download.nextcloud.com/server/releases/nextcloud-15.0.5.zip', 1, 0, '');
 /*!40000 ALTER TABLE `repositories` ENABLE KEYS */;
 UNLOCK TABLES;
 

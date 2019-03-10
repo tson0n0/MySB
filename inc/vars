@@ -103,7 +103,7 @@ fi
 #### 4 - Databases
 gsWolf_DB="${MySB_InstallDir}/db/Wolf.sq3"
 gsSync_DB="${MySB_InstallDir}/db/Sync.sq3"
-gsIblocklists_DB="${MySB_InstallDir}/db/iBlocklists.sq3"
+gsblocklists_DB="${MySB_InstallDir}/db/Blocklists.sq3"
 gbIsReady_MySB_Db="NO"
 if gfnCheckCommand 0 mysql && gfnCheckCommand 0 sqlite3; then
     if [ "$(find /var/lib/mysql/MySB_db/ -maxdepth 1 -type f 2>/dev/null | wc -l)" -gt 1 ]; then
@@ -115,7 +115,7 @@ if gfnCheckCommand 0 mysql && gfnCheckCommand 0 sqlite3; then
         fi
     fi
 fi
-export gsWolf_DB gsSync_DB gbIsReady_MySB_Db gsIblocklists_DB
+export gsWolf_DB gsSync_DB gbIsReady_MySB_Db gsblocklists_DB
 
 #### 5 - All Variables
 if [ -n "${MySB_InstallDir}" ] && [ "$gbIsReady_MySB_Db" == "YES" ]; then
@@ -236,8 +236,12 @@ if [ -n "${MySB_InstallDir}" ] && [ "$gbIsReady_MySB_Db" == "YES" ]; then
     gnMainUserId="$(echo "$sRequestValues" | awk '{split($0,a,"|"); print a[4]}')"
     [ -z "$EnvLang" ] && EnvLang="$(echo "$sRequestValues" | awk '{split($0,a,"|"); print a[5]}')"
     [ -z "$EnvLang" ] && EnvLang="${LANG:0:2}"
+    case "$EnvLang" in
+        "fr") gsLocale="fr_FR" ;;
+        "en") gsLocale="en_US" ;;
+    esac
     unset sRequestValues
-    export gsMainUserEmail gsMainUserName gsMainUserPassword gnMainUserId EnvLang
+    export gsMainUserEmail gsMainUserName gsMainUserPassword gnMainUserId EnvLang gsLocale
 
     if [ "$gsIpRestriction" == "YES" ]; then
         unset gsMainUserIPs

@@ -23,7 +23,7 @@
 //
 //#################### FIRST LINE #####################################
 
-global $MySB_DB, $iBlocklists_DB, $CurrentUser;
+global $MySB_DB, $Blocklists_DB, $CurrentUser;
 require_once(WEB_INC . '/languages/' . $_SESSION['Language'] . '/' . basename(__FILE__));
 
 $IsInstalled = $MySB_DB->get("services", "is_installed", ["serv_name" => "PeerGuardian"]);
@@ -32,8 +32,8 @@ $IsMainUser = (MainUser($CurrentUser)) ? true : false;
 if ( $IsInstalled == '1' ) {
 	if (isset($_POST['submit'])) {
 		switch ($_POST['submit']) {
-			case BlockLists_DB_Save:
-				$result = $iBlocklists_DB->update("ident", ["username" => $_POST['username'], "pin" => $_POST['pin']], ["id" => 1]);
+			case iBlockLists_DB_Save:
+				$result = $Blocklists_DB->update("iblocklist", ["iblocklist_username" => $_POST['iblocklist_username'], "iblocklist_pin" => $_POST['iblocklist_pin']], ["id" => 1]);
 				if ( $result->rowCount() == 0 ) {
 					$type = 'information';
 					$message = Global_NoChange;
@@ -47,33 +47,104 @@ if ( $IsInstalled == '1' ) {
 
 			break;
 
-		default:	// Global_SaveChanges
-			for ($i=0, $count = count($_POST['id_blocklists']);$i<$count;$i++) {
-				$value = $MySB_DB->update("blocklists", ["enable" => $_POST['enable'][$i], "enable" => $_POST['enable'][$i]], ["id_blocklists" => $_POST['id_blocklists'][$i]]);
+			case AddList_DB_Save:
+				if ( (isset($_POST['input_id'])) && (isset($_POST['input_url'][1])) ) {
+					$count = count($_POST['input_id']);
+					$success = false;
+					$command = 'message_only';
 
-				$result = $result+$value;
-			}
+					for($i=1; $i<=$count; $i++) {
+						$URL = preg_replace('/\s\s+/', '', $_POST['input_url'][$i]);
+						if (filter_var($URL, FILTER_VALIDATE_URL)) {
+							$value = $Blocklists_DB->insert("blocklists", [ "source" => $_POST['input_origin'][$i], "name" => $_POST['input_name'][$i], "url" => "$URL"]);
+							if ( $Blocklists_DB->id() > 0 ) {
+								$success = true;
+							}
+						} else {
+							$success = 'error';
+						}
+					}
 
-			if ( $result == 0 ) {
-				$type = 'information';
-				$message = Global_NoChange;
-				$command = 'message_only';
+					switch ($success) {
+						case 'error':
+							$type = 'error';
+							$message = Global_FailedUpdateMysbDB;
+							break;
+						case true:
+							$type = 'success';
+							$message = Global_Success;
+							break;
+						default:
+							$type = 'information';
+							$message = Global_NoChange;
+							break;
+					}
+				}
 
-			} else {
-				$type = 'success';
-				$message = Global_Success;
-				$command = 'Blocklists_PeerGuardian';
-			}
+				$count = count($_POST['personal_id']);
+				for ($i=0;$i<$count;$i++) {
+					$value = $Blocklists_DB->update("blocklists", ["active" => $_POST['personal_enable'][$i]], ["id" => $_POST['personal_id'][$i]]);
+					$result = $result+$value;
+				}
 
+				if ( $result == 0 ) {
+					$type = 'information';
+					$message = Global_NoChange;
+					$command = 'message_only';
+
+				} else {
+					$type = 'success';
+					$message = Global_Success;
+					$command = 'Blocklists_PeerGuardian';
+				}
+			break;
+
+			case Global_SaveChanges:
+				for ($i=0, $count = count($_POST['id_blocklists']);$i<$count;$i++) {
+					$value = $MySB_DB->update("blocklists", ["enable" => $_POST['enable'][$i]], ["id_blocklists" => $_POST['id_blocklists'][$i]]);
+
+					$result = $result+$value;
+				}
+
+				if ( $result == 0 ) {
+					$type = 'information';
+					$message = Global_NoChange;
+					$command = 'message_only';
+
+				} else {
+					$type = 'success';
+					$message = Global_Success;
+					$command = 'Blocklists_PeerGuardian';
+				}
+			break;
+
+			default:	// delete
+				foreach($_POST['submit'] as $key => $value) {
+					$Blocklists_DB->delete("blocklists", ["id" => "$key"]);
+					$result = $result+$data->rowCount();
+					if ( $result = 0 ) {
+						$success = false;
+					}
+				}
+
+				if ( $success == true ) {
+					$type = 'success';
+					$message = Global_Success;
+					$command = 'Blocklists_PeerGuardian';
+				} else {
+					$type = 'information';
+					$message = Global_NoChange;
+				}
 			break;
 		}
 
 		GenerateMessage($command, $type, $message, '');
 	}
 
-	$IdentIblocklist = $iBlocklists_DB->get("ident", "*", ["id" => 1]);
+	$IdentIblocklist = $Blocklists_DB->get("iblocklist_ident", "*", ["id" => 1]);
+	$Personal_Blocklists = $Blocklists_DB->select("blocklists", "*");
 
-	if (($IdentIblocklist['username'] == "") || ($IdentIblocklist['pin'] == "")) {
+	if (($IdentIblocklist['iblocklist_username'] == "") || ($IdentIblocklist['iblocklist_pin'] == "")) {
 		$BlockList = $MySB_DB->select("blocklists", "*", ["AND" => [
 															"list_url[!]" => "",
 															"comments[!]" => ["Country", "Subscription required "]
@@ -91,27 +162,102 @@ if ( $IsInstalled == '1' ) {
 	<div align="center" style="margin-top: 10px; margin-bottom: 20px;">
 	<form class="form_settings" method="post" action="">
 		<fieldset>
-		<legend><?php echo BlockLists_DB_Title; ?></legend>
+		<legend><?php echo iBlockLists_DB_Title; ?></legend>
 			<table style="width:100%">
 				<tr>
-					<th style="text-align:center;"><?php echo BlockLists_DB_Username; ?></th>
-					<th style="text-align:center;"><?php echo BlockLists_DB_Password; ?></th>
+					<th style="text-align:center;"><?php echo iBlockLists_DB_Username; ?></th>
+					<th style="text-align:center;"><?php echo iBlockLists_DB_Password; ?></th>
 				</tr>
 				<tr>
-					<td><input style="width:100%; cursor: pointer;" name="username" type="text" value="<?php echo $IdentIblocklist['username']; ?>" /></td>
-					<td><input style="width:100%; cursor: pointer;" name="pin" type="number" value="<?php echo $IdentIblocklist['pin']; ?>" /></td>
+					<td><input style="width:100%; cursor: pointer;" name="iblocklist_username" type="text" value="<?php echo $IdentIblocklist['iblocklist_username']; ?>" /></td>
+					<td style="width:120px"><input style="width:100%; cursor: pointer;" name="iblocklist_pin" type="number" value="<?php echo $IdentIblocklist['iblocklist_pin']; ?>" /></td>
 				</tr>
 			</table>
 
-			<input type="submit" name="submit" id="submit" value="<?php echo BlockLists_DB_Save; ?>" style="cursor: pointer;" />
+			<input type="submit" name="submit" id="submit" value="<?php echo iBlockLists_DB_Save; ?>" style="cursor: pointer;" />
+		</fieldset>
+
+		<br />
+		<fieldset>
+		<legend><?php echo AddList_DB_Title; ?></legend>
+		<div id="input1" class="clonedInput">
+			<input class="input_id" id="input_id" name="input_id[1]" type="hidden" value="1" />
+			<?php echo AddList_DB_Source; ?>&nbsp;<input class="input_origin" size="20" id="input_origin" name="input_origin[1]" type="text" />
+			<?php echo AddList_DB_Name; ?>&nbsp;<input class="input_name" size="20" id="input_name" name="input_name[1]" type="text" />
+			<?php echo AddList_DB_URL; ?>&nbsp;<input class="input_url" size="60" id="input_url" name="input_url[1]" type="text" />
+		</div>
+		<div style="margin-top: 10px; margin-bottom: 20px;">
+			<input type="button" id="btnAdd" value="<?php echo AddList_DB_AddList; ?>" style="cursor: pointer;" />
+			<input type="button" id="btnDel" value="<?php echo AddList_DB_RemoveList; ?>" style="cursor: pointer;" />
+		</div>
+		<div align="center">
+			<p class="Comments"><?php echo AddList_DB_Comment; ?></p>
+			<br />
+
+			<table style="border-spacing:1;">
+				<tr>
+					<th style="text-align:center;"><?php echo BlockLists_Table_Source; ?></th>
+					<th style="text-align:center;"><?php echo BlockLists_Table_Name; ?></th>
+					<th style="text-align:center;"><?php echo BlockLists_Table_URL; ?></th>
+					<th style="text-align:center;"><?php echo Global_LastUpdate; ?></th>
+					<th style="text-align:center;"><?php echo Global_IsActive; ?></th>
+					<th style="text-align:center;"><?php echo Global_Table_Delete; ?></th>
+				</tr>
+
+<?php
+	foreach($Personal_Blocklists as $List) {
+		switch ($List["enable"]) {
+			case '0':
+				if ( $IsMainUser ) {
+					$enable = '	<select name="personal_enable[]" style="width:60px;" class="redText" onchange="this.className=this.options[this.selectedIndex].className">
+										<option value="0" selected="selected" class="redText">' .Global_No. '</option>
+										<option value="1" class="greenText">' .Global_Yes. '</option>
+									</select>';
+				} else {
+					$enable = '	<select name="personal_enable[]" style="width:60px;" class="redText" disabled>
+										<option value="0" selected="selected" class="redText">' .Global_No. '</option>
+									</select>';
+				}
+				break;
+			default:
+				if ( $IsMainUser ) {
+					$enable = '	<select name="personal_enable[]" style="width:60px;" class="greenText" onchange="this.className=this.options[this.selectedIndex].className">
+										<option value="0" class="redText">' .Global_No. '</option>
+										<option value="1" selected="selected" class="greenText">' .Global_Yes. '</option>
+									</select>';
+				} else {
+					$enable = '	<select name="personal_enable[]" style="width:60px;" class="greenText" disabled>
+										<option value="1" selected="selected" class="greenText">' .Global_Yes. '</option>
+									</select>';
+				}
+				break;
+		}
+	?>
+				<tr>
+					<td><?php echo $List["source"]; ?></td>
+					<td>
+						<input type="hidden" name="personal_id[]" value="<?php echo $List["id"]; ?>" />
+						<input type="hidden" name="personal_name[]" value="<?php echo $List["name"]; ?>" />
+						<?php echo $List["name"]; ?>
+					</td>
+					<td><?php echo $List["url"]; ?></td>
+					<td><?php echo $List["lastupdate"]; ?></td>
+					<td><?php echo $enable; ?></td>
+					<td><input class="submit" name="submit[<?php echo $List["id"]; ?>]" type="submit" value="<?php echo Global_Delete; ?>" /></td>
+				</tr>
+
+	<?php
+	}
+?>
+			</table>
+
+			<input class="submit" style="width:<?php echo strlen(AddList_DB_Save)*10; ?>px; margin-top: 10px; margin-bottom: 10px;" name="submit" type="submit" value="<?php echo AddList_DB_Save; ?>">
+		</div>
 		</fieldset>
 	</form>
 	<?php } ?>
 
 	<form class="form_settings" method="post" action="">
-<?php if ( $IsMainUser ) { ?>
-			<input class="submit" style="width:<?php echo strlen(Global_SaveChanges)*10; ?>px; margin-top: 10px; margin-bottom: 10px;" name="submit" type="submit" value="<?php echo Global_SaveChanges; ?>">
-<?php } ?>
 			<fieldset>
 			<legend><?php echo BlockLists_Lists_Title; ?></legend>
 					<table style="border-spacing:1;">

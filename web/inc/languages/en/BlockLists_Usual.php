@@ -23,13 +23,23 @@
 //
 //#################### FIRST LINE #####################################
 
-define('BlockLists_DB_Title', 'i-Blocklists subscriptions');
-define('BlockLists_DB_Username', 'Username');
-define('BlockLists_DB_Password', 'PIN');
-define('BlockLists_DB_Save', 'Save my credentials');
+define('iBlockLists_DB_Title', 'i-Blocklists subscription');
+define('iBlockLists_DB_Username', 'Username');
+define('iBlockLists_DB_Password', 'PIN');
+define('iBlockLists_DB_Save', 'Save my credentials');
+
+define('AddList_DB_Title', 'Personal blacklists');
+define('AddList_DB_Source', 'Origin');
+define('AddList_DB_Name', 'Name');
+define('AddList_DB_URL', 'URL');
+define('AddList_DB_AddList', 'Add a new line');
+define('AddList_DB_RemoveList', 'Remove the last line');
+define('AddList_DB_Comment', 'Add your own lists in addition to those of iBlockList. (ex: Nexus23)');
+define('AddList_DB_Save', 'Save my lists');
 
 define('BlockLists_Lists_Title', 'Usual');
 define('BlockLists_Table_Source', 'Source');
 define('BlockLists_Table_Name', 'Name');
+define('BlockLists_Table_URL', 'URL');
 
 //#################### LAST LINE ######################################

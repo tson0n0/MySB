@@ -74,10 +74,10 @@ $Wolf_DB = new medoo([
 	'database_file' => Wolf_DB,
 	'database_name' => 'Wolf'
 ]);
-$iBlocklists_DB = new medoo([
+$Blocklists_DB = new medoo([
 	'database_type' => 'sqlite',
-	'database_file' => iBlocklists_DB,
-	'database_name' => 'iBlocklists'
+	'database_file' => Blocklists_DB,
+	'database_name' => 'Blocklists'
 ]);
 
 $NextCloudIsInstalled = $MySB_DB->get("services", "is_installed", ["serv_name" => "NextCloud"]);

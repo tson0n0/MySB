@@ -89,7 +89,7 @@ if(isset($_POST)==true && empty($_POST)==false) {
 					if (filter_var($url, FILTER_VALIDATE_URL)) {
 						$Tracker = parse_url($Tracker, PHP_URL_HOST);
 					}
-					$last_id_trackers_list = ManageUsersTrackers($Tracker, $_POST['is_active'][$i]);
+					$last_id_trackers_list = ManageUsersTrackers($Tracker, 1);
 					if ( $last_id_trackers_list == 0 ) {
 						$success = false;
 					}
@@ -171,10 +171,6 @@ if (empty($TrackersList)) {
 				<div id="input1" class="clonedInput">
 					<input class="input_id" id="input_id" name="input_id[1]" type="hidden" value="1" />
 					<?php echo MainUser_TrackersAdd_TextAddress; ?>&nbsp;<input class="input_tracker" id="input_tracker" name="input_tracker[1]" type="text" required="required" <?php echo $TrackerAddress; ?> />
-					&nbsp;&nbsp;<?php echo Global_IsActive; ?>&nbsp;&nbsp;<select class="redText" id="is_active" name="is_active[1]" style="width:60px; cursor: pointer;" required="required" onchange="this.className=this.options[this.selectedIndex].className">
-										<option value="0" selected="selected" class="redText"><?php echo Global_No; ?></option>
-										<option value="1" class="greenText"><?php echo Global_Yes; ?></option>
-									</select>
 				</div>
 				<div style="margin-top: 10px; margin-bottom: 20px;">
 					<input type="button" id="btnAdd" value="<?php echo MainUser_TrackersAdd_Btn_AddNewDomain; ?>" style="cursor: pointer;" />
@@ -291,8 +287,6 @@ foreach($TrackersList as $Tracker) {
 <?php
 	}
 ?>
-
-<script type="text/javascript" src="<?php echo THEMES_PATH; ?>MySB/js/jquery-dynamically-adding-form-elements.js"></script>
 
 <?php
 //#################### LAST LINE ######################################
