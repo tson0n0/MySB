@@ -26,6 +26,7 @@
   - add main user to sudo group
 - #62 LetsEncrypt script code review
 - #53 Bugs _(partial)_
+- #59 disable TSO/GSO for Plex
 
 ## v5.4 - 2019/01/14 _(start at: 2018/09/07)_
 
