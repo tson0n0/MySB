@@ -217,13 +217,20 @@ gfnPeerGuardianFailed() {
 
 #### PeerGuardian Create blocklists.list
 gfnPeerGuardianBlocklistsList() {
-    local sAllBlocklists sList bIsActive sCheckLog sIblocklistIdent sUsername sPin sDbToUpdate
+    local sAllBlocklists sList bIsActive sCheckLog sIblocklistIdent sUsername sPin sDbToUpdate bDisplay sMode
+    bDisplay="$1"
+    sMode="$2"
 
     function fnManageTypeLists() {
-        case "$1" in
+        local bDisplayFn sModeFn sListFn
+        bDisplayFn="$1"
+        sModeFn="$2"
+        sListFn="$3"
+
+        case "${sListFn}" in
             'personal')
                 # Personal lists
-                sAllBlocklists="$(sqlite3 -cmd '.timeout 150000' "${gsblocklists_DB}" "SELECT url,active FROM blocklists WHERE url != '';" | sed 's/\t/|/g;')"
+                sAllBlocklists="$(sqlite3 -cmd '.timeout 150000' "${gsblocklists_DB}" "SELECT list_url,enable FROM blocklists WHERE list_url != '';" | sed 's/\t/|/g;')"
                 sDbToUpdate="${gsblocklists_DB}"
                 ;;
             'iblocklists')
@@ -231,7 +238,7 @@ gfnPeerGuardianBlocklistsList() {
                 sIblocklistIdent="$(sqlite3 -cmd '.timeout 150000' "${gsblocklists_DB}" "SELECT username,pin FROM iblocklist_ident WHERE id='1';")"
                 sUsername="$(echo "$sIblocklistIdent" | awk '{split($0,a,"|"); print a[1]}')"
                 sPin="$(echo "$sIblocklistIdent" | awk '{split($0,a,"|"); print a[2]}')"
-                sAllBlocklists="$(cmdMySQL 'MySB_db' "SELECT list_url,enable FROM blocklists WHERE list_url != '';" | sed 's/\t/|/g;')"
+                sAllBlocklists="$(cmdMySQL 'MySB_db' "SELECT list_url,enable,subscription FROM blocklists WHERE list_url != '';" | sed 's/\t/|/g;')"
                 sDbToUpdate="MySB_db"
                 ;;
         esac
@@ -239,18 +246,20 @@ gfnPeerGuardianBlocklistsList() {
         for Blocklist in $sAllBlocklists; do
             sList="$(echo "$Blocklist" | awk '{split($0,a,"|"); print a[1]}')"
             bIsActive="$(echo "$Blocklist" | awk '{split($0,a,"|"); print a[2]}')"
+            bSubscription="$(echo "$Blocklist" | awk '{split($0,a,"|"); print a[3]}')"
 
             {
                 [ -n "$sUsername" ]
                 [ -n "$sPin" ]
+                [ "${bSubscription}" == "true" ]
             } && sList="${sList}&username=${sUsername}&pin=${sPin}"
 
-            case "$2" in
+            case "${sModeFn}" in
                 'UpdateLists') # Update each list of PeerGuardian during installation
                     echo "$sList" >/etc/pgl/blocklists.list # One to one list, the file 'blocklists.list' is created for each list for update them
 
                     if (! pglcmd update); then # if update fail maybe its due to a bad list
-                        if [ "$1" -eq 0 ]; then echo "$(date +"%T") --> The updated list of PGL may have failed." >>"${MySB_InstallDir}"/logs/"${gsScriptName}".log; fi
+                        if [ "${bDisplayFn}" -eq 0 ]; then echo "$(date +"%T") --> The updated list of PGL may have failed." >>"${MySB_InstallDir}"/logs/"${gsScriptName}".log; fi
 
                         sCheckLog="$(grep 'failed' /var/log/pgl/pglcmd.log | grep list.iblocklist.com | awk '{ print $6 }')"
                         for sList in $sCheckLog; do
@@ -274,7 +283,7 @@ gfnPeerGuardianBlocklistsList() {
 
     if [ -f /etc/pgl/pglcmd.conf ] && [ -f /etc/pgl/blocklists.list ]; then
         # /etc/pgl/blocklists.list
-        if [ "$1" -eq 1 ]; then log_daemon_msg "${Peerguardian_AddingSelectedBlocklist}"; fi
+        if [ "${bDisplay}" -eq 1 ]; then log_daemon_msg "${Peerguardian_AddingSelectedBlocklist}"; fi
         (   
             cat <<'EOF'
 # blocklists.list - lists the remote blocklists that pglcmd handles.
@@ -302,10 +311,10 @@ gfnPeerGuardianBlocklistsList() {
 EOF
         ) >/etc/pgl/blocklists.list
 
-        fnManageTypeLists 'personal'
-        fnManageTypeLists 'iblocklists'
+        fnManageTypeLists "${bDisplay}" "${sMode}" 'personal'
+        fnManageTypeLists "${bDisplay}" "${sMode}" 'iblocklists'
 
-        if [ "$1" -eq 1 ]; then gfnStatusLSB; fi
+        if [ "${bDisplay}" -eq 1 ]; then gfnStatusLSB; fi
     fi
 }
 

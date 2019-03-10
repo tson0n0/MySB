@@ -54,7 +54,7 @@ if ( $IsInstalled == '1' ) {
 					for($i=1; $i<=$count; $i++) {
 						$URL = preg_replace('/\s\s+/', '', $_POST['input_url'][$i]);
 						if (filter_var($URL, FILTER_VALIDATE_URL)) {
-							$Blocklists_DB->insert("blocklists", [ "source" => $_POST['input_origin'][$i], "name" => $_POST['input_name'][$i], "url" => "$URL"]);
+							$Blocklists_DB->insert("blocklists", [ "source" => $_POST['input_origin'][$i], "name" => $_POST['input_name'][$i], "list_url" => "$URL"]);
 							$result = $result+$Blocklists_DB->id();
 						} else {
 							GenerateMessage('message_only', 'error', sprintf(AddList_DB_BadUrl, $URL), '');
@@ -64,6 +64,7 @@ if ( $IsInstalled == '1' ) {
 					if ( $result > 0 ) {
 						$type = 'success';
 						$message = Global_Success;
+						$command = 'Blocklists_PeerGuardian';
 					} else {
 						$type = 'information';
 						$message = Global_NoChange;
@@ -71,7 +72,7 @@ if ( $IsInstalled == '1' ) {
 				} else {
 					$count = count($_POST['personal_id']);
 					for ($i=0;$i<=$count;$i++) {
-						$value = $Blocklists_DB->update("blocklists", ["active" => $_POST['personal_enable'][$i]], ["id" => $_POST['personal_id'][$i]]);
+						$value = $Blocklists_DB->update("blocklists", ["enable" => $_POST['personal_enable'][$i]], ["id" => $_POST['personal_id'][$i]]);
 						$result = $result+$value->rowCount();
 					}
 
@@ -206,7 +207,7 @@ if ( $IsInstalled == '1' ) {
 	}
 
 	foreach($Personal_Blocklists as $List) {
-		switch ($List["active"]) {
+		switch ($List["enable"]) {
 			case '0':
 				if ( $IsMainUser ) {
 					$enable = '	<select name="personal_enable[]" style="width:60px;" class="redText" onchange="this.className=this.options[this.selectedIndex].className">
@@ -240,7 +241,7 @@ if ( $IsInstalled == '1' ) {
 						<input type="hidden" name="personal_name[]" value="<?php echo $List["name"]; ?>" />
 						<?php echo $List["name"]; ?>
 					</td>
-					<td><?php echo $List["url"]; ?></td>
+					<td><?php echo $List["list_url"]; ?></td>
 					<td><?php echo $List["lastupdate"]; ?></td>
 					<td><?php echo $enable; ?></td>
 					<td><input class="submit" name="submit[<?php echo $List["id"]; ?>]" type="submit" value="<?php echo Global_Delete; ?>" /></td>

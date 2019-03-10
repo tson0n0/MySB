@@ -34,7 +34,7 @@ define('AddList_DB_Name', 'Name');
 define('AddList_DB_URL', 'URL');
 define('AddList_DB_AddList', 'Add a new line');
 define('AddList_DB_RemoveList', 'Remove the last line');
-define('AddList_DB_Comment', 'Add your own lists in addition to those of iBlockList. (ex: Nexus23)');
+define('AddList_DB_Comment', 'Add your own lists in addition to those of iBlockList. (ex: Nexus23)<br />The list <b>must be</b> in <b>P2P</b> format !');
 define('AddList_DB_Save', 'Save my lists');
 define('AddList_DB_BadUrl', 'Bad URL<br />%s');
 
