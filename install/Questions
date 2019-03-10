@@ -186,7 +186,8 @@ DisplaySurvey() {
 			sValue=""
 		fi
 		gsMainUserName=""
-		while [ -n "$(echo $gsMainUserName | grep '@')" ] || [ -z "$gsMainUserName" ]; do
+
+		while [ -n "$(echo "$gsMainUserName" | grep '@')" ] || [ -z "$gsMainUserName" ] || [ "$(echo "$gsMainUserName" | tr '[:upper:]' '[:lower:]')" == "admin" ] || [[ "$str" != "${str%[[:space:]]*}" ]]; do
 			gfnQuestionGetString NO "$Questions_MainUserUsername" gsMainUserName "$sValue"
 		done
 		unset sValue

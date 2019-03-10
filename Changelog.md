@@ -25,6 +25,7 @@
   - possiblity for main user to change some params
   - add main user to sudo group
 - #62 LetsEncrypt script code review
+- #53 Bugs _(partial)_
 
 ## v5.4 - 2019/01/14 _(start at: 2018/09/07)_
 

@@ -426,6 +426,8 @@ EOF
     fi
 fi
 
+{ [ -d /home/admin/ ] && [ "$(find /home/admin/ -type f 2>/dev/null | wc -l)" -eq 0 ]; } && rm -rf /home/admin/
+
 # -----------------------------------------
 # shellcheck source=inc/includes_after
 source "$(dirname "$0")"/../inc/includes_after
