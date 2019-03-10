@@ -230,7 +230,7 @@ gfnPeerGuardianBlocklistsList() {
         case "${sListFn}" in
             'personal')
                 # Personal lists
-                sAllBlocklists="$(sqlite3 -cmd '.timeout 150000' "${gsblocklists_DB}" "SELECT list_url,enable FROM blocklists WHERE list_url != '';" | sed 's/\t/|/g;')"
+                sAllBlocklists="$(sqlite3 -cmd '.timeout 150000' "${gsblocklists_DB}" "SELECT list_url,enable FROM blocklists WHERE enable='1' AND list_url != '';" | sed 's/\t/|/g;')"
                 sDbToUpdate="${gsblocklists_DB}"
                 ;;
             'iblocklists')
@@ -238,7 +238,7 @@ gfnPeerGuardianBlocklistsList() {
                 sIblocklistIdent="$(sqlite3 -cmd '.timeout 150000' "${gsblocklists_DB}" "SELECT username,pin FROM iblocklist_ident WHERE id='1';")"
                 sUsername="$(echo "$sIblocklistIdent" | awk '{split($0,a,"|"); print a[1]}')"
                 sPin="$(echo "$sIblocklistIdent" | awk '{split($0,a,"|"); print a[2]}')"
-                sAllBlocklists="$(cmdMySQL 'MySB_db' "SELECT list_url,enable,subscription FROM blocklists WHERE list_url != '';" | sed 's/\t/|/g;')"
+                sAllBlocklists="$(cmdMySQL 'MySB_db' "SELECT list_url,enable,subscription FROM blocklists WHERE enable='1' AND list_url != '';" | sed 's/\t/|/g;')"
                 sDbToUpdate="MySB_db"
                 ;;
         esac
