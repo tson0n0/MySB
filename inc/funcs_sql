@@ -39,7 +39,15 @@ cmdMySQL() {
         sRequest="$2"
         sVerbose="$3"
     fi
-    mysql --defaults-extra-file=/root/.config.cnf --database="${sDatabase}" -w --connect-timeout=10 -s -N -e "${sRequest}" ${sVerbose}
+
+    case "$sDatabase" in
+        "${gsblocklists_DB}")
+            [ -n "${sVerbose}" ] && sVerbose="-echo"
+            sqlite3 ${sVerbose} -cmd '.timeout 150000' "${sDatabase}" "${sRequest}"
+            ;;
+        *) mysql --defaults-extra-file=/root/.config.cnf --database="${sDatabase}" -w --connect-timeout=10 -s -N -e "${sRequest}" ${sVerbose} ;;
+    esac
+
 }
 
 ##################### LAST LINE ######################################

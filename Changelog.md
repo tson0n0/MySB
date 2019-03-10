@@ -11,6 +11,8 @@
   - standardized management _(only one list for PeerGuardian and rTorrent)_
   - update lists _(add & remove some)_
   - add countries
+  - #53 PeerGuardian, manual addition of lists
+  - Update blocking lists every 6 hours
 - Shellcheck code errors correction
 - CI check review
 - Bugs fix
@@ -19,11 +21,12 @@
 - MySQL templates conversion to MariaDB
 - NextCloud restore export OC_PASS for --password-from-env parameter
 - Remove Python packages update from MySB_UpgradeSystem
-- Update blocking lists every 6 hours for PeerGuardian et rTorrent
 - #61 SSH code review
   - possiblity for main user to change some params
   - add main user to sudo group
 - #62 LetsEncrypt script code review
+- #53 Bugs _(partial)_
+- #59 disable TSO/GSO for Plex
 
 ## v5.4 - 2019/01/14 _(start at: 2018/09/07)_
 

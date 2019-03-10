@@ -81,11 +81,14 @@ gfnIblocklistXmlGenerate() {
                     sValues="1, 1"
                     sEnable=""
                     ;;
-
                 'germany' | 'japan' | 'united kingdom' | 'finland' | 'united arab emirates')
                     # Countries where downloading illegal content in fined
                     sValues="1, 1"
                     sEnable=""
+                    ;;
+                'p2p allow')
+                    # P2P allow, disable it for MySB compatibilities
+                    continue
                     ;;
                 *)
                     sValues="0, 0"
@@ -214,12 +217,65 @@ gfnPeerGuardianFailed() {
 
 #### PeerGuardian Create blocklists.list
 gfnPeerGuardianBlocklistsList() {
-    local sAllBlocklists sList bIsActive sCheckLog sIblocklistIdent sUsername sPin
+    local sAllBlocklists sList bIsActive sCheckLog sIblocklistIdent sUsername sPin sDbToUpdate
+
+    function fnManageTypeLists() {
+        case "$1" in
+            'personal')
+                # Personal lists
+                sAllBlocklists="$(sqlite3 -cmd '.timeout 150000' "${gsblocklists_DB}" "SELECT url,active FROM blocklists WHERE url != '';" | sed 's/\t/|/g;')"
+                sDbToUpdate="${gsblocklists_DB}"
+                ;;
+            'iblocklists')
+                # iBlocklists credentials
+                sIblocklistIdent="$(sqlite3 -cmd '.timeout 150000' "${gsblocklists_DB}" "SELECT username,pin FROM iblocklist_ident WHERE id='1';")"
+                sUsername="$(echo "$sIblocklistIdent" | awk '{split($0,a,"|"); print a[1]}')"
+                sPin="$(echo "$sIblocklistIdent" | awk '{split($0,a,"|"); print a[2]}')"
+                sAllBlocklists="$(cmdMySQL 'MySB_db' "SELECT list_url,enable FROM blocklists WHERE list_url != '';" | sed 's/\t/|/g;')"
+                sDbToUpdate="MySB_db"
+                ;;
+        esac
+
+        for Blocklist in $sAllBlocklists; do
+            sList="$(echo "$Blocklist" | awk '{split($0,a,"|"); print a[1]}')"
+            bIsActive="$(echo "$Blocklist" | awk '{split($0,a,"|"); print a[2]}')"
+
+            {
+                [ -n "$sUsername" ]
+                [ -n "$sPin" ]
+            } && sList="${sList}&username=${sUsername}&pin=${sPin}"
+
+            case "$2" in
+                'UpdateLists') # Update each list of PeerGuardian during installation
+                    echo "$sList" >/etc/pgl/blocklists.list # One to one list, the file 'blocklists.list' is created for each list for update them
+
+                    if (! pglcmd update); then # if update fail maybe its due to a bad list
+                        if [ "$1" -eq 0 ]; then echo "$(date +"%T") --> The updated list of PGL may have failed." >>"${MySB_InstallDir}"/logs/"${gsScriptName}".log; fi
+
+                        sCheckLog="$(grep 'failed' /var/log/pgl/pglcmd.log | grep list.iblocklist.com | awk '{ print $6 }')"
+                        for sList in $sCheckLog; do
+                            echo "$(date +"%T") --> '$sList' will be disabled." >>"${MySB_InstallDir}"/logs/"${gsScriptName}".log
+                            # Force inactived list
+                            cmdMySQL "${sDbToUpdate}" "UPDATE blocklists SET enable='0', comments='Update failed' WHERE list_url='$sList';"
+                        done
+                    else # Update OK
+                        cmdMySQL "${sDbToUpdate}" "UPDATE blocklists SET lastupdate='$(date +%Y-%m-%d\ %H:%M:%S)' WHERE list_url='$sList';"
+                    fi
+                    ;;
+                'CreateFile') # Now, we create the final blocklists with all active lists
+                    case "$bIsActive" in
+                        1) echo "$sList" >>/etc/pgl/blocklists.list ;;
+                        0) echo "#$sList" >>/etc/pgl/blocklists.list ;;
+                    esac
+                    ;;
+            esac
+        done
+    }
 
     if [ -f /etc/pgl/pglcmd.conf ] && [ -f /etc/pgl/blocklists.list ]; then
         # /etc/pgl/blocklists.list
         if [ "$1" -eq 1 ]; then log_daemon_msg "${Peerguardian_AddingSelectedBlocklist}"; fi
-        (
+        (   
             cat <<'EOF'
 # blocklists.list - lists the remote blocklists that pglcmd handles.
 
@@ -246,45 +302,8 @@ gfnPeerGuardianBlocklistsList() {
 EOF
         ) >/etc/pgl/blocklists.list
 
-        sIblocklistIdent="$(sqlite3 -cmd '.timeout 150000' "${gsblocklists_DB}" "SELECT username,pin FROM ident WHERE id='1';")"
-        sUsername="$(echo "$sIblocklistIdent" | awk '{split($0,a,"|"); print a[1]}')"
-        sPin="$(echo "$sIblocklistIdent" | awk '{split($0,a,"|"); print a[2]}')"
-
-        sAllBlocklists="$(cmdMySQL 'MySB_db' "SELECT list_url,enable FROM blocklists WHERE enable = 1 AND list_url != '';" | sed 's/\t/|/g;')"
-        for Blocklist in $sAllBlocklists; do
-            sList="$(echo "$Blocklist" | awk '{split($0,a,"|"); print a[1]}')"
-            bIsActive="$(echo "$Blocklist" | awk '{split($0,a,"|"); print a[2]}')"
-
-            {
-                [ -n "$sUsername" ]
-                [ -n "$sPin" ]
-            } && sList="${sList}&username=${sUsername}&pin=${sPin}"
-
-            case "$2" in
-                'UpdateLists') # Update each list of PeerGuardian during installation
-                    echo "$sList" >/etc/pgl/blocklists.list # One to one list, the file 'blocklists.list' is created for each list for update them
-
-                    if (! pglcmd update); then # if update fail maybe its due to a bad list
-                        if [ "$1" -eq 0 ]; then echo "$(date +"%T") --> The updated list of PGL may have failed." >>"${MySB_InstallDir}"/logs/"${gsScriptName}".log; fi
-
-                        sCheckLog="$(grep 'failed' /var/log/pgl/pglcmd.log | grep list.iblocklist.com | awk '{ print $6 }')"
-                        for sList in $sCheckLog; do
-                            echo "$(date +"%T") --> '$sList' will be disabled." >>"${MySB_InstallDir}"/logs/"${gsScriptName}".log
-                            # Force inactived list
-                            cmdMySQL 'MySB_db' "UPDATE blocklists SET enable='0', comments='Update failed' WHERE list_url='$sList';"
-                        done
-                    else # Update OK
-                        cmdMySQL 'MySB_db' "UPDATE blocklists SET lastupdate='$(date +%Y-%m-%d\ %H:%M:%S)' WHERE list_url='$sList';"
-                    fi
-                    ;;
-                'CreateFile') # Now, we create the final blocklists with all active lists
-                    case "$bIsActive" in
-                        1) echo "$sList" >>/etc/pgl/blocklists.list ;;
-                        0) echo "#$sList" >>/etc/pgl/blocklists.list ;;
-                    esac
-                    ;;
-            esac
-        done
+        fnManageTypeLists 'personal'
+        fnManageTypeLists 'iblocklists'
 
         if [ "$1" -eq 1 ]; then gfnStatusLSB; fi
     fi
@@ -297,7 +316,7 @@ gfnPeerGuardianAllowP2P() {
     if [ -f /etc/pgl/pglcmd.conf ] && [ -f /etc/pgl/allow.p2p ]; then
         # /etc/pgl/allow.p2p
         if [ "$1" -eq 1 ]; then log_daemon_msg "${Peerguardian_PermissionSelectedTrackers}"; fi
-        (
+        (   
             cat <<'EOF'
 # allow.p2p - allow list for pglcmd
 #

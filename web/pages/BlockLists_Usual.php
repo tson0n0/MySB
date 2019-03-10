@@ -33,22 +33,20 @@ if ( $IsInstalled == '1' ) {
 	if (isset($_POST['submit'])) {
 		switch ($_POST['submit']) {
 			case iBlockLists_DB_Save:
-				$result = $Blocklists_DB->update("iblocklist", ["iblocklist_username" => $_POST['iblocklist_username'], "iblocklist_pin" => $_POST['iblocklist_pin']], ["id" => 1]);
+				$result = $Blocklists_DB->update("iblocklist_ident", ["username" => $_POST['username'], "pin" => $_POST['pin']], ["id" => 1]);
 				if ( $result->rowCount() == 0 ) {
 					$type = 'information';
 					$message = Global_NoChange;
 					$command = 'message_only';
-
 				} else {
 					$type = 'success';
 					$message = Global_Success;
 					$command = 'message_only';
 				}
-
 			break;
 
 			case AddList_DB_Save:
-				if ( (isset($_POST['input_id'])) && (isset($_POST['input_url'][1])) ) {
+				if ( ! empty($_POST['input_url'][1]) ) {
 					$count = count($_POST['input_id']);
 					$success = false;
 					$command = 'message_only';
@@ -56,46 +54,36 @@ if ( $IsInstalled == '1' ) {
 					for($i=1; $i<=$count; $i++) {
 						$URL = preg_replace('/\s\s+/', '', $_POST['input_url'][$i]);
 						if (filter_var($URL, FILTER_VALIDATE_URL)) {
-							$value = $Blocklists_DB->insert("blocklists", [ "source" => $_POST['input_origin'][$i], "name" => $_POST['input_name'][$i], "url" => "$URL"]);
-							if ( $Blocklists_DB->id() > 0 ) {
-								$success = true;
-							}
+							$Blocklists_DB->insert("blocklists", [ "source" => $_POST['input_origin'][$i], "name" => $_POST['input_name'][$i], "url" => "$URL"]);
+							$result = $result+$Blocklists_DB->id();
 						} else {
-							$success = 'error';
+							GenerateMessage('message_only', 'error', sprintf(AddList_DB_BadUrl, $URL), '');
 						}
 					}
 
-					switch ($success) {
-						case 'error':
-							$type = 'error';
-							$message = Global_FailedUpdateMysbDB;
-							break;
-						case true:
-							$type = 'success';
-							$message = Global_Success;
-							break;
-						default:
-							$type = 'information';
-							$message = Global_NoChange;
-							break;
+					if ( $result > 0 ) {
+						$type = 'success';
+						$message = Global_Success;
+					} else {
+						$type = 'information';
+						$message = Global_NoChange;
 					}
-				}
-
-				$count = count($_POST['personal_id']);
-				for ($i=0;$i<$count;$i++) {
-					$value = $Blocklists_DB->update("blocklists", ["active" => $_POST['personal_enable'][$i]], ["id" => $_POST['personal_id'][$i]]);
-					$result = $result+$value;
-				}
-
-				if ( $result == 0 ) {
-					$type = 'information';
-					$message = Global_NoChange;
-					$command = 'message_only';
-
 				} else {
-					$type = 'success';
-					$message = Global_Success;
-					$command = 'Blocklists_PeerGuardian';
+					$count = count($_POST['personal_id']);
+					for ($i=0;$i<=$count;$i++) {
+						$value = $Blocklists_DB->update("blocklists", ["active" => $_POST['personal_enable'][$i]], ["id" => $_POST['personal_id'][$i]]);
+						$result = $result+$value->rowCount();
+					}
+
+					if ( $result == 0 ) {
+						$type = 'information';
+						$message = Global_NoChange;
+						$command = 'message_only';
+					} else {
+						$type = 'success';
+						$message = Global_Success;
+						$command = 'Blocklists_PeerGuardian';
+					}
 				}
 			break;
 
@@ -120,9 +108,11 @@ if ( $IsInstalled == '1' ) {
 
 			default:	// delete
 				foreach($_POST['submit'] as $key => $value) {
-					$Blocklists_DB->delete("blocklists", ["id" => "$key"]);
-					$result = $result+$data->rowCount();
-					if ( $result = 0 ) {
+					$value = $Blocklists_DB->delete("blocklists", ["id" => "$key"]);
+					$result = $result+$value->rowCount();
+					if ( $result > 0 ) {
+						$success = true;
+					} else {
 						$success = false;
 					}
 				}
@@ -143,8 +133,13 @@ if ( $IsInstalled == '1' ) {
 
 	$IdentIblocklist = $Blocklists_DB->get("iblocklist_ident", "*", ["id" => 1]);
 	$Personal_Blocklists = $Blocklists_DB->select("blocklists", "*");
+	if (empty($Personal_Blocklists)) {
+		$ButtonSaveON = false;
+	} else {
+		$ButtonSaveON = true;
+	}
 
-	if (($IdentIblocklist['iblocklist_username'] == "") || ($IdentIblocklist['iblocklist_pin'] == "")) {
+	if (($IdentIblocklist['username'] == "") || ($IdentIblocklist['pin'] == "")) {
 		$BlockList = $MySB_DB->select("blocklists", "*", ["AND" => [
 															"list_url[!]" => "",
 															"comments[!]" => ["Country", "Subscription required "]
@@ -169,8 +164,8 @@ if ( $IsInstalled == '1' ) {
 					<th style="text-align:center;"><?php echo iBlockLists_DB_Password; ?></th>
 				</tr>
 				<tr>
-					<td><input style="width:100%; cursor: pointer;" name="iblocklist_username" type="text" value="<?php echo $IdentIblocklist['iblocklist_username']; ?>" /></td>
-					<td style="width:120px"><input style="width:100%; cursor: pointer;" name="iblocklist_pin" type="number" value="<?php echo $IdentIblocklist['iblocklist_pin']; ?>" /></td>
+					<td><input style="width:100%; cursor: pointer;" name="username" type="text" value="<?php echo $IdentIblocklist['username']; ?>" /></td>
+					<td style="width:120px"><input style="width:100%; cursor: pointer;" name="pin" type="number" value="<?php echo $IdentIblocklist['pin']; ?>" /></td>
 				</tr>
 			</table>
 
@@ -194,6 +189,9 @@ if ( $IsInstalled == '1' ) {
 			<p class="Comments"><?php echo AddList_DB_Comment; ?></p>
 			<br />
 
+<?php
+	if ($ButtonSaveON) {
+?>
 			<table style="border-spacing:1;">
 				<tr>
 					<th style="text-align:center;"><?php echo BlockLists_Table_Source; ?></th>
@@ -205,8 +203,10 @@ if ( $IsInstalled == '1' ) {
 				</tr>
 
 <?php
+	}
+
 	foreach($Personal_Blocklists as $List) {
-		switch ($List["enable"]) {
+		switch ($List["active"]) {
 			case '0':
 				if ( $IsMainUser ) {
 					$enable = '	<select name="personal_enable[]" style="width:60px;" class="redText" onchange="this.className=this.options[this.selectedIndex].className">
@@ -248,9 +248,11 @@ if ( $IsInstalled == '1' ) {
 
 	<?php
 	}
-?>
-			</table>
 
+	if ($ButtonSaveON) {
+			echo '</table>';
+ 	}
+?>
 			<input class="submit" style="width:<?php echo strlen(AddList_DB_Save)*10; ?>px; margin-top: 10px; margin-bottom: 10px;" name="submit" type="submit" value="<?php echo AddList_DB_Save; ?>">
 		</div>
 		</fieldset>
