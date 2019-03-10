@@ -59,9 +59,13 @@ echo >>/etc/motd
 # Disable TSO & GSO for all interfaces
 if (type -P ethtool >/dev/null); then
     for inet in $(echo "$(ip link show)" | grep -E '^([1-9]]?)\:\ ([a-z]?)' | awk '{ print $2 }' | sed 's/://g;'); do
-        [ "${inet}" = "lo" ] && continue
-        ethtool -K "${inet}" tso off
-        ethtool -K "${inet}" gso off
+        case "${inet}" in
+            'lo' | tun* | tap*) continue ;;
+            *)
+                ethtool -K "${inet}" tso off
+                ethtool -K "${inet}" gso off
+                ;;
+        esac
     done
 fi
 
