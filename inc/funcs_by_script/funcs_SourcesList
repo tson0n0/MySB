@@ -86,22 +86,6 @@ gfnCreateLocalMirror() {
 	chmod 0755 /var/spool/apt-mirror/var/*.sh
 	chown apt-mirror:apt-mirror /var/spool/apt-mirror/var/*.sh
 
-	#### Git LFS
-	# GPG Key
-	$binCURL -o "/tmp/git-lfs.key" "https://packagecloud.io/github/git-lfs/gpgkey"
-	if [ -f /tmp/git-lfs.key ]; then
-		apt-key add /tmp/git-lfs.key
-	fi
-	# Local mirrors
-	{
-		echo "# Git LFS"
-		echo "deb https://packagecloud.io/github/git-lfs/debian/ ${gsDebianRelease} main"
-		echo "clean https://packagecloud.io/github/git-lfs/debian/"
-	} >>/etc/apt/mirror.list
-	# git-lfs.list (local)
-	echo "# Git LFS" >/etc/apt/sources.list.d/git-lfs.list
-	echo "deb file:///var/spool/apt-mirror/mirror/packagecloud.io/github/git-lfs/debian/ ${gsDebianRelease} main" >>/etc/apt/sources.list.d/git-lfs.list
-
 	#### Docker
 	# GPG Key
 	$binCURL -o "/tmp/docker.key" "https://download.docker.com/linux/debian/gpg"

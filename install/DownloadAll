@@ -34,7 +34,7 @@ fi
 RemovePluginCakebox=NO
 RemovePluginManager=NO
 
-#### Git LFS pull
+#### Git pull
 if [ ! -d "${MySB_Files}" ]; then
     git clone --progress -b "${gsCurrentVersion}" https://github.com/toulousain79/MySB_files.git "${MySB_Files}"
 else

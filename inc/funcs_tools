@@ -458,7 +458,7 @@ gfnGetRepoValues() {
 		;;
 	'Shellcheck')
 		[ -f "$gsRepoDir" ] && chmod +x "$gsRepoDir"
-		gsVersionInstalled="$(gfnCheckCommand 0 shellcheck && shellcheck --version | grep 'version' | head -n 1 | awk '{ print $2 }' || echo 'Not installed')"
+		gsVersionInstalled="$([ -f /usr/bin/shellcheck ] && shellcheck --version | grep 'version' | head -n 1 | awk '{ print $2 }' || echo 'Not installed')"
 		gsVersionLatest="$($binCURL 'https://api.github.com/repos/koalaman/shellcheck/tags' | grep 'name' | head -n 1 | awk '{ print $2 }' | cut -d '"' -f 2 | sed 's/v//g;')"
 		;;
 	*) gsFileURL="" ;;
@@ -473,7 +473,7 @@ gfnGetRepoValues() {
 	echo "Type : $gsRepoType"
 	echo "Active : $(echo "$gnRepoActive" | sed 's/0/NO/g;' | sed 's/1/YES/g;')"
 	echo "Repo URL : $gsRepoURL"
-	[ -n "$gsVersionInstalled" ] && echo "Current version : $gsVersionInstalled" || echo "Not installed"
+	[ -n "$gsVersionInstalled" ] && echo "Current version : $gsVersionInstalled"
 	[ -n "$gsVersionLatest" ] && echo "Latest version : $gsVersionLatest"
 	[ -n "$gsFileURL" ] && echo "File URL : $gsFileURL"
 	echo
