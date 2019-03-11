@@ -29,27 +29,27 @@ source "$(dirname "$0")"/../inc/includes_before
 LocSwitch="$1"
 
 if [ -n "$LocSwitch" ] && gfnCheckCommand 0 pglcmd; then
-	case "$LocSwitch" in
-	"update")
-		#### Force PeerGuardian List Update
-		pglcmd update >$MySB_InstallDir/temp/pglcmd_update.log
+    case "$LocSwitch" in
+        "update")
+            #### Force PeerGuardian List Update
+            pglcmd update >$MySB_InstallDir/temp/pglcmd_update.log
 
-		#### Get date time from file
-		cat $MySB_InstallDir/temp/pglcmd_update.log | grep 'last modified:' | sed 's/)/:00/g;' | while read line; do
-			ListName="$(echo $line | awk '{ print $1 }')"
-			DateHour="$(echo $line | sed 's/modified:/#/g;' | cut -d "#" -f 2 | sed 's/^ //g;')"
-			cmdMySQL 'MySB_db' "UPDATE blocklists SET lastupdate = '$DateHour' WHERE pgl_list_name = '$ListName';" -v
-		done
-		;;
-	"check")
-		if ! gfnGetPid pglcmd; then
-			gfnScriptInvoke 'ScreenSTD' "$MySB_InstallDir/bin/MySB_SecurityRules" 'create' 'CRON'
-		fi
-		if ! gfnGetPid pglcmd; then
-			gfnSendMail "$Global_Subject_PeerGuardianCheck" "$gsMainUserName" "pgl_check" "PeerGuardian is dead !"
-		fi
-		;;
-	esac
+            #### Get date time from file
+            cat $MySB_InstallDir/temp/pglcmd_update.log | grep 'last modified:' | sed 's/)/:00/g;' | while read line; do
+                ListName="$(echo $line | awk '{ print $1 }')"
+                DateHour="$(echo $line | sed 's/modified:/#/g;' | cut -d "#" -f 2 | sed 's/^ //g;')"
+                cmdMySQL 'MySB_db' "UPDATE blocklists SET lastupdate = '$DateHour' WHERE list_name = '$ListName';" -v
+            done
+            ;;
+        "check")
+            if ! gfnGetPid pglcmd; then
+                gfnScriptInvoke 'ScreenSTD' "$MySB_InstallDir/bin/MySB_SecurityRules" 'create' 'CRON'
+            fi
+            if ! gfnGetPid pglcmd; then
+                gfnSendMail "$Global_Subject_PeerGuardianCheck" "$gsMainUserName" "pgl_check" "PeerGuardian is dead !"
+            fi
+            ;;
+    esac
 fi
 
 # -----------------------------------------

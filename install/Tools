@@ -33,7 +33,7 @@ if [ "$gsVersionInstalled" != "$gsVersionLatest" ]; then
     [ -f "$gsRepoDir" ] && mv -v "$gsRepoDir" "${MySB_Files}/${gsRepoFile}"
     [ -f "${MySB_Files}/${gsRepoFile}" ] && rm -fv "${MySB_Files}/${gsRepoFile}.tmp"
     tar --xz -xvf "${MySB_Files}/${gsRepoFile}" -C /tmp/
-    cp /tmp/shellcheck-stable/shellcheck "$gsRepoDir"
+    cp -v /tmp/shellcheck-stable/shellcheck "$gsRepoDir"
     chmod -v +x "$gsRepoDir"
     "$gsRepoDir" --version
 fi
