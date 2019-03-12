@@ -81,12 +81,12 @@ gfnSendMail() {
 		service nginx restart &>/dev/null
 	fi
 
-	#### Use case without MySQL needed:	new_version, upgrade, account_confirmed, ip_updated, pgl_check, main_account, tracker_found
-	#### Use case with MySQL needed:	new_user, renting, account_created, delete_user
+	#### Use case without MySQL needed:	new_version, account_confirmed, ip_updated, pgl_check, main_account, tracker_found
+	#### Use case with MySQL needed:	new_user, renting, account_created, delete_user, upgrade
 	# Add mail to DB
 	if [ -z "$5" ]; then
 		case "$sCase" in
-		'new_user' | 'renting' | 'account_created' | 'delete_user')
+		'new_user' | 'renting' | 'account_created' | 'delete_user' | 'upgrade')
 			echo "in_porgress" >>/tmp/SendMails.lock
 			screen -dmS SendMails "${MySB_InstallDir}"/scripts/SendMails.bsh CRON
 			nIdMail="$(cmdMySQL 'MySB_db' "SELECT id_mails FROM mails WHERE user='$sUser' AND use_case='$sCase';" 2>/dev/null)"
