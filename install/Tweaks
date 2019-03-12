@@ -33,7 +33,7 @@ install -v -o root -g root -m 0644 $MySB_InstallDir/templates/tweaks/profile.tmp
 install -v -o root -g root -m 0644 $MySB_InstallDir/templates/tweaks/bash_aliases.tmpl /root/.bash_aliases
 install -v -o root -g root -m 0644 /etc/skel/.bash_logout /root/.bash_logout
 if [ ! -f /root/.bash_profile ] || [ -z "$(grep 'bash_completion' /root/.bash_profile)" ] || [ -z "$(grep '.bashrc' /root/.bash_profile)" ]; then
-    (
+    (   
         cat <<'EOF'
 if [ -f /etc/bash_completion ]; then
 	. /etc/bash_completion
@@ -163,6 +163,7 @@ echo
 echo "########## SSH Keygen"
 mkdir -pv /root/.ssh/
 [ ! -f /root/.ssh/id_rsa ] && ssh-keygen -q -t rsa -b 2048 -N "" -f /root/.ssh/id_rsa
+ls -lat /root/.ssh/id_rsa
 
 #### AES-NI Crypto Acceleration
 echo
@@ -176,6 +177,8 @@ if [ -n "$(grep 'aes' /proc/cpuinfo)" ]; then
         [ -z "$(grep 'aesni_intel' /etc/modules)" ] && echo aesni_intel | tee -a /etc/modules
         [ -z "$(grep 'OPENSSL_ia32cap=~0x200000200000000' /etc/environment)" ] && echo "OPENSSL_ia32cap=~0x200000200000000" | tee -a /etc/environment
     fi
+    cat /etc/modules
+    cat /etc/environment
 fi
 
 #### Force CPU governor to "performance"
