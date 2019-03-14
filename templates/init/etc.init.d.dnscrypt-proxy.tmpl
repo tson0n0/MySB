@@ -1171,7 +1171,7 @@ gfnStart() {
 			gfnMessage 'info' 'log' "$gsProxyDesc is already running, processes: $nRunning"
 		else
 			# Update clock
-			/usr/sbin/ntpdate -u 0.fr.pool.ntp.org > /dev/null 2>&1
+			/usr/sbin/ntpdate -u 0.pool.ntp.org 1.pool.ntp.org > /dev/null 2>&1
 
 			# Get list of resolvers wished (gsResolversList)
 			gfnCheckResolversWished

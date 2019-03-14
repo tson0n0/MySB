@@ -104,7 +104,7 @@ systemctl daemon-reload &>/dev/null
 # echo "------------------------------"
 # echo "update-ca-certificates --verbose --fresh"
 # echo "------------------------------"
-# update-ca-certificates --verbose --fresh
+update-ca-certificates --verbose --fresh
 
 #### Cleaning
 # updatedb
