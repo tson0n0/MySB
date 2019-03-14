@@ -40,8 +40,8 @@ case "$1" in
         gfnSwitchDNS "bind"
 
         # Forcing NTP update
-        ping -c4 0.fr.pool.ntp.org
-        /usr/sbin/ntpdate -u 0.fr.pool.ntp.org
+        ping -c4 0.pool.ntp.org
+        /usr/sbin/ntpdate -u 0.pool.ntp.org 1.pool.ntp.org
 
         # MySQL
         [ -f /tmp/MySQL.bsh.log ] && cat /tmp/MySQL.bsh.log >>$MySB_InstallDir/logs/BulkChanges.bsh.log

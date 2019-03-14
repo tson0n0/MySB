@@ -71,13 +71,16 @@ perl -pi -e "s/<MySB_Version>/$gsCurrentVersion/g" /etc/rc.local
 echo
 echo "########## Timezone"
 if [ -n "$gsTimeZone" ]; then
-    if [ -f /etc/timezone ]; then rm -vf /etc/timezone; fi
-    echo "$gsTimeZone" | tee -a /etc/timezone
+    install -v -o root -g root -m 0644 $MySB_InstallDir/templates/systemd/timesyncd.conf.tmpl /etc/systemd/timesyncd.conf
+    timedatectl set-timezone "$gsTimeZone"
+    timedatectl set-local-rtc 0
+    timedatectl status
     if [ -f /etc/adjtime ]; then
         sed -i "s/UTC/LOCAL/g;" /etc/adjtime
     fi
     dpkg-reconfigure -f noninteractive tzdata
 fi
+ServicesToRestart="${ServicesToRestart} systemd-timesyncd"
 
 #### Swappiness
 if ([ "$gsMemory" -lt 2048 ] && [ "$(free -m | grep 'Swap' | awk '{ print $2 }')" -ne 0 ]); then
