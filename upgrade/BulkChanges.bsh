@@ -141,14 +141,15 @@ case "$1" in
         repquota -a
 
         #### Cleaning
-        # updatedb
-        # for file in $(locate *.dpkg-old *.dpkg-new *.dpkg-dist *.dpkg-bak *.ucf-dist); do
-        # if [ -n "$gbDevMode" ] && [ $gbDevMode -eq 1 ]; then
-        # mv -vf $file $MySB_InstallDir/logs/TODEL/
-        # else
-        # rm -vf $file
-        # fi
-        # done
+        rm -rf "${MySB_InstallDir}/temp/"{*,.*}
+        updatedb
+        for file in $(locate *.dpkg-old *.dpkg-new *.dpkg-dist *.dpkg-bak *.ucf-dist); do
+            if [ -n "$gbDevMode" ] && [ $gbDevMode -eq 1 ]; then
+                mv -vf $file $MySB_InstallDir/logs/TODEL/
+            else
+                rm -vf $file
+            fi
+        done
 
         #### Flush mail queue
         if gfnCheckCommand 0 postfix && gfnGetPid postfix; then postfix flush; fi

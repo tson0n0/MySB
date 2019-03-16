@@ -173,26 +173,27 @@ if [ $Continue -eq 0 ]; then
     fi
 
     if [ $Continue -eq 0 ]; then
-        if (! git stash); then
-            Continue=7
-            Error="${UpgradeMe_Error_GitStash[*]}"
-        fi
-    fi
-
-    if [ $Continue -eq 0 ]; then
         if (! git checkout -b "$MySB_NewVersion" origin/"$MySB_NewVersion"); then
-            Continue=8
+            Continue=7
             UpgradeMe_Error_GitCheckout="${UpgradeMe_Error_GitCheckout[*]//#new_version#/$MySB_NewVersion}"
-            Error="$UpgradeMe_Error_GitCheckout"
+            Error="${UpgradeMe_Error_GitCheckout}"
         fi
     fi
 
     if [ $Continue -eq 0 ]; then
         if (! git pull origin "$MySB_NewVersion"); then
-            Continue=9
+            Continue=8
             Error="${UpgradeMe_Error_GitPull[*]}"
         else
             git stash clear
+        fi
+    fi
+
+    if [ $Continue -eq 0 ]; then
+        if (! git reset --hard origin/"$MySB_NewVersion"); then
+            Continue=9
+            UpgradeMe_Error_GitReset="${UpgradeMe_Error_GitReset[*]//#new_version#/$MySB_NewVersion}"
+            Error="${UpgradeMe_Error_GitReset}"
         fi
     fi
 
@@ -207,15 +208,8 @@ if [ $Continue -eq 0 ]; then
     fi
 
     if [ $Continue -eq 0 ]; then
-        if (! git stash); then
-            Continue=11
-            Error="${UpgradeMe_Error_GitStash[*]}"
-        fi
-    fi
-
-    if [ $Continue -eq 0 ]; then
         if (! git checkout -b "$MySB_NewVersion" origin/"$MySB_NewVersion"); then
-            Continue=12
+            Continue=11
             UpgradeMe_Error_GitCheckout="${UpgradeMe_Error_GitCheckout//#new_version#/$MySB_NewVersion}"
             Error="$UpgradeMe_Error_GitCheckout"
         fi
@@ -223,10 +217,16 @@ if [ $Continue -eq 0 ]; then
 
     if [ $Continue -eq 0 ]; then
         if (! git pull origin "$MySB_NewVersion"); then
-            Continue=13
+            Continue=12
             Error="${UpgradeMe_Error_GitPull[*]}"
-        else
-            git stash clear
+        fi
+    fi
+
+    if [ $Continue -eq 0 ]; then
+        if (! git reset --hard origin/"$MySB_NewVersion"); then
+            Continue=13
+            UpgradeMe_Error_GitReset="${UpgradeMe_Error_GitReset[*]//#new_version#/$MySB_NewVersion}"
+            Error="${UpgradeMe_Error_GitReset}"
         fi
     fi
 fi
