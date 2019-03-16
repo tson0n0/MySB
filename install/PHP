@@ -26,7 +26,7 @@ source "$(dirname "$0")"/../inc/includes_before
 ##################### FIRST LINE #####################################
 
 #### STOP services
-gfnManageServices stop "$binPhpService redis-server"
+gfnManageServices stop "nginx $binPhpService redis-server"
 
 #### Redis
 install -v -o root -g root -m 0755 -d "/etc/redis"
@@ -43,7 +43,7 @@ gfnPackageBundleInstall "${sPackages[@]}"
 gfnPackagesManage purge "apache2"
 
 #### STOP services
-gfnManageServices stop "$binPhpService redis-server"
+gfnManageServices stop "nginx $binPhpService redis-server"
 
 #### Redis
 install -v -o root -g root -m 0755 -d "/etc/redis"
@@ -73,57 +73,57 @@ pear upgrade --force
 
 #### Disable all modules
 for Ext in $sPeclModules; do
-	[ -f $gsPhpDir/mods-available/$Ext.ini ] && phpdismod $Ext
-	rm -fv $gsPhpDir/mods-available/$Ext.ini
-	[ -n "$(pecl list | grep "$Ext")" ] && pecl uninstall $Ext
+    [ -f $gsPhpDir/mods-available/$Ext.ini ] && phpdismod $Ext
+    rm -fv $gsPhpDir/mods-available/$Ext.ini
+    [ -n "$(pecl list | grep "$Ext")" ] && pecl uninstall $Ext
 done
 if [ -d "${sExtDir}-zts" ]; then
-	sExtListZts="$(ls -A1 ${sExtDir}-zts | cut -d "." -f 1)"
-	for Ext in $sExtListZts; do
-		[ -f $gsPhpDir/mods-available/$Ext.ini ] && phpdismod $Ext
-		rm -fv $gsPhpDir/mods-available/$Ext.ini
-	done
-	rm -rfv ${sExtDir}-zts
+    sExtListZts="$(ls -A1 ${sExtDir}-zts | cut -d "." -f 1)"
+    for Ext in $sExtListZts; do
+        [ -f $gsPhpDir/mods-available/$Ext.ini ] && phpdismod $Ext
+        rm -fv $gsPhpDir/mods-available/$Ext.ini
+    done
+    rm -rfv ${sExtDir}-zts
 fi
 for Ext in $sAllExtList; do
-	[ -f $sExtDir/$Ext.ini ] && phpdismod $Ext
-	rm -fv $gsPhpDir/mods-available/$Ext.ini
+    [ -f $sExtDir/$Ext.ini ] && phpdismod $Ext
+    rm -fv $gsPhpDir/mods-available/$Ext.ini
 done
 
 #### Enable all modules
 for Ext in $sAllExtList; do
-	case "$Ext" in
-	'opcache')
-		echo "zend_extension=opcache.so" >$gsPhpDir/mods-available/opcache.ini
-		[ -z "$(php -m | grep 'opcache')" ] && $binPhpEnmod opcache
-		;;
-	*)
-		echo "extension=$Ext.so" >$gsPhpDir/mods-available/$Ext.ini
-		[ -z "$(php -m | grep "$Ext")" ] && $binPhpEnmod $Ext
-		;;
-	esac
+    case "$Ext" in
+        'opcache')
+            echo "zend_extension=opcache.so" >$gsPhpDir/mods-available/opcache.ini
+            [ -z "$(php -m | grep 'opcache')" ] && $binPhpEnmod opcache
+            ;;
+        *)
+            echo "extension=$Ext.so" >$gsPhpDir/mods-available/$Ext.ini
+            [ -z "$(php -m | grep "$Ext")" ] && $binPhpEnmod $Ext
+            ;;
+    esac
 done
 for Ext in $sPeclModules; do
-	case "$Ext" in
-	'smbclient')
-		gfnGetRepoValues 'libsmbclient-php' && gfnRepoManageByType
-		gfnRepoManageByType
-		cd ${gsRepoDir}/ || continue
-		phpize
-		./configure
-		make
-		make install
-		make test
-		echo "extension=smbclient.so" >$gsPhpDir/mods-available/smbclient.ini
-		$binPhpEnmod smbclient
-		;;
-	'htscanner')
-		pecl install htscanner
-		echo "extension=htscanner.so" >$gsPhpDir/mods-available/htscanner.ini
-		$binPhpEnmod htscanner
-		rm -fv $gsPhpDir/cli/conf.d/20-htscanner.ini
-		;;
-	esac
+    case "$Ext" in
+        'smbclient')
+            gfnGetRepoValues 'libsmbclient-php' && gfnRepoManageByType
+            gfnRepoManageByType
+            cd ${gsRepoDir}/ || continue
+            phpize
+            ./configure
+            make
+            make install
+            make test
+            echo "extension=smbclient.so" >$gsPhpDir/mods-available/smbclient.ini
+            $binPhpEnmod smbclient
+            ;;
+        'htscanner')
+            pecl install htscanner
+            echo "extension=htscanner.so" >$gsPhpDir/mods-available/htscanner.ini
+            $binPhpEnmod htscanner
+            rm -fv $gsPhpDir/cli/conf.d/20-htscanner.ini
+            ;;
+    esac
 done
 chmod 644 $sExtDir/*.so
 
