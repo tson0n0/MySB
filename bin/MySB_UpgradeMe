@@ -46,9 +46,9 @@ fi
 if [ $Continue -eq 0 ]; then
     echo -e -n "${CBLUE}${UpgradeMe_GitHubAccess}$CEND..."
     if (ping -c3 raw.githubusercontent.com >/dev/null 2>&1); then
-        echo -e "$Global_Done"
+        echo -e "${Global_Done}"
     else
-        echo -e "$Global_Failed"
+        echo -e "${Global_Failed}"
         Continue=2
         Error="${UpgradeMe_Error_GitHubAccess}"
     fi
@@ -62,24 +62,24 @@ if [ $Continue -eq 0 ]; then
 fi
 
 if [ $Continue -eq 0 ]; then
-    if [ -f "$MySB_InstallDir"/dev ]; then
+    if [ -f "${MySB_InstallDir}"/dev ]; then
         #### DEV - To force an upgrade
-        MySB_NewVersion="$(cat "$MySB_InstallDir"/dev)"
+        MySB_NewVersion="$(cat "${MySB_InstallDir}"/dev)"
     else
         #### Check if new version
         MySB_NewVersion="$(curl -skLS --retry 3 --silent https://raw.githubusercontent.com/toulousain79/MySB/rev/version | grep "${gsCurrentVersion}>" | cut -d ">" -f 2 2>/dev/null)"
-        [ -z "$MySB_NewVersion" ] && MySB_NewVersion="$(cat "$MySB_InstallDir"/version)"
+        [ -z "${MySB_NewVersion}" ] && MySB_NewVersion="$(cat "${MySB_InstallDir}"/version)"
     fi
 
-    MySB_CurrVersionDiff="$(echo "$gsCurrentVersion" | sed "s/v//g;" | sed "s/\.//g;")" # v3.5 --> 35
-    MySB_NewVersionDiff="$(echo "$MySB_NewVersion" | sed "s/v//g;" | sed "s/\.//g;")" # v4.0 --> 40
+    MySB_CurrVersionDiff="$(echo "${gsCurrentVersion}" | sed "s/v//g;" | sed "s/\.//g;")" # v3.5 --> 35
+    MySB_NewVersionDiff="$(echo "${MySB_NewVersion}" | sed "s/v//g;" | sed "s/\.//g;")" # v4.0 --> 40
 
     # New version is greater than current version, so we can do an upgrade of MySB
-    if [ -n "$MySB_CurrVersionDiff" ] && [ -n "$MySB_NewVersionDiff" ] && [ "$MySB_NewVersionDiff" -gt "$MySB_CurrVersionDiff" ]; then
+    if [ -n "${MySB_CurrVersionDiff}" ] && [ -n "${MySB_NewVersionDiff}" ] && [ "${MySB_NewVersionDiff}" -gt "${MySB_CurrVersionDiff}" ]; then
         case "$Type" in
             "CRON")
-                ${binCURL} "https://raw.githubusercontent.com/toulousain79/MySB/$MySB_NewVersion/Changelog.md" -o /tmp/changelog
-                gfnSendMail "MySB - ${UpgradeMe_NewVersion} ($MySB_NewVersion)" "${gsMainUserName}" "new_version" "$UpgradeMe_NewVersion"
+                ${binCURL} "https://raw.githubusercontent.com/toulousain79/MySB/${MySB_NewVersion}/Changelog.md" -o /tmp/changelog
+                gfnSendMail "MySB - ${UpgradeMe_NewVersion} (${MySB_NewVersion})" "${gsMainUserName}" "new_version" "${UpgradeMe_NewVersion}"
                 gfnEndingScript 0
                 ;;
             *)
@@ -88,14 +88,14 @@ if [ $Continue -eq 0 ]; then
                 echo -e "$UpgradeMe_Msg_VersionAvailable"
                 echo
                 gfnQuestionGetString NO "${Global_WantToContinue[*]}" WantToContinue "${Global_NO}"
-                WantToContinue="$(echo "$WantToContinue" | tr '[:lower:]' '[:upper:]')"
-                [ "$WantToContinue" == "$Global_NO" ] && gfnEndingScript 0
+                WantToContinue="$(echo "${WantToContinue}" | tr '[:lower:]' '[:upper:]')"
+                [ "${WantToContinue}" == "$Global_NO" ] && gfnEndingScript 0
                 ;;
         esac
     else
         UpgradeMe_UpToDate="${UpgradeMe_UpToDate//#version#/$MySB_NewVersion}"
         echo
-        echo -e "$UpgradeMe_UpToDate"
+        echo -e "${UpgradeMe_UpToDate}"
         echo
         gfnEndingScript 0
     fi
@@ -115,11 +115,11 @@ if [ $Continue -eq 0 ]; then
     DateTime="$(/bin/date +%Y%m%d-%H%M%S)"
     DbList="$(ls -1r /var/lib/mysql/)"
     for Database in $DbList; do
-        if [ -d /var/lib/mysql/"$Database"/ ]; then
-            case "$Database" in
+        if [ -d /var/lib/mysql/"${Database}"/ ]; then
+            case "${Database}" in
                 'mysql' | 'performance_schema') continue ;;
                 *)
-                    if (! mysqldump --defaults-extra-file=/root/.config.cnf --single-transaction "$Database" >"$MySB_InstallDir/db/MySQL_$Database-$DateTime-$gsCurrentVersion.dump.sql"); then
+                    if (! mysqldump --defaults-extra-file=/root/.config.cnf --single-transaction "${Database}" >"${MySB_InstallDir}/db/MySQL_${Database}-${DateTime}-${gsCurrentVersion}.dump.sql"); then
                         Continue=3
                         Error="${UpgradeMe_Error_BackupDatabase//#database#/$Database}"
                     fi
@@ -130,7 +130,7 @@ if [ $Continue -eq 0 ]; then
 
     # Creating backup with Backup-Manager
     [ ! -d "${MySB_InstallDir}_backup/temp" ] && mkdir -p "${MySB_InstallDir}_backup/temp"
-    [ "${gbDevMode}" -eq 1 ] && backup-manager-tools remove "$MySB_InstallDir"
+    [ "${gbDevMode}" -eq 1 ] && backup-manager-tools remove "${MySB_InstallDir}"
     if [ "${gbIsInstalled_Tautulli}" == "YES" ]; then
         gfnGetRepoValues 'Tautulli'
         mkdir -p /tmp/Tautulli
@@ -147,18 +147,18 @@ if [ $Continue -eq 0 ]; then
         backup-manager-tools add "/tmp/PlexMedia"
     fi
     if (! backup-manager -v -c /etc/MySB/BM_MySB.conf); then
-        Continue=5
+        Continue=4
         Error="UpgradeMe_Error_BackupFailed"
     fi
 
-    [ "$gbDevMode" -eq 1 ] && backup-manager-tools add "$MySB_InstallDir"
-    [ -d "${MySB_InstallDir}_backup/temp" ] && mv "${MySB_InstallDir}_backup/temp" "${MySB_InstallDir}_backup/$gsCurrentVersion"
+    [ "$gbDevMode" -eq 1 ] && backup-manager-tools add "${MySB_InstallDir}"
+    [ -d "${MySB_InstallDir}_backup/temp" ] && mv "${MySB_InstallDir}_backup/temp" "${MySB_InstallDir}_backup/${gsCurrentVersion}"
 fi
 
 #### MySB GitHub merge
 if [ $Continue -eq 0 ]; then
     echo
-    UpgradeMe_Merge="$(echo "$UpgradeMe_Merge" | sed "s/#current_version#/$gsCurrentVersion/g;" | sed "s/#new_version#/$MySB_NewVersion/g;")"
+    UpgradeMe_Merge="$(echo "$UpgradeMe_Merge" | sed "s/#current_version#/${gsCurrentVersion}/g;" | sed "s/#new_version#/${MySB_NewVersion}/g;")"
     echo -e "${CBLUE}$UpgradeMe_Merge$CEND"
     echo -e -n "${CRED}$Global_PleaseWait $CEND"
     gfnCountDown 3
@@ -168,21 +168,21 @@ if [ $Continue -eq 0 ]; then
     cd "${MySB_InstallDir}"/ || exit
 
     if (! git fetch --all); then
-        Continue=6
+        Continue=5
         Error="${UpgradeMe_Error_GitFetch[*]}"
     fi
 
     if [ $Continue -eq 0 ]; then
-        if (! git checkout -b "$MySB_NewVersion" origin/"$MySB_NewVersion"); then
-            Continue=7
-            UpgradeMe_Error_GitCheckout="${UpgradeMe_Error_GitCheckout[*]//#new_version#/$MySB_NewVersion}"
+        if (! git checkout -b "${MySB_NewVersion}" origin/"${MySB_NewVersion}"); then
+            Continue=6
+            UpgradeMe_Error_GitCheckout="${UpgradeMe_Error_GitCheckout[*]//#new_version#/${MySB_NewVersion}}"
             Error="${UpgradeMe_Error_GitCheckout}"
         fi
     fi
 
     if [ $Continue -eq 0 ]; then
-        if (! git pull origin "$MySB_NewVersion"); then
-            Continue=8
+        if (! git pull origin "${MySB_NewVersion}"); then
+            Continue=7
             Error="${UpgradeMe_Error_GitPull[*]}"
         else
             git stash clear
@@ -190,9 +190,9 @@ if [ $Continue -eq 0 ]; then
     fi
 
     if [ $Continue -eq 0 ]; then
-        if (! git reset --hard origin/"$MySB_NewVersion"); then
-            Continue=9
-            UpgradeMe_Error_GitReset="${UpgradeMe_Error_GitReset[*]//#new_version#/$MySB_NewVersion}"
+        if (! git reset --hard origin/"${MySB_NewVersion}"); then
+            Continue=8
+            UpgradeMe_Error_GitReset="${UpgradeMe_Error_GitReset[*]//#new_version#/${MySB_NewVersion}}"
             Error="${UpgradeMe_Error_GitReset}"
         fi
     fi
@@ -203,28 +203,28 @@ if [ $Continue -eq 0 ]; then
     git clean -fd
 
     if (! git fetch --all); then
-        Continue=10
+        Continue=9
         Error="${UpgradeMe_Error_GitFetch[*]}"
     fi
 
     if [ $Continue -eq 0 ]; then
-        if (! git checkout -b "$MySB_NewVersion" origin/"$MySB_NewVersion"); then
-            Continue=11
+        if (! git checkout -b "${MySB_NewVersion}" origin/"${MySB_NewVersion}"); then
+            Continue=10
             UpgradeMe_Error_GitCheckout="${UpgradeMe_Error_GitCheckout//#new_version#/$MySB_NewVersion}"
             Error="$UpgradeMe_Error_GitCheckout"
         fi
     fi
 
     if [ $Continue -eq 0 ]; then
-        if (! git pull origin "$MySB_NewVersion"); then
-            Continue=12
+        if (! git pull origin "${MySB_NewVersion}"); then
+            Continue=11
             Error="${UpgradeMe_Error_GitPull[*]}"
         fi
     fi
 
     if [ $Continue -eq 0 ]; then
-        if (! git reset --hard origin/"$MySB_NewVersion"); then
-            Continue=13
+        if (! git reset --hard origin/"${MySB_NewVersion}"); then
+            Continue=12
             UpgradeMe_Error_GitReset="${UpgradeMe_Error_GitReset[*]//#new_version#/$MySB_NewVersion}"
             Error="${UpgradeMe_Error_GitReset}"
         fi
@@ -232,23 +232,23 @@ if [ $Continue -eq 0 ]; then
 fi
 
 #### Completing the upgrade
-MySB_NewVersion="$(cat "$MySB_InstallDir"/version)"
+MySB_NewVersion="$(cat "${MySB_InstallDir}"/version)"
 MySB_RepoVersion="$(cd "${MySB_InstallDir}"/ && git branch | grep '\*' | awk '{ print $2 }')"
 
 if [ $Continue -eq 0 ]; then
-    if [ "$MySB_NewVersion" == "$MySB_RepoVersion" ]; then
-        if [ -f "$MySB_InstallDir/upgrade/From_$gsCurrentVersion-to-$MySB_NewVersion.bsh" ]; then
+    if [ "${MySB_NewVersion}" == "$MySB_RepoVersion" ]; then
+        if [ -f "${MySB_InstallDir}/upgrade/From_${gsCurrentVersion}-to-${MySB_NewVersion}.bsh" ]; then
             echo
             echo -e "${CBLUE}${UpgradeMe_StartScreen}$CEND"
             screen -wipe &>/dev/null
-            screen -dmS MySB_Upgrade /bin/bash "$MySB_InstallDir/upgrade/From_$gsCurrentVersion-to-$MySB_NewVersion.bsh"
+            screen -dmS MySB_Upgrade /bin/bash "${MySB_InstallDir}/upgrade/From_${gsCurrentVersion}-to-${MySB_NewVersion}.bsh"
             echo -e -n "${CRED}$Global_PleaseWait $CEND"
             gfnCountDown 10
 
             screen -r MySB_Upgrade
         else
-            Continue=14
-            Error="${UpgradeMe_Error_UpgradeSciptMissing} ($MySB_InstallDir/upgrade/From_$gsCurrentVersion-to-$MySB_NewVersion.bsh)"
+            Continue=13
+            Error="${UpgradeMe_Error_UpgradeSciptMissing} (${MySB_InstallDir}/upgrade/From_${gsCurrentVersion}-to-${MySB_NewVersion}.bsh)"
         fi
     fi
 fi
