@@ -152,7 +152,8 @@ DisplaySurvey() {
 			done
 			# Add previous FQDN for Let's Encrypt renew
 			if [ "$TYPE" == "INSTALL" ]; then
-				([ "$gsHostNameFqdn" != "$gsPreviousHostNameFqdn" ] && [[ "$(gfnCheckFQDN "${gsPreviousHostNameFqdn}")" == 0 ]] && (! grep -q "$gsPreviousHostNameFqdn" ${MySB_InstallDir}/ssl/letsencrypt_domains)) && echo "$gsPreviousHostNameFqdn" >> ${MySB_InstallDir}/ssl/letsencrypt_domains
+				[ ! -f "${MySB_InstallDir}/ssl/letsencrypt_domains" ] && touch "${MySB_InstallDir}/ssl/letsencrypt_domains"
+				([ "$gsHostNameFqdn" != "$gsPreviousHostNameFqdn" ] && [[ "$(gfnCheckFQDN "${gsPreviousHostNameFqdn}")" == 0 ]] && (! grep -q "$gsPreviousHostNameFqdn" "${MySB_InstallDir}/ssl/letsencrypt_domains")) && echo "$gsPreviousHostNameFqdn" >> "${MySB_InstallDir}/ssl/letsencrypt_domains"
 			fi
 		fi
 
