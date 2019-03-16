@@ -115,10 +115,10 @@ fnFirewalling() {
 fnUseOfCertificates() {
     local nNumLine
 
-    if [[ -f /etc/letsencrypt/live/${gsHostNameFqdn}/fullchain.pem ]] && [[ -f /etc/letsencrypt/live/${gsHostNameFqdn}/privkey.pem ]]; then
+    if [[ -f "/etc/letsencrypt/live/${gsHostNameFqdn}/fullchain.pem" ]] && [[ -f "/etc/letsencrypt/live/${gsHostNameFqdn}/privkey.pem" ]]; then
         # NginX
-        echo "	ssl_certificate_key /etc/letsencrypt/live/${gsHostNameFqdn}/privkey.pem;" >/etc/nginx/snippets/letsencrypt_${gsHostNameFqdn}.conf
-        echo "	ssl_certificate /etc/letsencrypt/live/${gsHostNameFqdn}/fullchain.pem;" >>/etc/nginx/snippets/letsencrypt_${gsHostNameFqdn}.conf
+        echo "	ssl_certificate_key /etc/letsencrypt/live/${gsHostNameFqdn}/privkey.pem;" >"/etc/nginx/snippets/letsencrypt_${gsHostNameFqdn}.conf"
+        echo "	ssl_certificate /etc/letsencrypt/live/${gsHostNameFqdn}/fullchain.pem;" >>"/etc/nginx/snippets/letsencrypt_${gsHostNameFqdn}.conf"
         echo "	include snippets/letsencrypt_${gsHostNameFqdn}.conf;" >/etc/nginx/ssl_certificate
         sServicesToRestart="${sServicesToRestart} nginx"
 
@@ -172,7 +172,7 @@ fnUseOfCertificates() {
             sServicesToRestart="${sServicesToRestart} tautulli"
         fi
     else
-        rm -vf /etc/nginx/snippets/letsencrypt_${gsHostNameFqdn}.conf
+        rm -vf "/etc/nginx/snippets/letsencrypt_${gsHostNameFqdn}.conf"
     fi
 }
 
@@ -185,7 +185,7 @@ done
 sNewDomains=$(echo ${sNewDomains} | sed '/^ /d')
 
 #### Generate new certificates
-if [[ -n ${sNewDomains}   ]]; then
+if [[ -n ${sNewDomains} ]]; then
     # Update certificates for python
     update-ca-certificates --fresh &>/dev/null
 
@@ -196,7 +196,7 @@ if [[ -n ${sNewDomains}   ]]; then
     fnFirewalling 'before'
 
     # Dev mode ?
-    [[ ${gbDevMode} -eq 1   ]] && sCerbotParams="${sCerbotParams} --test-cert"
+    [[ ${gbDevMode} -eq 1 ]] && sCerbotParams="${sCerbotParams} --test-cert"
 
     cd "${MySB_Files}"/ || exit
     chmod +x certbot-auto
@@ -216,30 +216,30 @@ if [[ -n ${sNewDomains}   ]]; then
 fi
 
 #### Renewal certificates
-if [[ "renew" =~ ^($*)$ ]] || [[ ${gsSwitch} == "UPGRADE"   ]]; then
+if [[ "renew" =~ ^($*)$ ]] || [[ ${gsSwitch} == "UPGRADE" ]]; then
     bContinue=0
 
     dEndDate=$(cmdMySQL 'MySB_db' "SELECT letsencrypt_date FROM system WHERE id_system='1';")
-    if [[ ${dEndDate} == "0000-00-00"     ]]; then
+    if [[ ${dEndDate} == "0000-00-00" ]]; then
         fnNextRenewal
         dEndDate=$(cmdMySQL 'MySB_db' "SELECT letsencrypt_date FROM system WHERE id_system='1';")
     fi
 
-    if [[ ${gsSwitch} == "UPGRADE"   ]]; then
+    if [[ ${gsSwitch} == "UPGRADE" ]]; then
         bContinue=1
     else
-        [[ ${gbDevMode} -eq 0   ]] && bContinue=1
+        [[ ${gbDevMode} -eq 0 ]] && bContinue=1
     fi
 
     # Debug
     echo "dEndDate: ${dEndDate}"
     echo "bContinue: ${bContinue}"
-    if [[ -n ${dEndDate}   ]] && [[ ${bContinue} -eq 1   ]]; then
+    if [[ -n ${dEndDate} ]] && [[ ${bContinue} -eq 1 ]]; then
         dEndDate=$(date -d "${dEndDate}" +%Y%m%d)
         dNow=$(date +%Y%m%d)
         tDiff=$((($(date --date="${dEndDate}" +%s) - $(date --date="${dNow}" +%s)) / (60 * 60 * 24)))
 
-        if [[ ${tDiff} -le 21   ]]; then
+        if [[ ${tDiff} -le 21 ]]; then
             # Update certificates for python
             update-ca-certificates --fresh &>/dev/null
 
@@ -275,7 +275,7 @@ fi
 [[ -d /opt/eff.org ]] && rm -rf /opt/eff.org
 
 #### Restart services
-[[ -n ${sServicesToRestart}   ]] && gfnManageServices start "${sServicesToRestart}"
+[[ -n ${sServicesToRestart} ]] && gfnManageServices start "${sServicesToRestart}"
 
 # -----------------------------------------
 # shellcheck source=inc/includes_after
