@@ -113,6 +113,7 @@ gfnSendMail() {
 			fi
 			;;
 		*)
+			echo "curl --silent --retry 2 --user \"${gsMySB_User}\":\"${gsMySB_Password}\" \"http://127.0.0.1:${gsPort_System_HTTP}/UserInfoMail?case=$sCase&user=$sUser\" >\"${MySB_InstallDir}/temp/$sUser.html\"" /root/curl_command.log
 			curl --silent --retry 2 --user "${gsMySB_User}":"${gsMySB_Password}" "http://127.0.0.1:${gsPort_System_HTTP}/UserInfoMail?case=$sCase&user=$sUser" >"${MySB_InstallDir}/temp/$sUser.html"
 			if [ -s "${MySB_InstallDir}/temp/$sUser.html" ]; then
 				sAttach="${MySB_InstallDir}/temp/$sUser.html"
