@@ -67,10 +67,18 @@ if [ "$gsSwitch" != "UPGRADE" ]; then
 fi
 
 #### Config files
-rm -vf /etc/mysql/my.cnf.fallback
+rm -vf /etc/alternatives/my.cnf
+rm -vf rm /etc/mysql/my.cnf*
+install -v -o root -g root -m 0600 "$MySB_InstallDir"/templates/mysql/etc.mysql.my.cnf.tmpl /etc/mysql/my.cnf
 rm -vf /etc/mysql/conf.d/*.cnf
+install -v -o root -g root -m 0644 "$MySB_InstallDir"/templates/mysql/etc.mysql.conf.d.mysqldump.cnf.tmpl /etc/mysql/conf.d/mysqldump.cnf
+install -v -o root -g root -m 0644 "$MySB_InstallDir"/templates/mysql/etc.mysql.conf.d.mysql.cnf.tmpl /etc/mysql/conf.d/mysql.cnf
 rm -vf /etc/mysql/mariadb.conf.d/*.cnf
-install -v -o root -g root -m 0600 "$MySB_InstallDir"/templates/mysql/etc.mysql.conf.d.my.cnf.tmpl /etc/mysql/my.cnf
+install -v -o root -g root -m 0644 "$MySB_InstallDir"/templates/mysql/etc.mysql.mariadb.conf.d.50-server.cnf.tmpl /etc/mysql/mariadb.conf.d/50-server.cnf
+install -v -o root -g root -m 0644 "$MySB_InstallDir"/templates/mysql/etc.mysql.mariadb.conf.d.50-client.cnf.tmpl /etc/mysql/mariadb.conf.d/50-client.cnf
+install -v -o root -g root -m 0644 "$MySB_InstallDir"/templates/mysql/etc.mysql.mariadb.conf.d.50-mysqld_safe.cnf.tmpl /etc/mysql/mariadb.conf.d/50-mysqld_safe.cnf
+install -v -o root -g root -m 0644 "$MySB_InstallDir"/templates/mysql/etc.mysql.mariadb.conf.d.50-mysql-clients.cnf.tmpl /etc/mysql/mariadb.conf.d/50-mysql-clients.cnf
+install -v -o root -g root -m 0644 "$MySB_InstallDir"/templates/mysql/etc.mysql.mariadb.conf.d.99-MySB.cnf.tmpl /etc/mysql/mariadb.conf.d/99-MySB.cnf
 
 #### START services
 gfnManageServices 'start' 'mysql'
@@ -85,28 +93,24 @@ if [ -z $MySQL_RootPassword ] && [ -z $MySQL_MysbPassword ]; then
     MySQL_MysbPassword="$(gfnGenPassword 16)"
     MySQL_BackupManager="$(gfnGenPassword 16)"
 
-    mysql -u root --verbose <<-EOF
+    mariadb -u root --verbose <<-EOF
 		UPDATE mysql.user SET Password=PASSWORD('$MySQL_RootPassword') WHERE User='root';
 		DELETE FROM mysql.user WHERE User='root' AND Host NOT IN ('localhost', '127.0.0.1', '::1');
 		DELETE FROM mysql.user WHERE User='';
 		DELETE FROM mysql.db WHERE Db='test' OR Db='test\_%';
-		DELETE FROM mysql.plugin WHERE name='innodb';
-		DELETE FROM mysql.plugin WHERE name='federated';
-		DELETE FROM mysql.plugin WHERE name='blackhole';
-		DELETE FROM mysql.plugin WHERE name='archive';
 		CREATE DATABASE MySB_db;
-		CREATE USER 'MySB_user'@'localhost';
-		CREATE USER 'BM_user'@'localhost';
-		GRANT ALL ON MySB_db.* to 'MySB_user'@'localhost' IDENTIFIED BY '$MySQL_MysbPassword';
-		GRANT SHOW DATABASES,SELECT,LOCK TABLES ON *.* TO 'BM_user'@'localhost' IDENTIFIED BY '$MySQL_BackupManager';
+		CREATE USER 'MySB_user'@'127.0.0.1';
+		CREATE USER 'BM_user'@'127.0.0.1';
+		GRANT ALL ON MySB_db.* to 'MySB_user'@'127.0.0.1' IDENTIFIED BY '$MySQL_MysbPassword';
+		GRANT SHOW DATABASES,SELECT,LOCK TABLES ON *.* TO 'BM_user'@'127.0.0.1' IDENTIFIED BY '$MySQL_BackupManager';
 		FLUSH PRIVILEGES;
 	EOF
 
     if [ "${gbToInstall_NextCloud}" == "YES" ] || [ "${gbIsInstalled_NextCloud}" != "INIT" ]; then
         if [ ! -f /var/lib/mysql/NextCloud_db/db.opt ]; then
-            mysql -u root -p"${MySQL_RootPassword}" --verbose <<-EOF
+            mariadb -u root -p"${MySQL_RootPassword}" --verbose <<-EOF
 				CREATE DATABASE NextCloud_db CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
-				GRANT ALL ON NextCloud_db.* to 'MySB_user'@'localhost' IDENTIFIED BY '$MySQL_MysbPassword';
+				GRANT ALL ON NextCloud_db.* to 'MySB_user'@'127.0.0.1' IDENTIFIED BY '$MySQL_MysbPassword';
 				FLUSH PRIVILEGES;
 			EOF
         fi
@@ -124,7 +128,7 @@ if [ -z $MySQL_RootPassword ] && [ -z $MySQL_MysbPassword ]; then
         echo "[client]"
         echo "user = MySB_user"
         echo "password = $MySQL_MysbPassword"
-        echo "host = localhost"
+        echo "host = 127.0.0.1"
         echo "port = 3306"
     } >/root/.config.cnf
     chmod -v 0600 /root/.config.cnf
@@ -132,18 +136,18 @@ if [ -z $MySQL_RootPassword ] && [ -z $MySQL_MysbPassword ]; then
     # Create MySB database (ONLY during a new install, NOT during an upgrade)
     if [ "$gsSwitch" == "INSTALL" ]; then
         # MySQL Schema
-        mysql --defaults-extra-file=/root/.config.cnf --database=MySB_db --verbose <"$MySB_InstallDir"/templates/mysql/Schema.sql
+        mariadb --defaults-extra-file=/root/.config.cnf --database=MySB_db --verbose <"$MySB_InstallDir"/templates/mysql/Schema.sql
         # MySQL Triggers
-        mysql --defaults-extra-file=/root/.config.cnf --database=MySB_db --verbose <"$MySB_InstallDir"/templates/mysql/Triggers.sql
+        mariadb -u root -p"${MySQL_RootPassword}" --verbose <"$MySB_InstallDir"/templates/mysql/Triggers.sql
         # MySQL Tables
-        mysql --defaults-extra-file=/root/.config.cnf --database=MySB_db --verbose <"$MySB_InstallDir"/templates/mysql/Table_blocklists.sql
-        mysql --defaults-extra-file=/root/.config.cnf --database=MySB_db --verbose <"$MySB_InstallDir"/templates/mysql/Table_dnscrypt_config.sql
-        mysql --defaults-extra-file=/root/.config.cnf --database=MySB_db --verbose <"$MySB_InstallDir"/templates/mysql/Table_lets_encrypt.sql
-        mysql --defaults-extra-file=/root/.config.cnf --database=MySB_db --verbose <"$MySB_InstallDir"/templates/mysql/Table_providers_monitoring.sql
-        mysql --defaults-extra-file=/root/.config.cnf --database=MySB_db --verbose <"$MySB_InstallDir"/templates/mysql/Table_repositories.sql
-        mysql --defaults-extra-file=/root/.config.cnf --database=MySB_db --verbose <"$MySB_InstallDir"/templates/mysql/Table_services.sql
-        mysql --defaults-extra-file=/root/.config.cnf --database=MySB_db --verbose <"$MySB_InstallDir"/templates/mysql/Table_smtp.sql
-        mysql --defaults-extra-file=/root/.config.cnf --database=MySB_db --verbose <"$MySB_InstallDir"/templates/mysql/Table_system.sql
+        mariadb --defaults-extra-file=/root/.config.cnf --database=MySB_db --verbose <"$MySB_InstallDir"/templates/mysql/Table_blocklists.sql
+        mariadb --defaults-extra-file=/root/.config.cnf --database=MySB_db --verbose <"$MySB_InstallDir"/templates/mysql/Table_dnscrypt_config.sql
+        mariadb --defaults-extra-file=/root/.config.cnf --database=MySB_db --verbose <"$MySB_InstallDir"/templates/mysql/Table_lets_encrypt.sql
+        mariadb --defaults-extra-file=/root/.config.cnf --database=MySB_db --verbose <"$MySB_InstallDir"/templates/mysql/Table_providers_monitoring.sql
+        mariadb --defaults-extra-file=/root/.config.cnf --database=MySB_db --verbose <"$MySB_InstallDir"/templates/mysql/Table_repositories.sql
+        mariadb --defaults-extra-file=/root/.config.cnf --database=MySB_db --verbose <"$MySB_InstallDir"/templates/mysql/Table_services.sql
+        mariadb --defaults-extra-file=/root/.config.cnf --database=MySB_db --verbose <"$MySB_InstallDir"/templates/mysql/Table_smtp.sql
+        mariadb --defaults-extra-file=/root/.config.cnf --database=MySB_db --verbose <"$MySB_InstallDir"/templates/mysql/Table_system.sql
     fi
 else
     if [ "${gbIsInstalled_Webmin}" == "YES" ] && [ -f /etc/webmin/mysql/config ]; then
@@ -162,6 +166,11 @@ if [ -n "$MySQL_MysbPassword" ]; then
         perl -pi -e "s/<MySQL_MysbPassword>/$MySQL_MysbPassword/g" /etc/MySB/config.php
     fi
 fi
+
+#### MariaDB config
+echo
+echo "########## MariaDB config"
+mariadb --print-defaults
 
 #### MySQL Tuner
 # shellcheck source=.etc/MySB/config_db
