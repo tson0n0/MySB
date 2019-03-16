@@ -111,16 +111,16 @@ echo -e -n "${CBLUE}$CurrentSTEP/$TotalSTEP	- $Upgrade_Certificate$CEND..."
 gfnScriptInvoke 'ScreenWAIT' "$MySB_InstallDir/install/Certificates" 'CreateCACertificate' 'mysb' 'UPGRADE'
 gfnStatusSTD
 
-#### NginX
-((CurrentSTEP++))
-echo -e -n "${CBLUE}$CurrentSTEP/$TotalSTEP	- $Upgrade_NginX$CEND..."
-gfnScriptInvoke 'ScreenWAIT' "$MySB_InstallDir/install/Nginx" 'UPGRADE'
-gfnStatusSTD
-
 #### PHP
 ((CurrentSTEP++))
 echo -e -n "${CBLUE}$CurrentSTEP/$TotalSTEP	- $Upgrade_PHP$CEND..."
 gfnScriptInvoke 'ScreenWAIT' "$MySB_InstallDir/install/PHP" 'UPGRADE'
+gfnStatusSTD
+
+#### NginX
+((CurrentSTEP++))
+echo -e -n "${CBLUE}$CurrentSTEP/$TotalSTEP	- $Upgrade_NginX$CEND..."
+gfnScriptInvoke 'ScreenWAIT' "$MySB_InstallDir/install/Nginx" 'UPGRADE'
 gfnStatusSTD
 
 #### DownloadAll

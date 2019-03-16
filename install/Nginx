@@ -31,13 +31,13 @@ gsRutorrentPluginsDirEscaped="$(echo $gsRutorrentPluginsDir | sed s,/,\\\\\/,g)"
 LoadavgDirEscaped="$(echo $gsLoadAvgDir | sed s,/,\\\\\/,g)"
 
 #### STOP services
-gfnManageServices stop "nginx"
+gfnManageServices stop "nginx $binPhpService"
 
 #### Install packages
 gfnPackageBundleInstall 'nginx-extras'
 
 #### STOP services
-gfnManageServices stop "nginx"
+gfnManageServices stop "nginx $binPhpService"
 
 #### Create directories & remove some files
 if [ ! -d /etc/nginx/sites-available ]; then mkdir -v /etc/nginx/sites-available; fi
@@ -159,7 +159,7 @@ if [ "$gbToInstall_PlexMedia" == "YES" ] || [ "$gbIsInstalled_PlexMedia" == "YES
 fi
 
 #### START services
-gfnManageServices start "nginx"
+gfnManageServices start "$binPhpService nginx"
 
 # -----------------------------------------
 # shellcheck source=inc/includes_after
