@@ -396,7 +396,6 @@ gfnCleanBeforeUpgrade() {
 	git gc
 	git repack -Ad
 	git prune
-	clear
 
 	# Clean files tracked by LFS
 	[ -f "${MySB_InstallDir}"/.gitattributes ] && sLfsFilesType="$(grep 'filter=lfs' .gitattributes | awk '{ print $1 }')"
