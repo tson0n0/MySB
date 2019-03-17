@@ -184,7 +184,7 @@ gfnChangeFQDN() {
         sed -i "s/torrents/rtorrent/g;" "${gsRepoDir}"/conf.php
         # NginX (alias with proxy)
         # shellcheck disable=SC2001
-		sCakeboxDirEscaped="$(echo "${gsCakeboxDir}" | sed s,/,\\\\\\\/,g)"
+        sCakeboxDirEscaped="$(echo "${gsCakeboxDir}" | sed s,/,\\\\\\\/,g)"
         [[ -L /etc/nginx/sites-enabled/cakebox ]] && rm -f /etc/nginx/sites-enabled/cakebox
         install -g root -o root -m 0644 "${MySB_InstallDir}"/templates/nginx/etc.nginx.site-enabled.cakebox.tmpl /etc/nginx/sites-available/cakebox
         # perl -pi -e "s/<server_name>/$sNewFQDN/g" /etc/nginx/sites-available/cakebox
@@ -202,12 +202,12 @@ gfnChangeFQDN() {
     log_daemon_msg "Reconfigure ruTorrent Plugins"
     # Plugin Fileshare
     gfnGetRepoValues 'ruTorrent Plugin FileShare' &>/dev/null
-	gfnDeleteDirectory 0 "${gsRepoDir}"
+    gfnDeleteDirectory 0 "${gsRepoDir}"
     gfnRepoManageByType
     [[ -f "${gsRepoDir}"/conf.php ]] && perl -pi -e "s/http:\/\/mydomain.com\/share.php/https:\/\/$sNewFQDN:$gsPort_MySB_HTTPS\/fileshare.php/g" "${gsRepoDir}"/conf.php
     # Plugin Mediastream
     gfnGetRepoValues 'ruTorrent Plugin MediaStream' &>/dev/null
-	gfnDeleteDirectory 0 "${gsRepoDir}"
+    gfnDeleteDirectory 0 "${gsRepoDir}"
     gfnRepoManageByType
     [[ -f "${gsRepoDir}"/conf.php ]] && perl -pi -e "s/http:\/\/mydomain.com\/stream\/view.php/https:\/\/$sNewFQDN:$gsPort_MySB_HTTPS\/view/g" "${gsRepoDir}"/conf.php
     gfnStatusLSB
@@ -262,11 +262,11 @@ gfnUpgradeInProgress() {
             gfnManageServices 'start' "nginx"
             ;;
         "off")
-            gfnManageServices 'stop' "nginx"
+            gfnManageServices 'stop' "nginx $binPhpService"
             rm -f /etc/nginx/sites-enabled/WiP
             [[ ! -L /etc/nginx/sites-enabled/default ]] && ln -s /etc/nginx/sites-available/default /etc/nginx/sites-enabled/default
             [[ ! -L /etc/nginx/sites-enabled/cakebox ]] && ln -s /etc/nginx/sites-available/cakebox /etc/nginx/sites-enabled/cakebox
-            gfnManageServices 'start' "nginx cron"
+            gfnManageServices 'start' "$binPhpService nginx cron"
             ;;
     esac
 }
