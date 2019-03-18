@@ -47,7 +47,7 @@ case "${gsSwitch}" in
     'INSTALL' | 'UPGRADE')
         sPackages=(libaugeas0 augeas-lenses)
         gfnPackagesManage install 'backports' "${sPackages[@]}"
-        sPackages=(python-virtualenv python-dev python3-pkg-resources python3-virtualenv gcc dialog libssl-dev libffi-dev libltdl-dev psutils python-augeas)
+        sPackages=(virtualenv python-virtualenv python-dev python3-pkg-resources python3-virtualenv gcc dialog libssl-dev libffi-dev libltdl-dev psutils python-augeas)
         gfnPackageBundleInstall "${sPackages[@]}"
         ;;
 esac
