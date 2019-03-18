@@ -113,13 +113,6 @@ gfnSendMail() {
 			fi
 			;;
 		*)
-			# Debug
-			ls -la /run/php/
-			service php7.0-fpm status
-			gfnManageServices start "$binPhpService nginx"
-			ls -la /run/php/
-			service php7.0-fpm status
-
 			curl --silent --retry 2 --user "${gsMySB_User}":"${gsMySB_Password}" "http://127.0.0.1:${gsPort_System_HTTP}/UserInfoMail?case=$sCase&user=$sUser" >"${MySB_InstallDir}/temp/$sUser.html"
 			if [ -s "${MySB_InstallDir}/temp/$sUser.html" ]; then
 				sAttach="${MySB_InstallDir}/temp/$sUser.html"
