@@ -255,20 +255,21 @@ gfnPeerGuardianBlocklistsList() {
             } && sList="${sList}&username=${sUsername}&pin=${sPin}"
 
             case "${sModeFn}" in
-                'UpdateLists') # Update each list of PeerGuardian during installation
+                'UpdateLists')     # Update each list of PeerGuardian during installation
                     if [ "${bIsActive}" -eq 1 ]; then
-                        echo "$sList" >/etc/pgl/blocklists.list # One to one list, the file 'blocklists.list' is created for each list for update them
+                        echo     "$sList" >/etc/pgl/blocklists.list # One to one list, the file 'blocklists.list' is created for each list for update them
 
                         if (! pglcmd update); then # if update fail maybe its due to a bad list
-                            if [ "${bDisplayFn}" -eq 0 ]; then echo "$(date +"%T") --> The updated list of PGL may have failed." >>"${MySB_InstallDir}/logs/${gsScriptName}.log"; fi
+                            [ "${bDisplayFn}" -eq 0 ] && echo "$(date +"%T") --> The updated list of PGL may have failed." >>"${MySB_InstallDir}/logs/${gsScriptName}.log"
 
                             sCheckLog="$(grep 'failed' /var/log/pgl/pglcmd.log | grep list.iblocklist.com | awk '{ print $6 }')"
-                            for sList in $sCheckLog; do
-                                echo "$(date +"%T") --> '$sList' will be disabled." >>"${MySB_InstallDir}/logs/${gsScriptName}.log"
+                            for sFailedList in     ${sCheckLog}; do
+                                echo "$(date +"%T") --> '$sFailedList' will be disabled." >>"${MySB_InstallDir}/logs/${gsScriptName}.log"
                                 # Force inactived list
-                                cmdMySQL "${sDbToUpdate}" "UPDATE blocklists SET enable='0', comments='Update failed' WHERE list_url='$sList';"
+                                # cmdMySQL "${sDbToUpdate}" "UPDATE blocklists SET enable='0', comments='Update failed' WHERE list_url='$sFailedList';"
+                                cmdMySQL "${sDbToUpdate}" "UPDATE blocklists SET enable='0' WHERE list_url='$sFailedList';"
                             done
-                        else # Update OK
+                        else     # Update OK
                             cmdMySQL "${sDbToUpdate}" "UPDATE blocklists SET lastupdate='$(date +%Y-%m-%d\ %H:%M:%S)' WHERE list_url='$sList';"
                         fi
                     fi
@@ -285,8 +286,8 @@ gfnPeerGuardianBlocklistsList() {
 
     if [ -f /etc/pgl/pglcmd.conf ] && [ -f /etc/pgl/blocklists.list ]; then
         # /etc/pgl/blocklists.list
-        if [ "${bDisplay}" -eq 1 ]; then log_daemon_msg "${Peerguardian_AddingSelectedBlocklist}"; fi
-        (
+        [ "${bDisplay}" -eq 1 ] && log_daemon_msg "${Peerguardian_AddingSelectedBlocklist}"
+        (   
             cat <<'EOF'
 # blocklists.list - lists the remote blocklists that pglcmd handles.
 
@@ -316,7 +317,7 @@ EOF
         fnManageTypeLists "${bDisplay}" "${sMode}" 'personal'
         fnManageTypeLists "${bDisplay}" "${sMode}" 'iblocklists'
 
-        if [ "${bDisplay}" -eq 1 ]; then gfnStatusLSB; fi
+        [ "${bDisplay}" -eq 1 ] && gfnStatusLSB
     fi
 }
 
@@ -327,7 +328,7 @@ gfnPeerGuardianAllowP2P() {
     if [ -f /etc/pgl/pglcmd.conf ] && [ -f /etc/pgl/allow.p2p ]; then
         # /etc/pgl/allow.p2p
         if [ "$1" -eq 1 ]; then log_daemon_msg "${Peerguardian_PermissionSelectedTrackers}"; fi
-        (
+        (   
             cat <<'EOF'
 # allow.p2p - allow list for pglcmd
 #
