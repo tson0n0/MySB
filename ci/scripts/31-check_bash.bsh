@@ -106,12 +106,11 @@ if [ -n "${sFilesList}" ]; then
         sed -i '1iset -n' "${file}"
         echo "set +n" >>"${file}"
         dos2unix "${file}" &>/dev/null
-        bash $"{file}"
-        if [[ ${?} -ne 0 ]]; then
+        if (bash "${file}"); then
+            echo -e "${CYELLOW}${file}:${CEND} ${CGREEN}Passed${CEND}"
+        else
             echo -e "${CYELLOW}${file}:${CEND} ${CRED}Failed${CEND}"
             nReturn=1
-        else
-            echo -e "${CYELLOW}${file}:${CEND} ${CGREEN}Passed${CEND}"
         fi
     done
 fi
