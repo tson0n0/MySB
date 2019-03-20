@@ -157,6 +157,7 @@ if [ "$REBOOT" == "YES" ]; then
     gfnCountDown 30
 
     reboot
+    # systemctl --force --force reboot
 fi
 
 ##################### LAST LINE ######################################
