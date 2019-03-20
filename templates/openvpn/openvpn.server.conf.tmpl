@@ -346,4 +346,9 @@ mtu-disc yes
 ;up "<MySB_InstallDir>/scripts/OpenVPN-Bridge.bsh start"
 ;down "<MySB_InstallDir>/scripts/OpenVPN-Bridge.bsh stop"
 
+# Block access to any other DNS
+# https://www.dnsleaktest.com/how-to-fix-a-dns-leak.html
+# https://forums.openvpn.net/viewtopic.php?t=22039
+push "block-outside-dns"
+
 ##################### LAST LINE ######################################
