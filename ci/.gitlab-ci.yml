@@ -2,20 +2,20 @@
 stages:
     - check_develop
     - check_master
-    - build_images
 
 # #### Templates - BoF
 .tmpl_check: &tmpl_check
-    image: registry.gitlab.com/toulousain79/mysb_images/project_check/project_check:v99.99
+    image: ${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/mysb_images/project_check/project_check:v99.99
     script:
         - |
             for script in $(find ${CI_PROJECT_DIR}/ci/scripts/ -type f -name "[0-9][0-9]-*.bsh" | sort -n); do
-                source ${script}
+                . ${script}
             done
 # #### Templates - EoF
 
-# #### Project check for develop branch (merge request)
-check_develop:
+
+# #### Project check (merge request)
+project_check_develop:
     stage: check_develop
     only:
       refs:
@@ -25,11 +25,12 @@ check_develop:
 
 
 # #### Project check for master branch (after merge request & schedules)
-check_master:
+project_check_master:
     stage: check_master
     only:
       refs:
         - master
         - schedules
     when: on_success
+    allow_failure: false
     <<: *tmpl_check
