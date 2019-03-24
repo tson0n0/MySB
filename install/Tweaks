@@ -99,8 +99,10 @@ fi
 echo
 echo "########## Locale"
 [ -z "${gsLocale}" ] && gsLocale="en_US"
-locale-gen "${gsLocale}.UTF-8"
+sed -i -e "s/# ${gsLocale}.UTF-8 UTF-8/${gsLocale}.UTF-8 UTF-8/" /etc/locale.gen
 dpkg-reconfigure -f noninteractive locales
+update-locale "LANG=${gsLocale}.UTF-8"
+locale-gen "${gsLocale}.UTF-8"
 locale >$MySB_InstallDir/files/locale
 cat /opt/MySB/files/locale
 
