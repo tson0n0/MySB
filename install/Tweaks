@@ -71,7 +71,7 @@ perl -pi -e "s/<MySB_Version>/$gsCurrentVersion/g" /etc/rc.local
 echo
 echo "########## Timezone"
 if [ -n "$gsTimeZone" ]; then
-    install -v -o root -g root -m 0644 $MySB_InstallDir/templates/systemd/timesyncd.conf.tmpl /etc/systemd/timesyncd.conf
+    install -v -o root -g root -m 0644 $MySB_InstallDir/templates/systemd/etc.systemd.timesyncd.conf.tmpl /etc/systemd/timesyncd.conf
     timedatectl set-timezone "$gsTimeZone"
     timedatectl set-local-rtc 0
     timedatectl status
@@ -99,8 +99,10 @@ fi
 echo
 echo "########## Locale"
 [ -z "${gsLocale}" ] && gsLocale="en_US"
-locale-gen "${gsLocale}.UTF-8"
+sed -i -e "s/# ${gsLocale}.UTF-8 UTF-8/${gsLocale}.UTF-8 UTF-8/" /etc/locale.gen
 dpkg-reconfigure -f noninteractive locales
+update-locale "LANG=${gsLocale}.UTF-8"
+locale-gen "${gsLocale}.UTF-8"
 locale >$MySB_InstallDir/files/locale
 cat /opt/MySB/files/locale
 
@@ -146,6 +148,8 @@ echo "########## Persistent iptables rules"
 gfnPackageBundleInstall "iptables-persistent"
 systemctl enable netfilter-persistent
 install -d /etc/iptables
+[ -f /usr/share/netfilter-persistent/plugins.d/25-ip6tables ] && mv -v /usr/share/netfilter-persistent/plugins.d/25-ip6tables /usr/share/netfilter-persistent/plugins.d/25-ip6tables.old
+[ -f /etc/iptables/rules.v6 ] && rm -fv /etc/iptables/rules.v6
 
 #### NTP (disable IPv6)
 echo
@@ -219,9 +223,34 @@ gfnFstabGeneration
 cat /etc/fstab
 
 #### SystemD
-#
+echo
+echo "########## SystemD"
+# https://www.unix-experience.fr/linux/systemd/
+# https://www.redhat.com/en/blog/converting-traditional-sysv-init-scripts-red-hat-enterprise-linux-7-systemd-unit-files
 # aAllPackages=("${PackagesList_ToPurge[@]}")
 # gfnPackagesManage purge "${aAllPackages[@]}"
+if [ -f /etc/default/grub ]; then
+    echo
+    echo "########## Replace Init with Systemd"
+    source /etc/default/grub
+    if [ -n "${GRUB_CMDLINE_LINUX_DEFAULT}" ] && (! grep -q 'init=/bin/systemd' <<<"${GRUB_CMDLINE_LINUX_DEFAULT}"); then
+        sed -i "s/${GRUB_CMDLINE_LINUX_DEFAULT}/${GRUB_CMDLINE_LINUX_DEFAULT} init=\/bin\/systemd/g;" /etc/default/grub
+    else
+        perl -pi -e 's/GRUB_CMDLINE_LINUX_DEFAULT=""/GRUB_CMDLINE_LINUX_DEFAULT="init=\/bin\/systemd"/g' /etc/default/grub
+    fi
+    update-grub
+    grep GRUB_CMDLINE_LINUX_DEFAULT /etc/default/grub
+fi
+if [ -f /etc/systemd/system.conf ]; then
+    # CPUAffinity
+    sOldValue="$(grep CPUAffinity /etc/systemd/system.conf)"
+    aNewValues=()
+    for ((i = 1; i <= gsProcessors; i++)); do
+        aNewValues+=("${i}")
+    done
+    sed -i "s/${sOldValue}/CPUAffinity=${aNewValues[*]}/g;" /etc/systemd/system.conf
+    sed -i "s/^#CPUAffinity/SyslogFacility/g;" /etc/systemd/system.conf
+fi
 
 #### Cleaning
 echo
