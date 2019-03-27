@@ -26,7 +26,7 @@ if [ -z "${vars}" ] || [ "$vars" -eq 0 ]; then
     # shellcheck source=ci/scripts/00-load_vars.bsh
     source "$(dirname "$0")/00-load_vars.bsh"
 fi
-if [[ -n ${1}   ]]; then
+if [[ -n ${1} ]]; then
     rm -rf /tmp/shellcheck_scan
     if [[ -d ${1} ]]; then
         rsync -av --exclude '.git' "${1}" /tmp/shellcheck_scan

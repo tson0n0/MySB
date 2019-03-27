@@ -227,8 +227,55 @@ echo
 echo "########## SystemD"
 # https://www.unix-experience.fr/linux/systemd/
 # https://www.redhat.com/en/blog/converting-traditional-sysv-init-scripts-red-hat-enterprise-linux-7-systemd-unit-files
-# aAllPackages=("${PackagesList_ToPurge[@]}")
-# gfnPackagesManage purge "${aAllPackages[@]}"
+# https://www.mauras.ch/systemd-run-it-last.html
+# https://www.freedesktop.org/software/systemd/man/systemd.directives.html
+# /etc/systemd/system/sysinit.target.wants/
+# keyboard-setup.service
+# quota.service
+# systemd-timesyncd.service
+
+# /etc/systemd/system/default.target.wants/
+# haveged.service
+
+# /etc/systemd/system/network-online.target.wants/
+# networking.service
+
+# /etc/systemd/system/sockets.target.wants/
+
+# /etc/systemd/system/multi-user.target.wants/
+# console-setup.service
+# containerd.service
+# docker.service
+# mariadb.service
+# netfilter-persistent.service
+# networking.service
+# nfs-client.target
+# nfs-server.service
+# nginx.service
+# nmbd.service
+# openvpn.service
+# php7.0-fpm.service
+# plexmediaserver.service
+# postfix.service
+# quotarpc.service
+# redis-server.service
+# remote-fs.target
+# rpcbind.service
+# rsync.service
+# rsyslog.service
+# smbd.service
+# ssh.service
+# unattended-upgrades.service
+# vsftpd.service
+
+# /etc/systemd/system/remote-fs.target.wants/
+# nfs-client.target
+
+# /etc/systemd/system/custom.target
+
+# /etc/systemd/system/getty.target.wants/
+# getty@tty1.service
+
 if [ -f /etc/default/grub ]; then
     echo
     echo "########## Replace Init with Systemd"
@@ -279,9 +326,11 @@ gfnManageServices restart "$ServicesToRestart"
 #### Create init script for MySB_SecurityRules_Init
 echo
 echo "########## MySB_SecurityRules_Init"
-install -v -o root -g root -m 0755 $MySB_InstallDir/templates/init/etc.init.d.MySB_SecurityRules_Init.tmpl /etc/init.d/MySB_SecurityRules_Init
-systemctl daemon-reload
-systemctl enable MySB_SecurityRules_Init
+# install -v -o root -g root -m 0755 $MySB_InstallDir/templates/init/etc.init.d.MySB_SecurityRules_Init.tmpl /etc/init.d/MySB_SecurityRules_Init
+# systemctl daemon-reload
+# systemctl enable MySB_SecurityRules_Init
+install -v -o root -g root -m 0755 $MySB_InstallDir/templates/systemd/MySB_SecurityRules_Init.service.tmpl /lib/systemd/system/MySB_SecurityRules_Init.service
+systemctl enable MySB_SecurityRules_Init.service
 
 # -----------------------------------------
 # shellcheck source=inc/includes_after
