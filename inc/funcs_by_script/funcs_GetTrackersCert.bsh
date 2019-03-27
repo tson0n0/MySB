@@ -71,7 +71,6 @@ gfnGetActiveTrackers() {
         unset IFS OIFS
 
         # Uniq
-        # sTrackerList=($(echo "${sTrackerList[*]}" | tr ' ' '\n' | sort | uniq))
         mapfile -t sTrackerList < <(echo "${sTrackerList[*]}" | tr ' ' '\n' | sort | uniq)
 
         # Add trackers

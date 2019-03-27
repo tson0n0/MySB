@@ -1,5 +1,4 @@
 #!/bin/bash
-# rev 5.5
 # ----------------------------------
 #  __/\\\\____________/\\\\___________________/\\\\\\\\\\\____/\\\\\\\\\\\\\___
 #   _\/\\\\\\________/\\\\\\_________________/\\\/////////\\\_\/\\\/////////\\\_
@@ -22,51 +21,54 @@
 #	--> Licensed under the MIT license: http://www.opensource.org/licenses/mit-license.php
 #
 ##################### FIRST LINE #####################################
-#
-#	This script is only used for "init.d" !!!
-#	It is started during boot ONLY at the end of all others services.
-#	And it is started during Shutdown/Reboot process BEFORE all others.
-#
-#	DO NOT USE !!!
-#
-##################### FIRST LINE #####################################
 
-### BEGIN INIT INFO
-# Provides:		  MySB_SecurityRules
-# Required-Start:	$all
-# Required-Stop:	 $all
-# Default-Start:	 2 3 4 5
-# Default-Stop:	  0 1 6
-# Short-Description: Firewall And Security
-# Description:	   Generate all security rules for IPtables, PeerGuardian and Fail2Ban rules
-### END INIT INFO
+# 1/ lister tous les fichiers .tmpl
+# 2/ pour chaque fichier trouvé, rechercher si il est appelé
+#   SI trouvé ALORS OK
+#   SI trouvé ET commenté ALORS WARNING
+#   SINON KO
 
-#### Includes
-# shellcheck source=.etc/MySB/config
-source /etc/MySB/config
+if [ -z "${vars}" ] || [ "$vars" -eq 0 ]; then
+    # shellcheck source=ci/scripts/00-load_vars.bsh
+    source "$(dirname "$0")/00-load_vars.bsh"
+fi
+if [[ -n ${1}   ]]; then
+    rm -rf /tmp/shellcheck_scan
+    if [[ -d ${1} ]]; then
+        rsync -av --exclude '.git' "${1}" /tmp/shellcheck_scan
+        sDirToScan="/tmp/shellcheck_scan"
+    else
+        echo -e "${CYELLOW}${1} not a valid directory:${CEND} ${CRED}Failed${CEND}"
+        exit
+    fi
+else
+    if [[ -f /.dockerenv ]]; then
+        if [[ -n ${CI_PROJECT_PATH} ]]; then
+            sDirToScan="/builds/${CI_PROJECT_PATH}"
+        else
+            echo -e "${CYELLOW}Secret Variable \$CI_PROJECT_PATH:${CEND} ${CRED}Failed${CEND}"
+            exit
+        fi
+    else
+        echo -e "${CYELLOW}You are not in 'project_validation' images:${CEND} ${CRED}Failed${CEND}"
+        exit
+    fi
+fi
 
-case "$1" in
-    "start")
-        while [ -z "$(systemctl status mysql | grep 'Active: active (running)')" ]; do
-            sleep 1
-        done
-        #### We apply first MySB security rules (Iptables, NginX IP restriction, Fail2Ban, PeerGuardian, DNScrypt and Bind)
-        # All services not started will be start, also rTorrent sessions...
-        log_daemon_msg "Applying all MySB security rules"
-        /bin/bash "$MySB_InstallDir"/bin/MySB_SecurityRules 'create' 'INIT'
-        log_end_msg 0
-        ;;
-    "stop")
-        log_daemon_msg "Stopping all MySB security rules"
-        /bin/bash "$MySB_InstallDir"/bin/MySB_SecurityRules 'clean' 'STOP'
-        log_end_msg 0
-        ;;
-    *)
-        echo "Usage: $0 { start | stop }"
-        ;;
-esac
+# Templates files
+sFilesListTmpl="$(find ${sDirToScan}/templates/ -type f -name "*.tmpl" -printf "%f\n" | sort -z | xargs -r0)"
+if [ -n "${sFilesListTmpl}" ]; then
+    echo && echo -e "${CBLUE}*** Check for unused templates ***${CEND}"
+    for sFile in ${sFilesListTmpl}; do
+        if ! grep -qR "${sFile}" "${sDirToScan}"/; then
+            echo -e "${CYELLOW}${sFile}:${CEND} ${CRED}Failed${CEND}"
+            nReturn=$((nReturn + 1))
+        else
+            echo -e "${CYELLOW}${sFile}:${CEND} ${CGREEN}Passed${CEND}"
+        fi
+    done
+fi
 
-exit 0
+# export nReturn
 
-# -----------------------------------------
 ##################### LAST LINE ######################################

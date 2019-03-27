@@ -1,14 +1,13 @@
 [Unit]
-Description=Generate all security rules for IPtables, PeerGuardian and Fail2Ban rules
-After=syslog.target network.target remote-fs.target nss-lookup.target
+Description=Create all MySB security rules on boot
+Before=nginx.service vsftpd.service plexmediaserver.service openvpn.service remote-fs.target
+After=rsyslog.service networking.service netfilter-persistent.service ssh.service mariadb.service postfix.service
+Requires=networking.service mariadb.service
 
 [Service]
-Type=simple
-EnvironmentFile=/etc/courtlistener
-WorkingDirectory=/usr/local/solr/example
-ExecStart=/usr/bin/java -jar -server -Xmx${CL_SOLR_XMX} start.jar -DINSTALL_ROOT=${INSTALL_ROOT}
-Restart=on-failure
-LimitNOFILE=10000
+Type=forking
+ExecStart=/bin/bash /opt/MySB/bin/MySB_SecurityRules 'create' 'INIT'
+ExecStop=/bin/bash /opt/MySB/bin/MySB_SecurityRules 'clean' 'STOP'
 
 [Install]
 WantedBy=multi-user.target

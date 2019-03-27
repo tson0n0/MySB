@@ -73,6 +73,10 @@ case "$1" in
 
         #### Git LFS
         rm -fv /etc/apt/sources.list.d/git-lfs.list
+
+        #### init;d
+        rm -fv /etc/init.d/MySB_SecurityRules_Init
+        systemctl daemon-reload
         ;;
     "AFTER" | "INIT")
         ####################################
