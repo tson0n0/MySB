@@ -176,7 +176,7 @@ $MySB_Version = GetVersion();
 
 <?php
 	switch ($_SERVER['REQUEST_URI']) {
-		case '/?admin/logs.html':
+		case '/?admin/logs.html*':
 			// jQuery Color Plugin
 			echo '	<script type="text/javascript" src="'. THEMES_PATH . 'MySB/js/jquery.color.js"></script>';
 			// Import The jQuery Script
