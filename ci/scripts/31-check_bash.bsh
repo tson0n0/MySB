@@ -103,8 +103,8 @@ if [ -n "${sFilesList}" ]; then
         sed -i '/includes_before/d' "${file}"
         sed -i '/includes_after/d' "${file}"
         sed -i '/#!\/bin\/bash/d' "${file}"
-        sed -i '1iset -n' "${file}"
-        echo "set +n" >>"${file}"
+        sed -i '1iset -o noexec -o verbose' "${file}"
+        # echo "set +n" >>"${file}"
         dos2unix "${file}" &>/dev/null
         if (bash "${file}"); then
             echo -e "${CYELLOW}${file}:${CEND} ${CGREEN}Passed${CEND}"
