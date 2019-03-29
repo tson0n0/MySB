@@ -86,9 +86,9 @@ if [ -n "${sFuncsList}" ]; then
                 echo -e "${CYELLOW}${func}:${CEND} ${CRED}Failed${CEND}"
                 nReturn=$((nReturn + 1))
                 ;;
-            2)
-                echo -e "${CYELLOW}${func}:${CEND} ${CGREEN}Use twice, can be optimized${CEND}"
-                ;;
+            # 2)
+            #     echo -e "${CYELLOW}${func}:${CEND} ${CGREEN}Use twice, can be optimized${CEND}"
+            #     ;;
             *)
                 echo -e "${CYELLOW}${func}:${CEND} ${CGREEN}Passed${CEND}"
                 ;;
