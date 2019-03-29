@@ -96,24 +96,24 @@ if [ -n "${sFuncsList}" ]; then
     done
 fi
 
-# sFilesList="${sFilesListSh} ${sFilesListBash}"
-# if [ -n "${sFilesList}" ]; then
-#     echo && echo -e "${CBLUE}*** Check scripts with 'set -n' ***${CEND}"
-#     for file in ${sFilesList}; do
-#         sed -i '/includes_before/d' "${file}"
-#         sed -i '/includes_after/d' "${file}"
-#         sed -i '/#!\/bin\/bash/d' "${file}"
-#         sed -i '1iset -n' "${file}"
-#         echo "set +n" >>"${file}"
-#         dos2unix "${file}" &>/dev/null
-#         if (bash "${file}"); then
-#             echo -e "${CYELLOW}${file}:${CEND} ${CGREEN}Passed${CEND}"
-#         else
-#             echo -e "${CYELLOW}${file}:${CEND} ${CRED}Failed${CEND}"
-#             nReturn=1
-#         fi
-#     done
-# fi
+sFilesList="${sFilesListSh} ${sFilesListBash}"
+if [ -n "${sFilesList}" ]; then
+    echo && echo -e "${CBLUE}*** Check scripts with 'set -n' ***${CEND}"
+    for file in ${sFilesList}; do
+        sed -i '/includes_before/d' "${file}"
+        sed -i '/includes_after/d' "${file}"
+        sed -i '/#!\/bin\/bash/d' "${file}"
+        sed -i '1iset -o noexec -o verbose' "${file}"
+        # echo "set +n" >>"${file}"
+        dos2unix "${file}" &>/dev/null
+        if (bash "${file}"); then
+            echo -e "${CYELLOW}${file}:${CEND} ${CGREEN}Passed${CEND}"
+        else
+            echo -e "${CYELLOW}${file}:${CEND} ${CRED}Failed${CEND}"
+            nReturn=1
+        fi
+    done
+fi
 
 export nReturn
 
