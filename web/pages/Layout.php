@@ -38,7 +38,7 @@ $MySB_Version = GetVersion();
 	<!-- Template CSS -->
 	<link rel="stylesheet" type="text/css" href="<?php echo THEMES_PATH; ?>MySB/css/screen.css" />
 	<link rel="stylesheet" type="text/css" href="<?php echo THEMES_PATH; ?>MySB/css/mysb.css" />
-<?php if ( strstr($_SERVER['REQUEST_URI'], '/?main-user/logs.html') ) { ?>
+<?php if ( strstr($_SERVER['REQUEST_URI'], '/?admin/logs.html') ) { ?>
 	<link rel="stylesheet" type="text/css" href="<?php echo THEMES_PATH; ?>MySB/css/ccze.css" />
 <?php } ?>
 	<link rel="stylesheet" type="text/css" href="<?php echo THEMES_PATH; ?>MySB/css/jQ-menu.css" />
@@ -176,7 +176,7 @@ $MySB_Version = GetVersion();
 
 <?php
 	switch ($_SERVER['REQUEST_URI']) {
-		case '/?main-user/logs.html':
+		case '/?admin/logs.html':
 			// jQuery Color Plugin
 			echo '	<script type="text/javascript" src="'. THEMES_PATH . 'MySB/js/jquery.color.js"></script>';
 			// Import The jQuery Script
