@@ -59,6 +59,12 @@ $MySB_Version = GetVersion();
 		case '/?admin/smtp.html':
 			echo '	<script type="text/javascript" src="'. THEMES_PATH . 'MySB/js/smtp.js"></script>';
 			break;
+		case '/?admin/logs.html':
+			// jQuery Color Plugin
+			echo '	<script type="text/javascript" src="'. THEMES_PATH . 'MySB/js/jquery.color.js"></script>';
+			// Import The jQuery Script
+			echo '	<script type="text/javascript" src="'. THEMES_PATH . 'MySB/js/jMenu.js"></script>';
+			break;
 	}
 ?>
 </head>
@@ -176,12 +182,6 @@ $MySB_Version = GetVersion();
 
 <?php
 	switch ($_SERVER['REQUEST_URI']) {
-		case '/?admin/logs.html*':
-			// jQuery Color Plugin
-			echo '	<script type="text/javascript" src="'. THEMES_PATH . 'MySB/js/jquery.color.js"></script>';
-			// Import The jQuery Script
-			echo '	<script type="text/javascript" src="'. THEMES_PATH . 'MySB/js/jMenu.js"></script>';
-			break;
 		case '/?blocklists/usual-blocklists.html':
 		case '/?user/synchronization.html':
 		case '/?user/manage-addresses.html':
