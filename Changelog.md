@@ -3,10 +3,12 @@
 ## v5.5 - 2019/xx/xx _(start at: 2019/01/26)_
 
 - NextCloud v15.0.5
+- GeoIPupdate latest
 - Portal
   - page referer bug
   - users: correction of the display of available space
   - users: correction of manual quota capture by user
+  - #63 Portal bugs
 - Blocklists
   - standardized management _(only one list for PeerGuardian and rTorrent)_
   - update lists _(add & remove some)_
@@ -24,9 +26,13 @@
 - #61 SSH code review
   - possiblity for main user to change some params
   - add main user to sudo group
+- #68 force public DNS on install
+- #67 locales
 - #62 LetsEncrypt script code review
-- #53 Bugs _(partial)_
+- #61 SSH sudo user
 - #59 disable TSO/GSO for Plex
+- #54 Bugs
+- #46 SystemD
 - remove Git LFS
 - OpenVPN, block access to any other DNS
 
