@@ -74,9 +74,15 @@ case "$1" in
         #### Git LFS
         rm -fv /etc/apt/sources.list.d/git-lfs.list
 
-        #### init;d
+        #### init.d
         rm -fv /etc/init.d/MySB_SecurityRules_Init
         systemctl daemon-reload
+
+        #### GeoIP
+        rm -fv /usr/local/bin/geoipupdate
+        rm -fv /usr/local/share/man/man1/geoipupdate.1
+        rm -rfv /usr/local/share/GeoIP/
+        rm -rfv /usr/local/share/doc/geoipupdate
         ;;
     "AFTER" | "INIT")
         ####################################

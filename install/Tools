@@ -40,14 +40,23 @@ fi
 
 #### GeoIP update
 gfnGetRepoValues 'GeoIPupdate' && gfnRepoManageByType
-if [ $gnRepoUpgrade -eq 1 ] || [ "$gsSwitch" == "INSTALL" ]; then
-    cd ${gsRepoDir}/ || exit
-    make clean
-    autoreconf
-    ./configure
-    make -j$gsProcessors
-    make install
-    install -v -o root -g root -m 0644 $MySB_InstallDir/templates/other/usr.local.etc.geoip.conf.tmpl /usr/local/etc/GeoIP.conf
+if [ "$gsVersionInstalled" != "$gsVersionLatest" ]; then
+    # Change architecture if needed
+    case $(getconf LONG_BIT) in
+        32) gsRepoURL="${gsRepoURL//amd64/386}" ;;
+    esac
+
+    # Download DEB file
+    [ -f "${gsRepoDir}/${gsRepoFile}" ] && mv -v "${gsRepoDir}/${gsRepoFile}" "${gsRepoDir}/${gsRepoFile}.tmp"
+    gfnRepoManageByType
+    [ -f "${gsRepoDir}/${gsRepoFile}" ] && rm -fv "${gsRepoDir}/${gsRepoFile}.tmp"
+
+    if [ -f "${gsRepoDir}/${gsRepoFile}" ]; then
+        dpkg -i "${gsRepoDir}/${gsRepoFile}"
+    fi
+
+    install -v -o root -g root -m 0644 $MySB_InstallDir/templates/other/etc.geoip.conf.tmpl /etc/GeoIP.conf
+
     # Disable the upgrade job
     cmdMySQL 'MySB_db' "UPDATE repositories SET upgrade='0' WHERE name='GeoIPupdate';" -v
 fi
