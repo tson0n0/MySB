@@ -293,9 +293,9 @@ EOF
         if [ -d $gsNextCloudDir ] && [ -f $gsNextCloudDir/config/config.php ]; then
             #### Check old config file
             PasswordSalt="$(su -s /bin/sh www-data -c "/usr/bin/php $gsNextCloudDir/occ config:system:get passwordsalt")"
-            echo "PasswordSalt: "$PasswordSalt
+            echo "PasswordSalt: $PasswordSalt"
             Secret="$(su -s /bin/sh www-data -c "/usr/bin/php $gsNextCloudDir/occ config:system:get secret")"
-            echo "Secret: "$Secret
+            echo "Secret: $Secret"
 
             #### New config file
             # Get the new version
