@@ -92,7 +92,7 @@ gfnLoadingVars() {
                     ;;
                 --users)
                     ApplyRtorrentUsed=NO
-                    ApplyIptablesUsers=NO
+                    ApplyIptablesUsers=YES
                     ApplyConfigNginx="$(gfnCheckCommand 1 nginx)"
                     ApplyConfigFail2Ban=$gbIsInstalled_Fail2Ban
                     ApplyConfigPeerGuardian=$gbIsInstalled_PeerGuardian
