@@ -61,8 +61,8 @@ if ( $IsInstalled == '1' ) {
 	], "ORDER" => ["list_name" => "ASC"]]);
 ?>
 
+	<div style="margin-top: 10px; margin-bottom: 20px;">
 	<form class="form_settings" method="post" action="">
-		<div align="center">
 <?php if ( $IsMainUser ) { ?>
 			<input class="submit" style="width:<?php echo strlen(Global_SaveChanges)*10; ?>px; margin-bottom: 10px;" name="submit" type="submit" value="<?php echo Global_SaveChanges; ?>">
 <?php } ?>
@@ -148,8 +148,8 @@ if ( $IsInstalled == '1' ) {
 <?php if ( $IsMainUser ) { ?>
 			<input class="submit" style="width:<?php echo strlen(Global_SaveChanges)*10; ?>px; margin-top: 10px;" name="submit" type="submit" value="<?php echo Global_SaveChanges; ?>">
 <?php } ?>
-		</div>
 	</form>
+	</div>
 <?php
 } else {
 	echo '<h1>PeerGuardian is not installed...</h1>';

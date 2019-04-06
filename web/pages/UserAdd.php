@@ -64,7 +64,7 @@ function Form($RealFreeSpace, $FreeSpace) {
 				</table>
 				<div align="center"><p class="Comments">' . MainUser_UserAdd_Comment . '</p></div>';
 	if ($PortalIsItLocked === false) {
-		echo '<input class="submit" style="width:' . strlen(Global_SaveChanges)*10 . 'px; margin-top: 10px;" name="submit" type="submit" value="' .MainUser_UserAdd_AddUser. '"">';
+		echo '<input class="submit" style="width:' . strlen(Global_SaveChanges)*10 . 'px; margin-top: 10px;" name="submit" type="submit" value="' .MainUser_UserAdd_AddUser. '">';
 	}
 	echo '</div>
 		</form>';
@@ -210,9 +210,9 @@ if ( !empty($sUsersList) ) {
 	// Is lock ?
 	$PortalIsItLocked = PortalIsItLocked();
 ?>
+	<div style="margin-top: 10px; margin-bottom: 20px;">
 	<form class="form_settings" method="post" action="">
-		<div align="center" style="margin-top: 50px; margin-bottom: 20px;"><table style="border-spacing:1;">
-			<input name="free_space" type="hidden" value="<?php echo $RealFreeSpace; ?>"/>
+		<table style="border-spacing:1;">
 			<tr>
 				<th style="text-align:center;"><?php echo MainUser_UserAdd_Table_Username; ?></th>
 				<th style="text-align:center;"><?php echo MainUser_UserAdd_Table_Email; ?></th>
@@ -365,11 +365,11 @@ if ( !empty($sUsersList) ) {
 ?>
 			</table>
 
+			<input name="free_space" type="hidden" value="<?php echo $RealFreeSpace; ?>"/>
 		<?php if ( ($IsMainUser) && ($PortalIsItLocked === false) ) { ?>
 			<input class="submit" style="width:<?php echo strlen(Global_SaveChanges)*10; ?>px; margin-top: 10px;" name="submit" type="submit" value="<?php echo Global_SaveChanges; ?>">
 		<?php } ?>
-
-		</div>
 	</form>
+	</div>
 <?php
 //#################### LAST LINE ######################################

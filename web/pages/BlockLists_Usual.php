@@ -155,7 +155,7 @@ if ( $IsInstalled == '1' ) {
 	if ( $IsMainUser ) {
 ?>
 
-	<div align="center" style="margin-top: 10px; margin-bottom: 20px;">
+	<div style="margin-top: 10px; margin-bottom: 20px;">
 	<form class="form_settings" method="post" action="">
 		<fieldset>
 		<legend><?php echo iBlockLists_DB_Title; ?></legend>

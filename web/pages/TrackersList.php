@@ -87,8 +87,8 @@ if(isset($_POST)==true && empty($_POST)==false) {
 $TrackersList = $MySB_DB->select("trackers_list", ["id_trackers_list", "tracker", "tracker_domain", "origin", "is_ssl", "is_active", "ping", "cert_expiration"], ["to_delete" => 0], ["ORDER" => "trackers_list.tracker_domain ASC"]);
 ?>
 
+<div style="margin-top: 10px; margin-bottom: 20px;">
 <form class="form_settings" method="post" action="">
-	<div align="center">
 
 	<?php if ( $IsMainUser ) { ?>
 		<input class="submit" style="width:<?php echo strlen(Global_SaveChanges)*10; ?>px; margin-bottom: 10px;" name="submit" type="submit" value="<?php echo Global_SaveChanges; ?>">
@@ -212,8 +212,8 @@ foreach($TrackersList as $Tracker) {
 		<?php if ( $IsMainUser ) { ?>
 			<input class="submit" style="width:<?php echo strlen(Global_SaveChanges)*10; ?>px; margin-top: 10px;" name="submit" type="submit" value="<?php echo Global_SaveChanges; ?>">
 		<?php } ?>
-	</div>
 </form>
+</div>
 
 <?php
 //#################### LAST LINE ######################################

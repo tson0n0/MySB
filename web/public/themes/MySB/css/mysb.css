@@ -82,3 +82,7 @@ input:required:valid {
 	background-position: right top;
 	background-repeat: no-repeat;
 }
+
+div.scrollmenu {
+	overflow:scroll;
+}
