@@ -212,13 +212,16 @@ if [ "$gbToInstall_NextCloud" == "YES" ] && [ "$gsSwitch" != "INIT" ]; then
     fi
 
     if gfnCheckCommand 0 $gsNextCloudDir/occ; then
+        # Upgrade
+        su -s /bin/sh www-data -c "/usr/bin/php $gsNextCloudDir/occ upgrade -v"
+
         # NextCloud is installed
         cmdMySQL 'MySB_db' "UPDATE services SET to_install = '0', is_installed = '1' WHERE serv_name='NextCloud';" -v
 
         # Force upgrade script on next boot if needed
         ScriptOnBoot="$(cmdMySQL 'MySB_db' "SELECT script FROM repositories WHERE on_boot = '1' AND name = 'NextCloud';")"
         if [ -n "$ScriptOnBoot" ]; then
-            cmdMySQL 'MySB_db' "UPDATE repositories SET script = '$0' WHERE name='NextCloud';" -v
+            cmdMySQL 'MySB_db' "UPDATE repositories SET on_boot = '1', script = '$0' WHERE name='NextCloud';" -v
         else
             su -s /bin/sh www-data -c "/usr/bin/php $gsNextCloudDir/occ maintenance:mode --off"
         fi
