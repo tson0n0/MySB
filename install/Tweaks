@@ -86,13 +86,12 @@ ServicesToRestart="${ServicesToRestart} systemd-timesyncd"
 if ([ "$gsMemory" -lt 2048 ] && [ "$(free -m | grep 'Swap' | awk '{ print $2 }')" -ne 0 ]); then
     echo
     echo "########## Swappiness"
-    echo 80 | tee -a /proc/sys/vm/swappiness
-    if [[ ! $(grep 'vm.swappiness' /etc/sysctl.conf) ]]; then
-        echo "" | tee -a /etc/sysctl.conf
-        echo "# Swappiness - BoF" | tee -a /etc/sysctl.conf
-        echo "vm.swappiness = 80" | tee -a /etc/sysctl.conf
-        echo "# Swappiness - EoF" | tee -a /etc/sysctl.conf
-    fi
+    {
+        echo vm.swappiness=10
+        echo vm.vfs_cache_pressure=50
+    } >/etc/sysctl.d/99-swappiness.conf
+    cat /etc/sysctl.d/99-swappiness.conf
+    sysctl -p /etc/sysctl.d/99-swappiness.conf
 fi
 
 #### locale
