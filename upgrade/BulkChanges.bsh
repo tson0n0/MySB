@@ -83,6 +83,12 @@ case "$1" in
         rm -fv /usr/local/share/man/man1/geoipupdate.1
         rm -rfv /usr/local/share/GeoIP/
         rm -rfv /usr/local/share/doc/geoipupdate
+
+        #### Swappiness
+        if (grep -q 'vm.swappiness' /etc/sysctl.conf); then
+            sed -i '/Swappiness/d' /etc/sysctl.conf
+            sed -i '/swappiness/d' /etc/sysctl.conf
+        fi
         ;;
     "AFTER" | "INIT")
         ####################################
