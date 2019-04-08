@@ -89,7 +89,11 @@ fnNextRenewal() {
         # Backup certificates
         sTarGz="${MySB_InstallDir}_backup/letsencrypt_${dEndDate}.tar.gz"
         mkdir -p "${MySB_InstallDir}_backup"
-        [[ ! -f ${sTarGz} ]] && tar zcvf "${sTarGz}" /etc/letsencrypt/
+        if [ ! -f ${sTarGz} ]; then
+            if (tar zcvf "${sTarGz}" /etc/letsencrypt/); then
+                find "${MySB_InstallDir}_backup" -maxdepth 1 -type f -mtime +30 -name "*.tar.gz" -exec rm -vf {} \;
+            fi
+        fi
     fi
 }
 
