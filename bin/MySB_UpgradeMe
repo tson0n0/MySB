@@ -150,6 +150,8 @@ if [ $Continue -eq 0 ]; then
     if (! backup-manager -v -c /etc/MySB/BM_MySB.conf); then
         Continue=4
         Error="UpgradeMe_Error_BackupFailed"
+    else
+        find "${MySB_InstallDir}_backup" -maxdepth 1 -type d -name "v*" -mtime +1 -exec rm -rfv {} \;
     fi
 
     [ "$gbDevMode" -eq 1 ] && backup-manager-tools add "${MySB_InstallDir}"
